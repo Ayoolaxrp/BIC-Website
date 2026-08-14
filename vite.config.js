@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   plugins: [react()],
@@ -12,6 +13,11 @@ export default defineConfig({
     sourcemap: false,
     chunkSizeWarningLimit: 700,
     rolldownOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        // SPA fallback for GitHub Pages: unknown paths serve the app shell.
+        '404': fileURLToPath(new URL('./404.html', import.meta.url)),
+      },
       output: {
         codeSplitting: {
           groups: [
