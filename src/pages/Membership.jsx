@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import SpotlightCard from '../components/SpotlightCard';
 import TiltCard from '../components/TiltCard';
 import usePaystack from '../hooks/usePaystack';
@@ -207,6 +208,10 @@ export default function Membership() {
 
   return (
     <>
+      <Seo
+        title="Membership"
+        description="Unlock exclusive educational resources, professional networks, and career opportunities by becoming a registered member of the Babcock Investors Club."
+      />
       <PageHero
         crumb="Membership"
         title="Join the Club"

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import SpotlightCard from '../components/SpotlightCard';
 import useSubmission from '../hooks/useSubmission';
@@ -157,6 +158,10 @@ export default function Sponsorship() {
 
   return (
     <>
+      <Seo
+        title="Partner With BIC"
+        description="Invest in the next generation of investors, entrepreneurs, and business leaders. Partner with the Babcock Investors Club."
+      />
       <PageHero crumb="Partners" title="Partner With BIC">
         <p style={{ fontSize: '1.3rem', color: 'var(--sky-blue-light)', marginBottom: 24, fontWeight: 500 }}>
           Invest in the next generation of investors, entrepreneurs, and business leaders.

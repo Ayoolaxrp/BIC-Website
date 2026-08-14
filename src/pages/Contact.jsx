@@ -1,5 +1,6 @@
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import SpotlightCard from '../components/SpotlightCard';
 import useSubmission from '../hooks/useSubmission';
@@ -71,6 +72,10 @@ export default function Contact() {
 
   return (
     <>
+      <Seo
+        title="Contact Us"
+        description="Have questions about membership, events, or partnerships? Reach the Babcock Investors Club executive team — we respond within 24 hours."
+      />
       <PageHero
         crumb="Contact Us"
         title="Get in Touch"

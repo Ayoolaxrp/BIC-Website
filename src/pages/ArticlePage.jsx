@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import FadeIn from '../components/FadeIn';
 import { fetchArticles } from '../lib/api';
 
@@ -31,6 +32,7 @@ export default function ArticlePage() {
   if (notFound) {
     return (
       <section className="section container text-center" style={{ paddingTop: 120, paddingBottom: 120 }}>
+        <Seo title="Article Not Found" description="This article may have been unpublished. Browse the Babcock Investors Club blog for more insights." />
         <h1 className="section-title">Article not found</h1>
         <p className="admin-subtitle">
           This article may have been unpublished. Browse the rest of our library instead.
@@ -46,6 +48,7 @@ export default function ArticlePage() {
 
   return (
     <>
+      <Seo title={article.title} description={article.summary || 'An article by the Babcock Investors Club editorial team.'} />
       <PageHero
         crumb={`Blog / ${article.category || 'Article'}`}
         title={article.title}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCurrentUser, getMyApplication, getMyRsvps, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut, signUp, updateProfile } from '../lib/auth';
+import Seo from '../components/Seo';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
 import { asset } from '../lib/assets';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
@@ -158,6 +159,7 @@ export default function Member() {
   if (!user) {
     return (
       <section className="section container admin-login-wrap">
+        <Seo title="Member Portal" noindex />
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
           {isDemoMode && (
             <div className="form-status visible demo" style={{ marginBottom: 16, maxWidth: 460, marginLeft: 'auto', marginRight: 'auto' }}>
@@ -240,6 +242,7 @@ export default function Member() {
 
   return (
     <section className="section container">
+      <Seo title="Member Portal" noindex />
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
         <div className="admin-topbar">
           <div>

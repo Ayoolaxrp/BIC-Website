@@ -1,5 +1,6 @@
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import { getInitials } from '../utils/initials';
 import { asset } from '../lib/assets';
@@ -124,6 +125,10 @@ const LinkedInIcon = () => (
 export default function About() {
   return (
     <>
+      <Seo
+        title="About Us"
+        description="Discover the roots of the Babcock Investors Club and the principles that guide our community of student investors at Babcock University."
+      />
       <PageHero
         crumb="About Us"
         title="Our History & Vision"

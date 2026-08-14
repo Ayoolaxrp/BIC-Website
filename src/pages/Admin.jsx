@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Seo from '../components/Seo';
 import { motion } from 'framer-motion';
 import { isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -257,6 +258,7 @@ export default function Admin() {
   if (user === null) {
     return (
       <section className="section container admin-login-wrap">
+        <Seo title="Admin Console" noindex />
         <div className="admin-login-card">
           <h1 className="admin-title">Admin Console</h1>
           <p className="admin-subtitle">
@@ -309,6 +311,7 @@ export default function Admin() {
 
   return (
     <section className="section container">
+      <Seo title="Admin Console" noindex />
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
         <div className="admin-topbar">
           <div>

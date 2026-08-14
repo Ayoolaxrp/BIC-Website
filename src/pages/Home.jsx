@@ -5,6 +5,7 @@ import Counter from '../components/Counter';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
 import StickyCta from '../components/StickyCta';
+import Seo from '../components/Seo';
 import useCountdown from '../hooks/useCountdown';
 import { asset } from '../lib/assets';
 
@@ -172,6 +173,7 @@ export default function Home() {
 
   return (
     <>
+      <Seo />
       {/* HERO */}
       <header className="hero">
         <motion.div className="hero-bg-img" style={{ y: bgY }} aria-hidden="true" />

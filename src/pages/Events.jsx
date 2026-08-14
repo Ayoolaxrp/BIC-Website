@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
 import useCountdown from '../hooks/useCountdown';
@@ -185,6 +186,10 @@ export default function Events() {
 
   return (
     <>
+      <Seo
+        title="Events & Summits"
+        description="Don't miss our upcoming flagship event. Register early to secure your seat — summits, workshops, and competitions for student investors."
+      />
       <PageHero
         crumb="Events"
         title="Upcoming Events & Summits"

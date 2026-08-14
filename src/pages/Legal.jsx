@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import FadeIn from '../components/FadeIn';
 
 const sections = [
@@ -44,6 +45,10 @@ export default function Legal() {
 
   return (
     <>
+      <Seo
+        title="Privacy Policy & Terms"
+        description="How the Babcock Investors Club handles your data and the terms that govern your use of this website."
+      />
       <PageHero crumb="Legal" title="Privacy Policy & Terms" description="How we handle your data and the terms that govern your use of this website." />
       <FadeIn className="section container">
         <div className="legal-tabs" style={{ display: 'flex', gap: 10, marginBottom: 40 }}>

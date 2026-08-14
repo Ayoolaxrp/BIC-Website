@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
+import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import { fetchArticles, fetchNewsletterPosts } from '../lib/api';
 import { asset } from '../lib/assets';
@@ -229,6 +230,10 @@ export default function Blog() {
 
   return (
     <>
+      <Seo
+        title="Blog & Resources"
+        description="A curated reading list of the best real articles on Nigerian markets, investing, and student finance — hand-picked by the BIC research team."
+      />
       <PageHero
         crumb="Blog & Resources"
         title="Insights & Education"
