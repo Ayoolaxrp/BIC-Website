@@ -8,6 +8,12 @@ import ScrollProgress from './components/ScrollProgress';
 import PageLoader from './components/PageLoader';
 import CursorGlow from './components/CursorGlow';
 
+// The app may be served at the root (Vercel, dev) or under a sub-path
+// (GitHub Pages: /BIC-Website/). Base the router on Vite's BASE_URL so deep
+// links, shared URLs, and client-side navigation all resolve on any deployment.
+const routerBase =
+  import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL.replace(/\/+$/, '');
+
 // Code-split every route so the initial bundle stays lean.
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
@@ -56,7 +62,7 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBase}>
       <MotionConfig reducedMotion="never">
         <ScrollToTop />
         <ScrollProgress />
