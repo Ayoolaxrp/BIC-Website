@@ -8,7 +8,7 @@
 // ============================================================================
 const path = require('path');
 const fs = require('fs');
-const { chromium } = require('C:/Users/User/node_modules/playwright');
+const { chromium } = require('playwright');
 
 const BASE = 'https://ayoolaxrp.github.io/BIC-Website';
 const ROUTES = ['/', '/about', '/membership', '/events', '/blog', '/sponsorship', '/contact', '/member', '/legal', '/admin'];
