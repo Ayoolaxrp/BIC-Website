@@ -5,6 +5,7 @@ import TiltCard from '../components/TiltCard';
 import SpotlightCard from '../components/SpotlightCard';
 import useSubmission from '../hooks/useSubmission';
 import { SECTORS } from '../lib/sectors';
+import { asset } from '../lib/assets';
 
 const Check = ({ size = 24 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
@@ -47,7 +48,7 @@ const interestTags = [
   'Leadership Development',
 ];
 
-const deckUrl = '/resources/bic-sponsorship-deck.pdf';
+const deckUrl = asset('/resources/bic-sponsorship-deck.pdf');
 
 const howItWorks = [
   {

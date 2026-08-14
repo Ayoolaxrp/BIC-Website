@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { submitRecord } from '../lib/store';
+import { asset } from '../lib/assets';
 
 export const BIC_LINKEDIN = 'https://www.linkedin.com/company/babcock-investors-club/';
 
@@ -41,7 +42,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-logo">
-              <img src="/images/logo.jpg" alt="BIC" style={{ height: 40 }} />
+              <img src={asset('/images/logo.jpg')} alt="BIC" style={{ height: 40 }} />
               <div className="logo-text">
                 <span className="logo-name">BIC</span>
                 <span className="logo-tagline">Babcock Investors Club</span>

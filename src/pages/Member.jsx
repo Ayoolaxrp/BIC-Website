@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCurrentUser, getMyApplication, getMyRsvps, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut, signUp, updateProfile } from '../lib/auth';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
+import { asset } from '../lib/assets';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
 
 const MEMBER_RESOURCES = [
-  { name: "Beginner's Guide to Investing", file: '/resources/bic-beginners-guide-to-investing.pdf', size: 'PDF · 4.4 KB' },
-  { name: 'Nigerian Stock Market 101', file: '/resources/bic-nigerian-stock-market-101.pdf', size: 'PDF · 3.9 KB' },
-  { name: 'Mock Trading Tournament Rules', file: '/resources/bic-mock-trading-rules.pdf', size: 'PDF · 3.2 KB' },
-  { name: 'Personal Budgeting Template', file: '/resources/bic-budget-template.csv', size: 'CSV · 538 B' },
-  { name: 'Sponsorship Prospectus', file: '/resources/bic-sponsorship-deck.pdf', size: 'PDF · 3.2 KB' },
+  { name: "Beginner's Guide to Investing", file: asset('/resources/bic-beginners-guide-to-investing.pdf'), size: 'PDF · 4.4 KB' },
+  { name: 'Nigerian Stock Market 101', file: asset('/resources/bic-nigerian-stock-market-101.pdf'), size: 'PDF · 3.9 KB' },
+  { name: 'Mock Trading Tournament Rules', file: asset('/resources/bic-mock-trading-rules.pdf'), size: 'PDF · 3.2 KB' },
+  { name: 'Personal Budgeting Template', file: asset('/resources/bic-budget-template.csv'), size: 'CSV · 538 B' },
+  { name: 'Sponsorship Prospectus', file: asset('/resources/bic-sponsorship-deck.pdf'), size: 'PDF · 3.2 KB' },
 ];
 
 function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }) {

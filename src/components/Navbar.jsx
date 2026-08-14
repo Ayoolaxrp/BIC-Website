@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser, isDemoMode, onAuthChange, signOut } from '../lib/auth';
 import './Navbar.css';
+import { asset } from '../lib/assets';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -78,7 +79,7 @@ export default function Navbar() {
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="container navbar-inner">
           <Link to="/" className="navbar-logo">
-            <img src="/images/logo.jpg" alt="BIC Logo" />
+            <img src={asset('/images/logo.jpg')} alt="BIC Logo" />
             <div className="logo-text">
               <span className="logo-name">BIC</span>
               <span className="logo-tagline">Babcock Investors</span>

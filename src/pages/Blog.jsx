@@ -4,6 +4,7 @@ import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import TiltCard from '../components/TiltCard';
 import { fetchArticles, fetchNewsletterPosts } from '../lib/api';
+import { asset } from '../lib/assets';
 
 // Curated articles — every entry is a real, published article (verified URLs).
 // BIC curates and summarizes these for its members; all credit goes to the
@@ -146,31 +147,31 @@ const CATEGORIES = [
 const RESOURCES = [
   {
     name: "Beginner's Guide to Investing",
-    file: '/resources/bic-beginners-guide-to-investing.pdf',
+    file: asset('/resources/bic-beginners-guide-to-investing.pdf'),
     size: 'PDF · 4.4 KB',
     desc: 'BIC\u2019s own intro guide — assets, risk, costs, and how to start small in Nigeria.',
   },
   {
     name: 'Nigerian Stock Market 101',
-    file: '/resources/bic-nigerian-stock-market-101.pdf',
+    file: asset('/resources/bic-nigerian-stock-market-101.pdf'),
     size: 'PDF · 3.9 KB',
     desc: 'How the NGX works, how to buy shares, fees, and market jargon decoded.',
   },
   {
     name: 'Mock Trading Tournament Rules',
-    file: '/resources/bic-mock-trading-rules.pdf',
+    file: asset('/resources/bic-mock-trading-rules.pdf'),
     size: 'PDF · 3.2 KB',
     desc: 'Official rules for BIC\u2019s simulated trading competitions.',
   },
   {
     name: 'Personal Budgeting Template',
-    file: '/resources/bic-budget-template.csv',
+    file: asset('/resources/bic-budget-template.csv'),
     size: 'CSV · 538 B',
     desc: 'A simple spreadsheet to plan income, spending, and savings.',
   },
   {
     name: 'Sponsorship Prospectus',
-    file: '/resources/bic-sponsorship-deck.pdf',
+    file: asset('/resources/bic-sponsorship-deck.pdf'),
     size: 'PDF · 3.2 KB',
     desc: 'What partners get at each tier — share with your employer or brand.',
   },

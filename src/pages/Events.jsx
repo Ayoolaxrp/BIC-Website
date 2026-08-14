@@ -8,13 +8,14 @@ import usePaystack from '../hooks/usePaystack';
 import { fetchEvents } from '../lib/api';
 import { submitRecord } from '../lib/store';
 import { PAYSTACK_PUBLIC_KEY, paystackConfigured } from '../lib/config';
+import { asset } from '../lib/assets';
 
 const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
 
 const upcomingEvents = [
   {
     id: 'summit-2026',
-    img: '/images/events.png',
+    img: asset('/images/events.png'),
     alt: 'Annual Finance Summit',
     title: 'Annual Student Finance Summit 2026',
     desc: 'Join industry leaders and top alumni as we discuss market trends, investment strategies, and career growth in an ever-changing economic landscape.',
@@ -32,7 +33,7 @@ const upcomingEvents = [
   },
   {
     id: 'ta-masterclass',
-    img: '/images/about.png',
+    img: asset('/images/about.png'),
     alt: 'Technical Analysis Masterclass',
     title: 'Technical Analysis Masterclass',
     desc: 'Learn how to read charts, identify patterns, and make data-driven trading decisions. A perfect hands-on session for beginners.',
@@ -49,7 +50,7 @@ const upcomingEvents = [
   },
   {
     id: 'stock-pitch-2026',
-    img: '/images/events.png',
+    img: asset('/images/events.png'),
     alt: 'Student Stock Pitch Challenge',
     title: 'Student Stock Pitch Challenge',
     desc: 'Compete in our flagship pitch competition — build an investment thesis, defend it before a panel of industry judges, and win prizes plus CV-worthy recognition.',
@@ -70,7 +71,7 @@ const upcomingEvents = [
 const pastEvents = [
   {
     id: 'mixer-2025',
-    img: '/images/hero-bg.png',
+    img: asset('/images/hero-bg.png'),
     title: 'End of Semester Mixer',
     date: 'Nov 18, 2025 · 5:00 PM',
     desc: 'Members connected with peers, shared investment ideas, and built their professional networks over refreshments at the Student Center Lounge.',
@@ -78,7 +79,7 @@ const pastEvents = [
   },
   {
     id: 'summit-2025',
-    img: '/images/events.png',
+    img: asset('/images/events.png'),
     title: 'Annual Student Finance Summit 2025',
     date: 'Oct 24, 2025 · 10:00 AM',
     desc: 'Our flagship summit brought industry leaders and 400+ students together for panels, masterclasses, and a student investing competition.',
@@ -86,7 +87,7 @@ const pastEvents = [
   },
   {
     id: 'trading-tournament',
-    img: '/images/about.png',
+    img: asset('/images/about.png'),
     title: 'Mock Trading Tournament',
     date: 'Feb 14, 2026 · 12:00 PM',
     desc: 'Students competed in a simulated market environment, managing virtual portfolios under live market conditions.',
@@ -124,7 +125,7 @@ export default function Events() {
     .filter((e) => e.is_upcoming !== false)
     .map((e) => ({
       id: e.id,
-      img: e.image_url || '/images/events.png',
+      img: e.image_url || asset('/images/events.png'),
       alt: e.title,
       title: e.title,
       desc: e.description || '',

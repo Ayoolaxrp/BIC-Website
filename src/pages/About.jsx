@@ -2,6 +2,7 @@ import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import TiltCard from '../components/TiltCard';
 import { getInitials } from '../utils/initials';
+import { asset } from '../lib/assets';
 
 const values = [
   {
@@ -133,7 +134,7 @@ export default function About() {
       <FadeIn className="section container">
         <div className="grid-2 align-center">
           <TiltCard className="about-img-wrap" max={5}>
-            <img src="/images/about.png" alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
+            <img src={asset('/images/about.png')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
           </TiltCard>
           <div style={{ paddingLeft: 24 }}>
             <span className="section-label">Our Story</span>

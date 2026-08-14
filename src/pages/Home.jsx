@@ -4,6 +4,7 @@ import FadeIn from '../components/FadeIn';
 import Counter from '../components/Counter';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
+import { asset } from '../lib/assets';
 
 const whyJoin = [
   {
@@ -251,7 +252,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', paddingRight: 24 }}>
             <TiltCard className="intro-img" max={5}>
-              <img src="/images/about.png" alt="BIC students" />
+              <img src={asset('/images/about.png')} alt="BIC students" />
             </TiltCard>
           </div>
         </div>
