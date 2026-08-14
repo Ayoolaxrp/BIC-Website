@@ -955,6 +955,23 @@ p { color: var(--gray-700); line-height: 1.75; }
   .btn { width: 100%; justify-content: center; }
   .registration-box { padding: 20px 16px; }
   .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  /* ---- 375px (iPhone SE) floor ---- */
+  .hero-stats { gap: 20px; justify-content: space-between; }
+  .event-meta { flex-wrap: wrap; gap: 8px 16px; }
+  .sponsors-track { gap: 24px; }
+  .sponsor-logo { font-size: 1.2rem; }
+  .intro-stats-box { position: static; width: 100%; margin-top: 16px; }
+  .tier-card { padding: 28px 20px; }
+  .commitment-box { padding: 32px 20px; }
+  .contact-info { padding: 32px 20px; }
+  .contact-form-box { padding: 32px 20px; }
+  .spotlight-card { padding: 24px 20px; }
+  /* iOS zoom prevention — any input/select below 16px triggers viewport zoom on focus */
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .footer-newsletter input { font-size: 16px; }
+  .tier-tag { font-size: 0.7rem; padding: 4px 12px; }
 }
 
 /* ---- NEW HOMEPAGE SECTIONS ---- */
