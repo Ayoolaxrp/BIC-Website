@@ -4,7 +4,12 @@ import FadeIn from '../components/FadeIn';
 import Counter from '../components/Counter';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
+import StickyCta from '../components/StickyCta';
+import useCountdown from '../hooks/useCountdown';
 import { asset } from '../lib/assets';
+
+// Next flagship session — mirrors the Events page countdown target.
+const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
 
 const whyJoin = [
   {
@@ -152,6 +157,7 @@ const whyList = [
 ];
 
 export default function Home() {
+  const countdown = useCountdown(NEXT_EVENT_DATE);
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 700], [0, 150]);
   const heroOpacity = useTransform(scrollY, [0, 550], [1, 0.35]);
@@ -189,6 +195,18 @@ export default function Home() {
               Babcock Investors Club (BIC) is a premier student-led community focused on investment
               awareness, networking, leadership, and growth opportunities.
             </p>
+
+            {countdown && (
+              <Link to="/events" className="hero-next-event" aria-label="Next flagship event countdown — see events">
+                <span className="hero-next-dot" aria-hidden="true"></span>
+                Annual Summit in
+                <strong>
+                  {countdown.days}d · {countdown.hours}h · {countdown.minutes}m
+                </strong>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </Link>
+            )}
+
             <div className="hero-actions">
               <MagneticButton>
                 <Link to="/membership" className="btn btn-primary">Become a Member</Link>
@@ -462,6 +480,9 @@ export default function Home() {
           </div>
         </div>
       </FadeIn>
+
+      {/* MOBILE STICKY CTA — keeps Join BIC reachable while scrolling (mobile only) */}
+      <StickyCta />
 
       {/* CTA */}
       <FadeIn className="cta-section">

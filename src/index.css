@@ -2040,3 +2040,111 @@ input.input-error:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,
   .cd-num { font-size: 2rem; }
   .deck-cta-inner { flex-direction: column; align-items: flex-start; }
 }
+
+/* ============================================================
+   LEAD CONVERSION & PREMIUM POLISH — scroll progress, sticky
+   mobile CTA, hero countdown, a11y + mobile hardening
+   ============================================================ */
+
+/* Thin gold scroll-progress bar (ScrollProgress component) */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sky-blue), var(--gold));
+  transform-origin: 0 50%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Hero countdown pill (Home hero — urgency cue linking to Events) */
+.hero-next-event {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding: 10px 18px;
+  border-radius: 50px;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  background: rgba(14, 165, 233, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+.hero-next-event:hover {
+  border-color: var(--sky-blue);
+  background: rgba(14, 165, 233, 0.14);
+  transform: translateY(-2px);
+}
+.hero-next-event strong { color: var(--white); font-weight: 700; }
+.hero-next-event svg { color: var(--sky-blue); flex-shrink: 0; }
+.hero-next-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+/* Sticky mobile-only CTA bar (StickyCta component) */
+.sticky-cta {
+  position: fixed;
+  left: 12px; right: 12px; bottom: 12px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px 12px 20px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  border-radius: 16px;
+  background: rgba(1, 27, 51, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  color: var(--white);
+}
+.sticky-cta-info { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.sticky-cta-info strong { font-size: 0.95rem; }
+.sticky-cta-info span { font-size: 0.72rem; color: rgba(255, 255, 255, 0.65); }
+.sticky-cta-btn { flex-shrink: 0; padding: 12px 22px; font-size: 0.92rem; }
+/* Keep the fixed bar from covering page content on the pages that show it */
+body:has(.sticky-cta) { padding-bottom: 80px; }
+@media (min-width: 641px) {
+  .sticky-cta { display: none; }
+  body:has(.sticky-cta) { padding-bottom: 0; }
+}
+
+/* Touch targets & mobile comfort */
+@media (max-width: 640px) {
+  .btn,
+  .form-group input,
+  .form-group select,
+  .form-group textarea { min-height: 46px; }
+  .committee-grid { justify-content: center; }
+  .hero-next-event { font-size: 0.78rem; padding: 9px 14px; }
+}
+
+/* Cursor affordance on interactive elements */
+button, a, [role="button"], select, .link-btn, .category-btn, .tab-btn, .admin-tab { cursor: pointer; }
+
+/* Visible keyboard focus (accessibility) */
+:focus-visible {
+  outline: 2px solid var(--sky-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion preferences for CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .hero-orb, .hero-badge .dot, .hero-next-dot, .cursor-glow {
+    animation: none !important;
+  }
+  .fade-in, .card, .tilt-card, .btn, .sticky-cta { transition: none !important; }
+}
+
+/* Defensive: never allow horizontal scroll (marquee, orbs, glows are contained) */
+html, body { overflow-x: hidden; overflow-x: clip; }

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import ScrollProgress from './components/ScrollProgress';
 import PageLoader from './components/PageLoader';
 import CursorGlow from './components/CursorGlow';
 
@@ -58,6 +59,7 @@ export default function App() {
     <BrowserRouter>
       <MotionConfig reducedMotion="never">
         <ScrollToTop />
+        <ScrollProgress />
         <CursorGlow />
         <Navbar />
         <AnimatedRoutes />
