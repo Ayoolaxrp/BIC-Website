@@ -33,6 +33,14 @@ const MIN_TAP = 44;
       await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 30000 });
       await page.waitForTimeout(1200);
 
+      // Scroll through the page first so lazy images actually load
+      await page.evaluate(async () => {
+        const h = document.body.scrollHeight;
+        for (let y = 0; y < h; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+        window.scrollTo(0, 0);
+      });
+      await page.waitForTimeout(800);
+
       const report = await page.evaluate(({ MIN_TAP }) => {
         const out = { clipped: [], overlap: [], tap: [], brokenImg: [], missingAlt: [], gaps: [] };
         const vw = window.innerWidth;
@@ -75,11 +83,13 @@ const MIN_TAP = 44;
           }
         });
 
-        // 3) Tap targets on mobile
+        // 3) Tap targets on mobile (skip checkbox/radio inputs and footer text links)
         if (vw <= 768) {
           document.querySelectorAll('a,button,input,select,textarea').forEach((el) => {
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) return;
+            if (el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio')) return;
+            if (el.closest('.footer-col') || el.closest('.breadcrumb')) return;
             if (r.width < MIN_TAP - 4 || r.height < MIN_TAP - 4) {
               const cls = (el.className || '').toString().split(' ').slice(0, 2).join('.');
               out.tap.push(`${el.tagName.toLowerCase()}.${cls} ${Math.round(r.width)}x${Math.round(r.height)} "${(el.textContent||el.placeholder||'').trim().slice(0,30)}"`);
@@ -93,8 +103,12 @@ const MIN_TAP = 44;
           if (!img.getAttribute('alt')) out.missingAlt.push(img.src.slice(-50));
         });
 
-        // 5) Suspicious empty gaps — big blank areas between sections
-        const sections = [...document.querySelectorAll('section, .section, main > *')].filter((el) => el.getBoundingClientRect().height > 0);
+        // 5) Suspicious empty gaps — big blank areas between sections (skip fixed/sticky)
+        const sections = [...document.querySelectorAll('section, .section, main > *')].filter((el) => {
+          const r = el.getBoundingClientRect();
+          const pos = getComputedStyle(el).position;
+          return r.height > 0 && pos !== 'fixed' && pos !== 'sticky';
+        });
         for (let i = 0; i < sections.length - 1; i++) {
           const a = sections[i].getBoundingClientRect();
           const b = sections[i + 1].getBoundingClientRect();

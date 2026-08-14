@@ -781,6 +781,8 @@ p { color: var(--gray-700); line-height: 1.75; }
   font-size: 0.88rem;
   color: rgba(255,255,255,0.55);
   transition: var(--transition);
+  display: inline-block;
+  padding: 4px 0;
 }
 .footer-col ul li a:hover { color: var(--sky-blue); padding-left: 4px; }
 .footer-newsletter input {
@@ -863,7 +865,7 @@ p { color: var(--gray-700); line-height: 1.75; }
   color: rgba(255,255,255,0.45);
   margin-bottom: 20px;
 }
-.breadcrumb a { color: var(--sky-blue); display: inline-block; padding: 6px 8px; border-radius: 6px; }
+.breadcrumb a { color: var(--sky-blue); display: inline-block; padding: 8px 10px; border-radius: 6px; }
 .breadcrumb span { color: rgba(255,255,255,0.3); }
 
 /* ---- MOBILE NAV ---- */
