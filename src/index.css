@@ -809,6 +809,7 @@ p { color: var(--gray-700); line-height: 1.75; }
   color: rgba(255,255,255,0.35);
   flex-wrap: wrap;
 }
+.footer-bottom a { display: inline-block; padding: 6px 2px; }
 .footer-bottom a:hover { color: var(--sky-blue); }
 
 /* ---- SECTION BACKGROUNDS ---- */
