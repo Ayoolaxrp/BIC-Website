@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ScrollProgress from './components/ScrollProgress';
 import PageLoader from './components/PageLoader';
 import CursorGlow from './components/CursorGlow';
+import CookieConsent from './components/CookieConsent';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
 // (GitHub Pages: /BIC-Website/). Base the router on Vite's BASE_URL so deep
@@ -82,6 +83,7 @@ export default function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
+        <CookieConsent />
       </MotionConfig>
     </BrowserRouter>
   );

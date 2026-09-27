@@ -2324,6 +2324,85 @@ button, a, [role="button"], select, .link-btn, .category-btn, .tab-btn, .admin-t
 html, body { overflow-x: hidden; overflow-x: clip; }
 
 /* ================================================================== */
+/* COOKIE CONSENT CARD (BIV-inspired, Sept 2026)                       */
+/* ================================================================== */
+.cookie-card {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 950; /* above navbar (999 is loader) and mobile sticky CTA (900) */
+  width: min(380px, calc(100vw - 40px));
+  padding: 22px 22px 20px;
+  background: var(--white);
+  border: 1px solid rgba(10, 25, 49, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(6, 12, 24, 0.08), 0 24px 60px rgba(6, 12, 24, 0.22);
+}
+.cookie-title {
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.cookie-text {
+  color: var(--gray-500);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.cookie-text a {
+  color: var(--sky-blue-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-actions {
+  display: flex;
+  gap: 10px;
+}
+.cookie-actions .btn {
+  flex: 1;
+  justify-content: center;
+  padding: 11px 16px;
+  font-size: 0.88rem;
+  min-height: 44px;
+}
+.cookie-decline {
+  border: 1.5px solid rgba(10, 25, 49, 0.18);
+  color: var(--navy);
+  background: var(--white);
+}
+.cookie-decline:hover {
+  border-color: var(--navy);
+  background: var(--off-white);
+}
+/* Stack above the mobile sticky CTA instead of covering it */
+@media (max-width: 640px) {
+  .cookie-card {
+    left: 12px;
+    right: 12px;
+    bottom: 92px;
+    width: auto;
+  }
+}
+/* And above the desktop-height sticky area on short viewports */
+@media (max-height: 560px) {
+  .cookie-card { bottom: 12px; }
+}
+
+/* Footer "Cookie Preferences" — matches the legal links beside it */
+.footer-cookie-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.footer-cookie-btn:hover { color: var(--sky-blue-light); }
+
+/* ================================================================== */
 /* APPLE-STYLE DESIGN REFINEMENTS (BIV-inspired pass, Sept 2026)       */
 /* Tighter radii, pill CTAs, unified tokens, 404 page                  */
 /* ================================================================== */

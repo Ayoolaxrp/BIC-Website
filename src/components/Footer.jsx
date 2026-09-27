@@ -97,9 +97,16 @@ export default function Footer() {
         </p>
         <div className="footer-bottom">
           <p>© 2026 Babcock Investors Club. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: 24 }}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <Link to="/legal#privacy">Privacy Policy</Link>
             <Link to="/legal#terms">Terms of Service</Link>
+            <button
+              type="button"
+              className="footer-cookie-btn"
+              onClick={() => window.dispatchEvent(new CustomEvent('bic:open-consent'))}
+            >
+              Cookie Preferences
+            </button>
           </div>
         </div>
       </div>
