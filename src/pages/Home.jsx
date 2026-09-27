@@ -12,37 +12,6 @@ import { asset } from '../lib/assets';
 // Next flagship session — mirrors the Events page countdown target.
 const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
 
-const whyJoin = [
-  {
-    icon: (
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-    ),
-    title: 'Financial Literacy',
-    text: 'Gain a complete, foundational understanding of personal budgeting, investment concepts, capital markets, and wealth creation strategies designed for long-term growth.',
-  },
-  {
-    icon: (
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-    ),
-    title: 'Industry Connections',
-    text: 'Meet top executives, industry professionals, and corporate leaders through panel discussions, masterclasses, networking events, and career mentorship.',
-  },
-  {
-    icon: (
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-    ),
-    title: 'Entrepreneurship Skills',
-    text: 'Develop hands-on business modeling, marketing strategies, pitching experience, and startup skills. Turn your ideas into functional ventures with our network.',
-  },
-  {
-    icon: (
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-    ),
-    title: 'Committee Leadership',
-    text: 'Take charge by joining one of our key committees (Welfare, Media, Membership, etc.) and coordinate real club activities to build solid, resume-worthy leadership skills.',
-  },
-];
-
 const metrics = [
   { target: 50, suffix: '+', label: 'Active Student Members' },
   { target: 13000, suffix: '+', label: 'Student Population Reach' },
@@ -51,10 +20,16 @@ const metrics = [
 ];
 
 // Real club structure from the official executive results / club documentation.
+// BIV-style program cards: description + stat chips (cadence · group size · level)
 const sectors = [
   {
     title: 'Crypto & Digital Assets',
     text: 'Understand blockchain, digital assets, and the crypto market — from the fundamentals to risk-aware trading.',
+    chips: [
+      ['Weekly', 'Sessions'],
+      ['30+', 'Members'],
+      ['Beginner', 'Friendly'],
+    ],
     icon: (
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     ),
@@ -62,6 +37,11 @@ const sectors = [
   {
     title: 'Forex',
     text: 'Master currency markets, pips, and position sizing through sector sessions and simulated trading.',
+    chips: [
+      ['Weekly', 'Sessions'],
+      ['Mock', 'Trading'],
+      ['Technical', 'Analysis'],
+    ],
     icon: (
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0 0v3m0 0V4" /></svg>
     ),
@@ -69,6 +49,11 @@ const sectors = [
   {
     title: 'Securities',
     text: 'Follow the Nigerian Exchange: equity research, earnings analysis, and portfolio construction.',
+    chips: [
+      ['NGX', 'Focused'],
+      ['Pitch', 'Nights'],
+      ['Research', 'Led'],
+    ],
     icon: (
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
     ),
@@ -76,6 +61,11 @@ const sectors = [
   {
     title: 'Real Estate',
     text: 'Explore property investment, REITs, and the fundamentals of real-estate wealth building.',
+    chips: [
+      ['Bi-weekly', 'Sessions'],
+      ['REITs', 'Covered'],
+      ['Case', 'Studies'],
+    ],
     icon: (
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4m-6-9h.01M15 12h.01" /></svg>
     ),
@@ -91,6 +81,59 @@ const committees = [
   { name: 'Membership', head: 'Adebayo Kehinde Abraham' },
   { name: 'Educational Research', head: 'Opara Emmanuel Chinemerem' },
   { name: 'Training & Partnership', head: 'Okere Nelson Chineze' },
+];
+
+// ---- BIV-style "Three Ways to Engage" — one card per audience/goal ----
+const TickIcon = () => (
+  <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7" /></svg>
+);
+
+const engageWays = [
+  {
+    kind: 'Join the Club',
+    kindCls: 'k-blue',
+    title: 'Membership',
+    audience: 'For every Babcock student',
+    steps: [
+      'Complete the 2-minute application',
+      'Pay the ₦5,000 semester fee',
+      'Get onboarded into a sector & committee',
+    ],
+    cta: { to: '/membership', label: 'Become a Member', cls: 'btn-primary' },
+  },
+  {
+    kind: 'Weekly Sessions',
+    kindCls: 'k-green',
+    title: 'Sector Communities',
+    audience: 'For members deep-diving a market',
+    steps: [
+      'Pick your track — Crypto, Forex, Securities, Real Estate',
+      'Join chairperson-led weekly sessions',
+      'Practice with mock trading & pitch nights',
+    ],
+    cta: { to: '/about', label: 'Explore Sectors', cls: 'btn-outline' },
+  },
+  {
+    kind: 'Brand & Sponsor',
+    kindCls: 'k-navy',
+    title: 'Partnerships',
+    audience: 'For brands & employers',
+    steps: [
+      'Choose a tier — Headline, Gold, or Silver',
+      'Reach 13,000+ students on campus',
+      'Speak, exhibit, and recruit at our events',
+    ],
+    cta: { to: '/sponsorship', label: 'Partner With BIC', cls: 'btn-navy' },
+  },
+];
+
+// ---- BIV-style numbered pipeline — the member journey, 01–05 ----
+const journey = [
+  { num: '01', title: 'Apply', text: 'Fill the membership form with your Babcock email — takes less than two minutes.' },
+  { num: '02', title: 'Activate', text: 'Pay the ₦5,000 fee to unlock sessions, resources, and the member portal.' },
+  { num: '03', title: 'Learn', text: 'Bootcamps and weekly sector sessions take you from basics to real analysis.' },
+  { num: '04', title: 'Compete', text: 'Pitch challenges, mock trading tournaments, and AVA-style competitions.' },
+  { num: '05', title: 'Lead', text: 'Join a committee, head a sector, and graduate with a CV-worthy track record.' },
 ];
 
 const programmes = [
@@ -152,9 +195,10 @@ const tiers = [
 ];
 
 const whyList = [
-  'Practical financial education & simulated market trading.',
-  'Direct exposure to leading industry experts & corporate partners.',
-  'Collaborative committees designed for hands-on leadership development.',
+  'Practical financial education, from budgeting to capital markets & simulated trading.',
+  'Direct exposure to industry experts through panels, masterclasses & mentorship.',
+  'Hands-on entrepreneurship: business modeling, pitching, and venture skills.',
+  'Committee leadership that builds solid, resume-worthy experience.',
 ];
 
 export default function Home() {
@@ -299,27 +343,38 @@ export default function Home() {
         </div>
       </FadeIn>
 
-      {/* WHY JOIN BIC */}
-      <FadeIn className="why-join-section">
+      {/* THREE WAYS TO ENGAGE — BIV-style */}
+      <FadeIn className="engage-section">
         <div className="container">
           <div className="text-center">
-            <span className="section-label">Why Join Us</span>
+            <span className="section-label">How BIC Works</span>
             <h2 className="section-title">
-              Unlock Premium <span>Opportunities</span>
+              Three Ways to <span>Engage With BIC</span>
             </h2>
             <div className="gold-line"></div>
             <p className="section-subtitle">
-              BIC is more than just a club. We are a launchpad for future financial analysts,
-              successful entrepreneurs, and strategic business leaders.
+              Not sure where to start? Here's the clear difference between our three core
+              offerings — each designed for a different goal and commitment level.
             </p>
           </div>
-          <div className="why-join-grid">
-            {whyJoin.map((card, i) => (
-              <TiltCard className="why-join-card" key={card.title}>
-                <div className="why-join-icon">{card.icon}</div>
-                <h3>{card.title}</h3>
-                <p>{card.text}</p>
-              </TiltCard>
+          <div className="engage-grid">
+            {engageWays.map((w) => (
+              <div className="engage-card" key={w.title}>
+                <span className={`engage-kind ${w.kindCls}`}>{w.kind}</span>
+                <h3>{w.title}</h3>
+                <p className="engage-audience">{w.audience}</p>
+                <ul className="engage-steps">
+                  {w.steps.map((s) => (
+                    <li key={s}>
+                      <span className="step-tick"><TickIcon /></span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                <Link to={w.cta.to} className={`btn ${w.cta.cls} engage-cta`}>
+                  {w.cta.label}
+                </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -349,7 +404,36 @@ export default function Home() {
         </div>
       </FadeIn>
 
-      {/* SECTORS & COMMITTEES */}
+      {/* MEMBER JOURNEY — BIV-style numbered pipeline */}
+      <FadeIn className="pipeline-section">
+        <div className="container">
+          <div className="text-center">
+            <span className="section-label" style={{ color: 'var(--sky-blue-light)' }}>From Application to Alumni</span>
+            <h2 className="section-title">
+              Your BIC <span>Journey</span>
+            </h2>
+            <div className="gold-line"></div>
+            <p className="section-subtitle">
+              Five stages from first click to a CV-worthy track record — structured, supported,
+              and built around real market practice.
+            </p>
+          </div>
+          <div className="pipeline-track">
+            {journey.map((step) => (
+              <div className="pipeline-step" key={step.num}>
+                <span className="pipe-num">{step.num}</span>
+                <h4>{step.title}</h4>
+                <p>{step.text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center" style={{ marginTop: 44 }}>
+            <Link to="/membership" className="btn btn-primary">Start Stage 01 — Apply Now</Link>
+          </div>
+        </div>
+      </FadeIn>
+
+      {/* SECTOR COMMUNITIES — BIV-style program cards with stat chips */}
       <FadeIn className="spotlight-section">
         <div className="container">
           <div className="text-center">
@@ -363,13 +447,24 @@ export default function Home() {
               analysis, guided by experienced student leaders.
             </p>
           </div>
-          <div className="why-join-grid">
+          <div className="programs-grid">
             {sectors.map((s) => (
-              <TiltCard className="why-join-card" key={s.title} max={7}>
-                <div className="why-join-icon">{s.icon}</div>
+              <div className="program-card" key={s.title}>
+                <div className="program-icon">{s.icon}</div>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
-              </TiltCard>
+                <div className="program-chips">
+                  {s.chips.map(([num, label]) => (
+                    <span className="program-chip" key={label}>
+                      <strong>{num}</strong>
+                      <span>{label}</span>
+                    </span>
+                  ))}
+                </div>
+                <Link to="/membership" className="btn btn-outline program-cta">
+                  Join This Sector
+                </Link>
+              </div>
             ))}
           </div>
           <div className="text-center" style={{ marginTop: 56 }}>
