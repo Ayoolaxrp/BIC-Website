@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import Navbar from './components/Navbar';
@@ -26,6 +26,7 @@ const Sponsorship = lazy(() => import('./pages/Sponsorship'));
 const Member = lazy(() => import('./pages/Member'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Legal = lazy(() => import('./pages/Legal'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -52,7 +53,7 @@ function AnimatedRoutes() {
             <Route path="/member" element={<Member />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/legal" element={<Legal />} />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </motion.main>
@@ -61,9 +62,20 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  // Respect the OS-level reduced-motion preference (a11y): disable motion
+  // globally when the user asks for less animation.
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   return (
     <BrowserRouter basename={routerBase}>
-      <MotionConfig reducedMotion="never">
+      <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
         <ScrollToTop />
         <ScrollProgress />
         <CursorGlow />

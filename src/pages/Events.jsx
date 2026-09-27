@@ -146,9 +146,12 @@ export default function Events() {
   const [rsvpDone, setRsvpDone] = useState(false);
   const [rsvpStored, setRsvpStored] = useState(null); // { source: 'supabase' | 'local' }
 
+  // Inline status message for ticket purchase (replaces alert())
+  const [ticketMsg, setTicketMsg] = useState(null); // { type: 'success' | 'error', text, eventId }
+
   const buyTicket = (event) => {
     if (!window.PaystackPop) {
-      alert('Payment gateway is still loading. Please wait a moment and try again.');
+      setTicketMsg({ type: 'error', text: 'Payment gateway is still loading — please wait a moment and try again.', eventId: event.id });
       return;
     }
     // Prefer the RSVP email if the attendee already provided one
@@ -166,10 +169,10 @@ export default function Events() {
         event_id: event.id,
         event_name: event.title,
       },
-      onSuccess: (response) => alert(`Payment complete! Reference: ${response.reference}`),
-      onClose: () => alert('Transaction window closed.'),
+      onSuccess: (response) => setTicketMsg({ type: 'success', text: `Payment complete! Reference: ${response.reference}. Your ticket confirmation is on its way to ${email}.`, eventId: event.id }),
+      onClose: () => setTicketMsg({ type: 'error', text: 'Transaction window closed — you can retry whenever you are ready.', eventId: event.id }),
     });
-    if (!opened) alert('Payment gateway is still loading. Please wait a moment and try again.');
+    if (!opened) setTicketMsg({ type: 'error', text: 'Payment gateway is still loading — please wait a moment and try again.', eventId: event.id });
   };
 
   const handleRsvp = async (e) => {
@@ -193,31 +196,40 @@ export default function Events() {
       <PageHero
         crumb="Events"
         title="Upcoming Events & Summits"
-        description="Don't miss our upcoming flagship event. Register early to secure your seat."
+        description="Summits, masterclasses, and competitions for student investors. Register early to secure your seat."
       >
-        <div style={{ marginTop: 16 }}>
-          <span style={{ color: 'var(--sky-blue)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            Next Major Event Starts In:
-          </span>
-        </div>
-        <div className="hero-countdown">
-          {parts ? (
-            <>
-              {[
-                [parts.days, 'Days'],
-                [parts.hours, 'Hrs'],
-                [parts.minutes, 'Min'],
-                [parts.seconds, 'Sec'],
-              ].map(([num, label]) => (
-                <div className="cd-unit" key={label}>
-                  <span className="cd-num">{String(num).padStart(2, '0')}</span>
-                  <span className="cd-label">{label}</span>
-                </div>
-              ))}
-            </>
-          ) : (
-            <div className="cd-unit"><span className="cd-num">Now</span><span className="cd-label">Live!</span></div>
-          )}
+        {/* BIV-style split countdown: event info left, digits right */}
+        <div className="countdown-split">
+          <div className="cd-info">
+            <span className="cd-kicker">Next Major Event Starts In</span>
+            <span className="cd-event">Annual Student Finance Summit 2026</span>
+            <span className="cd-meta">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              Oct 24, 2026 · 10:00 AM
+              <span aria-hidden="true">|</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.99 1.99 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><circle cx="12" cy="11" r="3" /></svg>
+              Main Auditorium, Babcock University
+            </span>
+          </div>
+          <div className="hero-countdown">
+            {parts ? (
+              <>
+                {[
+                  [parts.days, 'Days'],
+                  [parts.hours, 'Hrs'],
+                  [parts.minutes, 'Min'],
+                  [parts.seconds, 'Sec'],
+                ].map(([num, label]) => (
+                  <div className="cd-unit" key={label}>
+                    <span className="cd-num">{String(num).padStart(2, '0')}</span>
+                    <span className="cd-label">{label}</span>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className="cd-unit"><span className="cd-num">Now</span><span className="cd-label">Live!</span></div>
+            )}
+          </div>
         </div>
       </PageHero>
 
@@ -275,13 +287,18 @@ export default function Events() {
                         Buy Ticket / RSVP (₦{event.ticketAmount.toLocaleString()})
                       </button></MagneticButton>
                     ) : event.ticketAmount > 0 ? (
-                      <button type="button" className="btn btn-primary" disabled title="Payments are enabled once the Paystack key is configured.">
-                        Tickets available after setup
-                      </button>
-                    ) : (
-                      <MagneticButton><button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => alert('RSVP confirmed. A Zoom link will be shared with members.')}>
-                        RSVP (Members Only)
+                      <MagneticButton><button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
+                        Reserve a Free Spot
                       </button></MagneticButton>
+                    ) : (
+                      <MagneticButton><button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
+                        Reserve a Free Spot
+                      </button></MagneticButton>
+                    )}
+                    {ticketMsg?.eventId === event.id && (
+                      <div className={`form-status visible ${ticketMsg.type}`} style={{ width: '100%' }} role="status">
+                        {ticketMsg.text}
+                      </div>
                     )}
                     <button type="button" className="btn btn-outline" onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
                       Reserve a Spot

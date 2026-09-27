@@ -67,7 +67,7 @@ const steps = [
   },
   {
     title: 'Pay the ₦5,000 Fee',
-    text: 'Check out securely via Paystack to activate your membership.',
+    text: 'Check out securely via Paystack — or pay in person while online payments are being set up.',
     icon: (
       <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h2m-5 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2z" /></svg>
     ),
@@ -124,7 +124,7 @@ export default function Membership() {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return; // block double submission
     setFormMsg(null);
@@ -154,6 +154,29 @@ export default function Membership() {
     };
 
     const finish = () => setSubmitting(false);
+
+    // When Paystack isn't configured yet, still accept the application so no
+    // lead is lost. The club follows up manually to collect the fee.
+    if (!paystackConfigured) {
+      setSubmitting(true);
+      const res = await submitRecord('member_applications', {
+        ...pendingRef.current,
+        payment_status: 'pending',
+      });
+      finish();
+      if (res.ok) {
+        setFormMsg({
+          type: 'success',
+          text: 'Application received! Online payment is being set up — the membership team will contact you at your Babcock email to complete your ₦5,000 registration.',
+        });
+        formRef.current.reset();
+        setSelectedInterests([]);
+        pendingRef.current = null;
+      } else {
+        setFormMsg({ type: 'error', text: 'Something went wrong saving your application. Please try again or reach us via the contact page.' });
+      }
+      return;
+    }
 
     const checkout = () => {
       const opened = pay({
@@ -364,19 +387,21 @@ export default function Membership() {
                     type="submit"
                     className="btn btn-primary"
                     style={{ width: '100%', padding: 16, fontSize: '1.05rem', justifyContent: 'center' }}
-                    disabled={submitting || !paystackConfigured}
-                    title={!paystackConfigured ? 'Payments are enabled once the Paystack key is configured.' : undefined}
+                    disabled={submitting}
                   >
                     {submitting
-                      ? 'Preparing payment...'
+                      ? paystackConfigured
+                        ? 'Preparing payment...'
+                        : 'Submitting application...'
                       : paystackConfigured
                         ? 'Proceed to Payment (₦5,000)'
-                        : 'Payments enabled after setup'}
+                        : 'Submit Application'}
                   </button>
                   {!paystackConfigured && (
                     <p className="form-note" style={{ marginTop: 10 }}>
-                      The club has not connected Paystack yet — check back soon or contact us via the{' '}
-                      <Link to="/contact">contact page</Link>.
+                      Online payment is being set up — submit your application now and the
+                      membership team will contact you to complete your ₦5,000 registration.{' '}
+                      <Link to="/contact">Questions? Contact us.</Link>
                     </p>
                   )}
                 </div>

@@ -187,6 +187,18 @@ export default function Home() {
 
         <div className="container relative" style={{ zIndex: 2 }}>
           <motion.div className="hero-content fade-in visible" style={{ y: heroY, opacity: heroOpacity }}>
+            {/* BIV-style announcement ribbon — live event banner */}
+            {countdown && (
+              <Link to="/events" className="hero-ribbon" aria-label="Next flagship event countdown — view events">
+                <span className="ribbon-tag">Next Up</span>
+                <span>
+                  <strong>Annual Student Finance Summit</strong>
+                  <span className="ribbon-sep"> · </span>
+                  Oct 24, 2026 · Main Auditorium
+                </span>
+                <svg className="ribbon-arrow" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </Link>
+            )}
             <motion.div className="hero-badge" style={{ scale: badgeScale, y: badgeY }}>
               <span className="dot"></span> Leading Student Investment Community
             </motion.div>
@@ -199,7 +211,7 @@ export default function Home() {
             </p>
 
             {countdown && (
-              <Link to="/events" className="hero-next-event" aria-label="Next flagship event countdown — see events">
+              <Link to="/events" className="hero-next-event" aria-label="Countdown to the next flagship event — see events">
                 <span className="hero-next-dot" aria-hidden="true"></span>
                 Annual Summit in
                 <strong>
@@ -218,18 +230,27 @@ export default function Home() {
               </MagneticButton>
             </div>
 
-            <div className="hero-features">
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                </div>
-                <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Financial Literacy</span>
+            {/* BIV-style credibility strip — replaces the old floating feature items */}
+            <div className="hero-stat-strip">
+              <div className="hstat">
+                <span className="hstat-num">50+</span>
+                <span className="hstat-label">Active student members</span>
               </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              <div className="hstat">
+                <span className="hstat-num">13,000+</span>
+                <span className="hstat-label">Student population reach</span>
+              </div>
+              <div className="hstat">
+                <span className="hstat-num">25+</span>
+                <span className="hstat-label">Seminars &amp; workshops</span>
+              </div>
+              <div className="hstat-join" aria-hidden="true">
+                <div className="hstat-avatars">
+                  <span>AO</span>
+                  <span>FB</span>
+                  <span>+</span>
                 </div>
-                <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Elite Networking</span>
+                Join the community
               </div>
             </div>
           </motion.div>
@@ -447,21 +468,26 @@ export default function Home() {
           <div className="grid-3">
             {tiers.map((t) => (
               <TiltCard
-                className="card"
+                className="card partner-tier-card"
                 key={t.name}
                 style={{
                   padding: 32,
-                  textAlign: 'center',
+                  textAlign: 'left',
+                  display: 'flex',
+                  flexDirection: 'column',
                   ...(t.featured
-                    ? { background: 'linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%)', color: 'var(--white)', border: '1px solid var(--sky-blue)' }
+                    ? { background: 'linear-gradient(150deg, var(--navy) 0%, var(--navy-mid) 100%)', color: 'var(--white)', border: '1px solid rgba(14,165,233,0.5)', boxShadow: '0 24px 60px rgba(10,25,49,0.35)' }
                     : {}),
                 }}
               >
-                <h3 style={{ color: t.featured ? 'var(--white)' : 'var(--navy)', marginBottom: 12 }}>{t.name}</h3>
-                <p style={{ color: 'var(--sky-blue)', fontWeight: 700, fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: 16 }}>
+                {t.featured && (
+                  <span className="tier-flag">Most Popular</span>
+                )}
+                <h3 style={{ color: t.featured ? 'var(--white)' : 'var(--navy)', marginBottom: 6, fontSize: '1.35rem' }}>{t.name}</h3>
+                <p style={{ color: 'var(--sky-blue)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
                   {t.tagline}
                 </p>
-                <p style={{ color: t.featured ? 'rgba(255,255,255,0.7)' : 'var(--gray-500)', fontSize: '0.95rem', marginBottom: 24 }}>
+                <p style={{ color: t.featured ? 'rgba(255,255,255,0.75)' : 'var(--gray-500)', fontSize: '0.95rem', marginBottom: 26, flex: 1 }}>
                   {t.text}
                 </p>
                 <Link
