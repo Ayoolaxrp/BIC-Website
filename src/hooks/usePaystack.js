@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { paystackConfigured } from '../lib/config';
 
 const PAYSTACK_SRC = 'https://js.paystack.co/v1/inline.js';
 
@@ -14,6 +15,9 @@ export default function usePaystack() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    // No checkout is possible without a public key — skip loading inline.js
+    // entirely (no wasted request, no console exception).
+    if (!paystackConfigured) return;
     if (window.PaystackPop) {
       setStatus('ready');
       return;
@@ -24,7 +28,15 @@ export default function usePaystack() {
       script.src = PAYSTACK_SRC;
       script.dataset.paystack = '1';
       script.async = true;
-      document.body.appendChild(script);
+      // inline.js runs a self-setup check while evaluating and THROWS
+      // "Please put your Paystack Inline javascript file inside of a form
+      // element" unless its script tag sits inside a <form>. A hidden
+      // holder form satisfies that check without affecting the UI.
+      const holder = document.createElement('form');
+      holder.style.display = 'none';
+      holder.setAttribute('aria-hidden', 'true');
+      holder.appendChild(script);
+      document.body.appendChild(holder);
     }
     script.onload = () => setStatus('ready');
     script.onerror = () => setStatus('error');

@@ -15,6 +15,10 @@ dist-ssr
 # Tooling caches
 .firecrawl/
 
+# Reticle runtime artifacts (dev-only verification layer)
+.reticle/
+reticle-verify.json
+
 # Environment variables (never commit secrets)
 .env
 .env.*
