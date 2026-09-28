@@ -60,8 +60,6 @@ export default function CookieConsent() {
       {open && (
         <motion.aside
           className="cookie-card"
-          role="dialog"
-          aria-live="polite"
           aria-label="Cookie consent"
           initial={{ opacity: 0, y: 24, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

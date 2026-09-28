@@ -87,7 +87,7 @@ export default function Contact() {
           {/* INFO BOX */}
           <div className="contact-info">
             <div className="contact-info-content">
-              <h3>Contact Information</h3>
+              <h2 style={{ fontSize: "1.6rem" }}>Contact Information</h2>
               <p>Reach out to us directly or fill out the form, and we will respond within 24 hours.</p>
 
               <div className="info-items">
@@ -95,7 +95,7 @@ export default function Contact() {
                   <TiltCard className="info-item" key={item.label} max={6}>
                     <div className="info-icon">{item.icon}</div>
                     <div className="info-text">
-                      <h6>{item.label}</h6>
+                      <h3>{item.label}</h3>
                       <p style={{ whiteSpace: 'pre-line' }}>{item.value}</p>
                     </div>
                   </TiltCard>

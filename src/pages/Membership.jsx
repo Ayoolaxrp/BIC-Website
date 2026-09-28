@@ -253,7 +253,7 @@ export default function Membership() {
             <TiltCard className="step-card" key={s.title} max={7}>
               <div className="step-num">{i + 1}</div>
               <div className="step-icon">{s.icon}</div>
-              <h4>{s.title}</h4>
+              <h3>{s.title}</h3>
               <p>{s.text}</p>
             </TiltCard>
           ))}
@@ -278,7 +278,7 @@ export default function Membership() {
                 <li key={b.title}>
                   <div className="benefit-icon">{b.icon}</div>
                   <div className="benefit-text">
-                    <h4>{b.title}</h4>
+                    <h3>{b.title}</h3>
                     <p>{b.text}</p>
                   </div>
                 </li>

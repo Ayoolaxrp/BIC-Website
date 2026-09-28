@@ -8,6 +8,7 @@ import ScrollProgress from './components/ScrollProgress';
 import PageLoader from './components/PageLoader';
 import CursorGlow from './components/CursorGlow';
 import CookieConsent from './components/CookieConsent';
+import useLabelAssociation from './hooks/useLabelAssociation';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
 // (GitHub Pages: /BIC-Website/). Base the router on Vite's BASE_URL so deep
@@ -31,6 +32,9 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 function AnimatedRoutes() {
   const location = useLocation();
+  // Global a11y fix-up: associate visible form labels with their controls
+  // on every route (axe: `label`, `select-name`).
+  useLabelAssociation([location.pathname]);
 
   return (
     <AnimatePresence mode="wait" initial={false}>

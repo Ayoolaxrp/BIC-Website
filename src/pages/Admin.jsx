@@ -41,7 +41,7 @@ function Field({ label, children, hint }) {
     <div className="form-group">
       <label>{label}</label>
       {children}
-      {hint && <span className="field-error" style={{ color: 'var(--gray-500)', fontSize: '0.78rem', marginTop: 6 }}>{hint}</span>}
+      {hint && <span className="field-error" style={{ color: '#55617e', fontSize: '0.78rem', marginTop: 6 }}>{hint}</span>}
     </div>
   );
 }
@@ -85,7 +85,7 @@ function FileField({ name, kind = 'image', label, hint }) {
   return (
     <Field label={label} hint={hint}>
       <input ref={inputRef} type="file" name={name} accept={kind === 'image' ? 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml' : 'application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/csv,text/plain,application/zip'} onChange={onChange} />
-      {size && <span style={{ fontSize: '0.78rem', color: 'var(--gray-500)' }}>{size}</span>}
+      {size && <span style={{ fontSize: '0.78rem', color: '#55617e' }}>{size}</span>}
       {kind === 'image' && preview && (
         <img src={preview} alt="Preview" className="admin-upload-preview" />
       )}
@@ -130,7 +130,7 @@ function ItemList({ rows, onDelete, empty }) {
             <strong>{r.title || r.subject || r.name}</strong>
             {r.source_url && <a href={r.source_url} target="_blank" rel="noreferrer" className="admin-list-link">view ↗</a>}
             {r.body && <span className="admin-list-link">club article</span>}
-            {r.size_label && <span style={{ color: 'var(--gray-500)', fontSize: '0.8rem' }}> · {r.size_label}</span>}
+            {r.size_label && <span style={{ color: '#55617e', fontSize: '0.8rem' }}> · {r.size_label}</span>}
             {r.sector && <span className="badge badge-blue" style={{ marginLeft: 8 }}>{sectorLabel(r.sector)}</span>}
           </div>
           <button type="button" className="btn btn-outline btn-sm" onClick={() => onDelete(r.id)}>

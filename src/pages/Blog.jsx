@@ -270,7 +270,7 @@ export default function Blog() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center" style={{ padding: '60px 0', color: 'var(--gray-500)' }}>
+          <div className="text-center" style={{ padding: '60px 0', color: '#55617e' }}>
             No articles match your search. Try a different keyword or category.
           </div>
         ) : (
@@ -296,8 +296,8 @@ export default function Blog() {
                     <p className="blog-desc">{a.summary}</p>
                     <div className="blog-author">
                       <div className="author-info">
-                        <h6>{isClub ? 'Babcock Investors Club' : a.author || a.source_name}</h6>
-                        <p style={{ color: 'var(--sky-blue)', fontWeight: 600 }}>
+                        <h4>{isClub ? 'Babcock Investors Club' : a.author || a.source_name}</h4>
+                        <p style={{ color: 'var(--sky-blue-dark)', fontWeight: 600 }}>
                           {isClub ? 'Read on the blog →' : 'Read the full article →'}
                         </p>
                       </div>
@@ -318,7 +318,7 @@ export default function Blog() {
           </div>
         )}
 
-        <p className="text-center" style={{ color: 'var(--gray-500)', fontSize: '0.85rem', marginTop: 32 }}>
+        <p className="text-center" style={{ color: '#55617e', fontSize: '0.85rem', marginTop: 32 }}>
           Articles are curated for educational purposes. All content belongs to the original publications and authors.
         </p>
       </FadeIn>
@@ -374,7 +374,7 @@ export default function Blog() {
                   <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
                 <div className="resource-text">
-                  <h4>{r.name}</h4>
+                  <h3>{r.name}</h3>
                   <p>{r.size} · {r.desc}</p>
                 </div>
                 <span className="resource-download" aria-hidden="true">↓</span>

@@ -21,13 +21,13 @@
     <meta name="twitter:description" content="A student-led investment and financial literacy community at Babcock University." />
     <meta name="twitter:image" content="https://babcockinvestorsclub.org/images/logo.jpg" />
     <title>Babcock Investors Club | Empowering Student Investors</title>
-    <!-- Faster third-party origins: DNS+TLS warm-up before the font/Paystack requests fire -->
+    <!-- Faster third-party origins: DNS+TLS warm-up before the font requests fire -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://js.paystack.co" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
-    <!-- Paystack Pop inline checkout (used by Membership registration & Event tickets) -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <!-- Paystack Pop is lazy-loaded by usePaystack() on pages that need it
+         (Membership, Events) — keep the connection warm here only. -->
   </head>
   <body>
     <div id="root"></div>

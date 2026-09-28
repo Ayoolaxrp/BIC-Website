@@ -59,7 +59,7 @@ export default function Footer() {
             </div>
           </div>
           <div className="footer-col">
-            <h5>Quick Links</h5>
+            <h2>Quick Links</h2>
             <ul>
               {[['/', 'Home'], ['/about', 'About BIC'], ['/membership', 'Membership'], ['/events', 'Events'], ['/blog', 'Blog'], ['/member', 'Member Portal'], ['/contact', 'Contact']].map(([to, label]) => (
                 <li key={to}><Link to={to}>{label}</Link></li>
@@ -67,7 +67,7 @@ export default function Footer() {
             </ul>
           </div>
           <div className="footer-col">
-            <h5>Partnerships</h5>
+            <h2>Partnerships</h2>
             <ul>
               <li><Link to="/sponsorship">Become a Sponsor</Link></li>
               <li><Link to="/sponsorship">Sponsorship Tiers</Link></li>
@@ -75,7 +75,7 @@ export default function Footer() {
             </ul>
           </div>
           <div className="footer-col">
-            <h5>Newsletter</h5>
+            <h2>Newsletter</h2>
             <p style={{ fontSize: '.85rem', color: 'rgba(255,255,255,.5)', marginBottom: 16 }}>Get market updates and event news.</p>
             <form className="footer-newsletter" onSubmit={handleNewsletter}>
               <input type="email" name="email" placeholder="Email address" required />

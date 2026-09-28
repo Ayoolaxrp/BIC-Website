@@ -317,16 +317,16 @@ export default function Home() {
             </p>
 
             <div style={{ marginBottom: 32 }}>
-              <h4 style={{ color: 'var(--navy)', marginBottom: 16, fontSize: '1.1rem', fontWeight: 700 }}>
+              <h3 style={{ color: 'var(--navy)', marginBottom: 16, fontSize: '1.1rem', fontWeight: 700 }}>
                 Why BIC?
-              </h4>
+              </h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 {whyList.map((item) => (
                   <li
                     key={item}
                     style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: '0.95rem', color: 'var(--gray-700)' }}
                   >
-                    <svg width="18" height="18" fill="none" stroke="var(--green)" viewBox="0 0 24 24" style={{ flexShrink: 0, color: 'var(--green)' }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                    <svg width="18" height="18" fill="none" stroke="#047857" viewBox="0 0 24 24" style={{ flexShrink: 0, color: '#047857' }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
                     {item}
                   </li>
                 ))}
@@ -337,7 +337,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', paddingRight: 24 }}>
             <TiltCard className="intro-img" max={5}>
-              <img src={asset('/images/about.png')} alt="BIC students" />
+              <img src={asset('/images/about.webp')} alt="BIC students" />
             </TiltCard>
           </div>
         </div>
@@ -384,12 +384,12 @@ export default function Home() {
       <FadeIn className="metrics-section">
         <div className="container">
           <div className="text-center">
-            <span className="section-label" style={{ color: 'var(--sky-blue)' }}>Our Achievements</span>
+            <span className="section-label" style={{ color: "var(--sky-blue-light)", }}>Our Achievements</span>
             <h2 className="section-title" style={{ color: 'var(--white)' }}>
               BIC <span>Impact Metrics</span>
             </h2>
             <div className="gold-line"></div>
-            <p style={{ color: 'rgba(255,255,255,0.65)', maxWidth: 600, margin: '0 auto 48px' }}>
+            <p style={{ color: '#cdd6e8', maxWidth: 600, margin: '0 auto 48px' }}>
               Through strategic execution and academic collaboration, we have expanded our reach
               and empowered students across the campus.
             </p>
@@ -422,7 +422,7 @@ export default function Home() {
             {journey.map((step) => (
               <div className="pipeline-step" key={step.num}>
                 <span className="pipe-num">{step.num}</span>
-                <h4>{step.title}</h4>
+                <h3>{step.title}</h3>
                 <p>{step.text}</p>
               </div>
             ))}
@@ -468,9 +468,9 @@ export default function Home() {
             ))}
           </div>
           <div className="text-center" style={{ marginTop: 56 }}>
-            <h4 style={{ color: 'var(--navy)', fontSize: '1.1rem', fontWeight: 700, marginBottom: 20 }}>
+            <h3 style={{ color: 'var(--navy)', fontSize: '1.1rem', fontWeight: 700, marginBottom: 20 }}>
               Hands-on leadership through our committees
-            </h4>
+            </h3>
             <div className="committee-grid" style={{ maxWidth: 680, margin: '0 auto' }}>
               {committees.map((c) => (
                 <div className="committee-chip" key={c.name}>
@@ -486,9 +486,9 @@ export default function Home() {
       {/* SIGNATURE PROGRAMMES MARQUEE */}
       <FadeIn className="sponsors-section">
         <div className="container text-center">
-          <h4 style={{ color: 'var(--gray-500)', marginBottom: 32, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <h3 style={{ color: '#55617e', marginBottom: 32, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Programmes &amp; Activities
-          </h4>
+          </h3>
           <div className="marquee">
             <div className="marquee-track">
               {[...programmes, ...programmes].map((p, i) => (
@@ -579,10 +579,10 @@ export default function Home() {
                   <span className="tier-flag">Most Popular</span>
                 )}
                 <h3 style={{ color: t.featured ? 'var(--white)' : 'var(--navy)', marginBottom: 6, fontSize: '1.35rem' }}>{t.name}</h3>
-                <p style={{ color: 'var(--sky-blue)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
+                <p style={{ color: 'var(--sky-blue-dark)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
                   {t.tagline}
                 </p>
-                <p style={{ color: t.featured ? 'rgba(255,255,255,0.75)' : 'var(--gray-500)', fontSize: '0.95rem', marginBottom: 26, flex: 1 }}>
+                <p style={{ color: t.featured ? 'rgba(255,255,255,0.75)' : '#55617e', fontSize: '0.95rem', marginBottom: 26, flex: 1 }}>
                   {t.text}
                 </p>
                 <Link
@@ -596,7 +596,7 @@ export default function Home() {
             ))}
           </div>
           <div className="text-center" style={{ marginTop: 48 }}>
-            <p style={{ color: 'var(--gray-500)', marginBottom: 16 }}>
+            <p style={{ color: '#55617e', marginBottom: 16 }}>
               Not every organization fits a standard package. We welcome custom discussions.
             </p>
             <Link to="/sponsorship" className="btn btn-navy">Discuss Custom Plans</Link>

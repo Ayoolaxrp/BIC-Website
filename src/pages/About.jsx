@@ -139,7 +139,7 @@ export default function About() {
       <FadeIn className="section container">
         <div className="grid-2 align-center">
           <TiltCard className="about-img-wrap" max={5}>
-            <img src={asset('/images/about.png')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
+            <img src={asset('/images/about.webp')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
           </TiltCard>
           <div style={{ paddingLeft: 24 }}>
             <span className="section-label">Our Story</span>
@@ -238,7 +238,7 @@ export default function About() {
           {achievements.map((a) => (
             <TiltCard className="achievement-card" key={a.title} max={8}>
               <div className="achievement-icon">{a.icon}</div>
-              <h4>{a.title}</h4>
+              <h3>{a.title}</h3>
               <p>{a.text}</p>
             </TiltCard>
           ))}
@@ -267,7 +267,7 @@ export default function About() {
                       <span>{getInitials(m.name)}</span>
                     </div>
                     <div className="team-info">
-                      <h4>{m.name}</h4>
+                      <h3>{m.name}</h3>
                       <p>{m.role}</p>
                       <div className="team-social">
                         <a

@@ -194,7 +194,7 @@ export default function Member() {
                 placeholder="name.lastname@babcock.edu.ng"
                 aria-describedby="member-email-hint"
               />
-              <span id="member-email-hint" className="field-error" style={{ color: 'var(--gray-500)', fontWeight: 500, fontSize: '0.78rem', marginTop: 6 }}>
+              <span id="member-email-hint" className="field-error" style={{ color: "#55617e", fontWeight: 500, fontSize: '0.78rem', marginTop: 6 }}>
                 Member accounts are linked to your official @babcock.edu.ng email.
               </span>
             </div>
@@ -221,7 +221,7 @@ export default function Member() {
             </>
           )}
 
-          <p className="text-center" style={{ marginTop: 16, color: 'var(--gray-500)', fontSize: '0.9rem' }}>
+          <p className="text-center" style={{ marginTop: 16, color: '#55617e', fontSize: '0.9rem' }}>
             {mode === 'signin' ? (
               <>
                 New here? <button type="button" className="link-btn" onClick={() => { setMode('signup'); setAuthMsg(null); }}>Create an account</button>
@@ -297,7 +297,7 @@ export default function Member() {
                     <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
                 </select>
-                <span className="field-error" style={{ color: 'var(--gray-500)', fontSize: '0.78rem', marginTop: 6 }}>
+                <span className="field-error" style={{ color: '#55617e', fontSize: '0.78rem', marginTop: 6 }}>
                   Your sector shows on your profile and in the member directory.
                 </span>
               </div>
@@ -326,7 +326,7 @@ export default function Member() {
                 {profile?.phone && <p><strong>Phone:</strong> {profile.phone}</p>}
                 {profile?.bio && <p><strong>Bio:</strong> {profile.bio}</p>}
                 {!profile?.sector && !profile?.phone && !profile?.bio && (
-                  <p style={{ color: 'var(--gray-500)', fontSize: '0.9rem' }}>
+                  <p style={{ color: '#55617e', fontSize: '0.9rem' }}>
                     Add your sector, phone, and a short bio — your sector tells the club which community to onboard you into.
                   </p>
                 )}
@@ -373,7 +373,7 @@ export default function Member() {
                         <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                       </div>
                       <div className="resource-text">
-                        <h4>{r.title}</h4>
+                        <h3>{r.title}</h3>
                         <p>{r.size_label || 'Download'} · {r.description}</p>
                       </div>
                       <span className="resource-download" aria-hidden="true">↓</span>
@@ -389,7 +389,7 @@ export default function Member() {
                   <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
                 <div className="resource-text">
-                  <h4>{r.name}</h4>
+                  <h3>{r.name}</h3>
                   <p>{r.size}</p>
                 </div>
                 <span className="resource-download" aria-hidden="true">↓</span>
@@ -438,7 +438,7 @@ export default function Member() {
                 <li key={p.id}>
                   <div className="admin-list-main">
                     <strong>{p.subject}</strong>
-                    <span style={{ color: 'var(--gray-500)', fontSize: '0.85rem' }}>Newsletter · {new Date(p.created_at).toLocaleDateString()}</span>
+                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>Newsletter · {new Date(p.created_at).toLocaleDateString()}</span>
                   </div>
                   <Link to="/blog" className="btn btn-outline btn-sm">Read →</Link>
                 </li>
@@ -447,7 +447,7 @@ export default function Member() {
                 <li key={a.id}>
                   <div className="admin-list-main">
                     <strong>{a.title}</strong>
-                    <span style={{ color: 'var(--gray-500)', fontSize: '0.85rem' }}>{a.category || 'Article'}</span>
+                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>{a.category || 'Article'}</span>
                   </div>
                   {a.body ? (
                     <Link to={`/blog/${a.id}`} className="btn btn-outline btn-sm">Read →</Link>
@@ -471,7 +471,7 @@ export default function Member() {
                 <li key={r.id}>
                   <div className="admin-list-main">
                     <strong>{r.event_name}</strong>
-                    <span style={{ color: 'var(--gray-500)', fontSize: '0.85rem' }}>{new Date(r.created_at).toLocaleString()}</span>
+                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>{new Date(r.created_at).toLocaleString()}</span>
                   </div>
                   <span className="badge badge-green">RSVP Confirmed</span>
                 </li>

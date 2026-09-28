@@ -186,7 +186,7 @@ export default function Sponsorship() {
       <FadeIn className="deck-cta-band">
         <div className="container deck-cta-inner">
           <div>
-            <h3>Want the full breakdown?</h3>
+            <h2 style={{ fontSize: "1.5rem" }}>Want the full breakdown?</h2>
             <p>Get the complete prospectus — tiers, reach, activations, and pricing — as a PDF.</p>
           </div>
           <a href={deckUrl} download className="btn btn-primary">
@@ -228,7 +228,7 @@ export default function Sponsorship() {
             <TiltCard className="impact-list-item" key={i.title} max={6}>
               <Check size={24} />
               <div>
-                <h4>{i.title}</h4>
+                <h3>{i.title}</h3>
                 <p>{i.text}</p>
               </div>
             </TiltCard>
@@ -251,22 +251,22 @@ export default function Sponsorship() {
               founders, strategic consultants, savvy investors, corporate executives, and key
               decision-makers.
             </p>
-            <p style={{ fontSize: '0.95rem', color: 'var(--gray-500)' }}>
+            <p style={{ fontSize: '0.95rem', color: '#55617e' }}>
               Our platform allows partner organizations to strategically interact with student
               demographics matching their recruitment and marketing profiles.
             </p>
           </div>
           <div>
-            <h4 style={{ color: 'var(--navy)', marginBottom: 16, fontSize: '1.1rem', fontWeight: 700 }}>
+            <h3 style={{ color: 'var(--navy)', marginBottom: 16, fontSize: '1.1rem', fontWeight: 700 }}>
               Our members actively pursue growth in:
-            </h4>
+            </h3>
             <div className="interest-tag-grid">
               {interestTags.map((t) => (
                 <div className="interest-tag-item" key={t}>{t}</div>
               ))}
             </div>
             <div className="sector-preview">
-              <p style={{ fontSize: '0.9rem', color: 'var(--gray-500)', marginBottom: 10 }}>
+              <p style={{ fontSize: '0.9rem', color: '#55617e', marginBottom: 10 }}>
                 Members also join <strong>sector communities</strong>, each led by an executive:
               </p>
               <div className="sector-chip-row">
@@ -294,7 +294,7 @@ export default function Sponsorship() {
           {howItWorks.map((s) => (
             <TiltCard className="step-card" key={s.step} max={7}>
               <div className="step-num">{s.step}</div>
-              <h4>{s.title}</h4>
+              <h3>{s.title}</h3>
               <p>{s.text}</p>
             </TiltCard>
           ))}
@@ -327,7 +327,7 @@ export default function Sponsorship() {
                   className="tier-tag"
                   style={
                     t.name === 'Gold Partner'
-                      ? { background: 'rgba(22,101,52,0.1)', color: 'var(--green)' }
+                      ? { background: 'rgba(22,101,52,0.1)', color: '#065f46' }
                       : t.name === 'Silver Partner'
                         ? { background: 'rgba(15,23,42,0.05)', color: 'var(--navy)' }
                         : undefined
@@ -375,7 +375,7 @@ export default function Sponsorship() {
               What Our <span>Partners Receive</span>
             </h2>
             <div className="gold-line"></div>
-            <p style={{ color: 'var(--gray-500)', maxWidth: 600, margin: '0 auto' }}>
+            <p style={{ color: '#55617e', maxWidth: 600, margin: '0 auto' }}>
               Our corporate packages are structured to yield specific, measurable outcomes that match
               your organization's core business priorities.
             </p>
@@ -414,7 +414,7 @@ export default function Sponsorship() {
               <h3 style={{ color: 'var(--navy)', fontSize: '1.8rem', fontFamily: "'Playfair Display', serif", marginBottom: 8 }}>
                 Partnership Inquiry
               </h3>
-              <p style={{ color: 'var(--gray-500)' }}>
+              <p style={{ color: '#55617e' }}>
                 Fill out the form below and our partnerships team will get back to you shortly.
               </p>
             </div>

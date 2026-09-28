@@ -73,7 +73,7 @@ export default function Legal() {
           </div>
         ))}
 
-        <p className="text-center" style={{ color: 'var(--gray-500)', fontSize: '0.9rem' }}>
+        <p className="text-center" style={{ color: '#55617e', fontSize: '0.9rem' }}>
           Last updated: August 2026 · <Link to="/contact" className="link-btn">Contact us</Link> with any questions.
         </p>
       </FadeIn>
