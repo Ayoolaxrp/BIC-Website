@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop';
 
 
 import CookieConsent from './components/CookieConsent';
+import ScrollTop from './components/ScrollTop';
 import useLabelAssociation from './hooks/useLabelAssociation';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
@@ -85,6 +86,7 @@ export default function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
+        <ScrollTop />
         <CookieConsent />
       </MotionConfig>
     </BrowserRouter>

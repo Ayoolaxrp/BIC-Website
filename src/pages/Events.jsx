@@ -5,6 +5,7 @@ import Seo from '../components/Seo';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
 import useCountdown from '../hooks/useCountdown';
+import AddToCalendar from '../components/AddToCalendar';
 import usePaystack from '../hooks/usePaystack';
 import { fetchEvents } from '../lib/api';
 import { submitRecord } from '../lib/store';
@@ -279,6 +280,18 @@ export default function Events() {
                         <span>🎤 {s}</span>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="atc-row">
+                    <AddToCalendar
+                      event={{
+                        title: event.title,
+                        event_date: event.details?.[0]?.lines?.[0],
+                        event_time: event.details?.[0]?.lines?.[1],
+                        location: event.details?.find((d) => d.label === 'Location')?.lines?.join(', '),
+                        description: event.desc,
+                      }}
+                    />
                   </div>
 
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

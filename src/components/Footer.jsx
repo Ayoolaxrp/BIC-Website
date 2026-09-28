@@ -95,6 +95,9 @@ export default function Footer() {
           Babcock Investors Club content is for educational purposes only and does not constitute
           financial, investment, or legal advice. The club is a student-led organization at Babcock University.
         </p>
+        <div className="footer-wordmark" aria-hidden="true">
+          <span>BIC</span>
+        </div>
         <div className="footer-bottom">
           <p>© 2026 Babcock Investors Club. All rights reserved.</p>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>

@@ -1059,7 +1059,7 @@ div + .form-group {
   position: fixed;
   bottom: 32px; right: 32px;
   width: 46px; height: 46px;
-  background: var(--sky-blue);
+  background: var(--navy);
   color: var(--white);
   border-radius: 50%;
   display: flex;
@@ -2350,6 +2350,55 @@ input.input-error:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,
 }
 
 /* Sticky mobile-only CTA bar (StickyCta component) */
+/* BIV-style giant footer wordmark — the signature ending */
+.footer-wordmark {
+  text-align: center;
+  padding: 56px 24px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 24px;
+  overflow: hidden;
+}
+.footer-wordmark span {
+  display: block;
+  font-weight: 800;
+  font-size: clamp(4rem, 16vw, 13rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.07);
+  user-select: none;
+}
+
+/* Add to Calendar (Events) */
+.atc {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.atc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--white);
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.atc-btn:hover { border-color: rgba(6, 12, 24, 0.3); background: var(--off-white); }
+.atc-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sky-blue-dark);
+}
+.atc-link:hover { text-decoration: underline; }
+.atc-row { margin-bottom: 18px; }
+
+/* Sticky CTA sits above ScrollTop and the cookie card */
 .sticky-cta {
   position: fixed;
   left: 12px; right: 12px; bottom: 12px;
