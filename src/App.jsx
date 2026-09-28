@@ -4,9 +4,9 @@ import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import ScrollProgress from './components/ScrollProgress';
-import PageLoader from './components/PageLoader';
-import CursorGlow from './components/CursorGlow';
+
+
+
 import CookieConsent from './components/CookieConsent';
 import useLabelAssociation from './hooks/useLabelAssociation';
 
@@ -45,7 +45,7 @@ function AnimatedRoutes() {
         exit={{ opacity: 0, y: -14 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={<div style={{ minHeight: '55vh' }} />}>
           <Routes location={location}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
@@ -82,8 +82,6 @@ export default function App() {
     <BrowserRouter basename={routerBase}>
       <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
         <ScrollToTop />
-        <ScrollProgress />
-        <CursorGlow />
         <Navbar />
         <AnimatedRoutes />
         <Footer />

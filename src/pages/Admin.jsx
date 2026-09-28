@@ -260,10 +260,13 @@ export default function Admin() {
       <section className="section container admin-login-wrap">
         <Seo title="Admin Console" noindex />
         <div className="admin-login-card">
-          <h1 className="admin-title">Admin Console</h1>
-          <p className="admin-subtitle">
-            Sign in to manage events, articles, resources, newsletter posts, and review submissions.
-          </p>
+          <div className="admin-login-head">
+            <span className="admin-login-eyebrow">Babcock Investors Club</span>
+            <h1 className="admin-title">Admin Console</h1>
+            <p className="admin-subtitle">
+              Manage events, articles, resources, newsletter posts, and review submissions.
+            </p>
+          </div>
           {!isSupabaseConfigured && (
             <div className="form-status visible demo" style={{ marginBottom: 16 }}>
               <strong>Demo mode:</strong> Supabase isn't connected yet — the console runs on
@@ -312,16 +315,17 @@ export default function Admin() {
   return (
     <section className="section container">
       <Seo title="Admin Console" noindex />
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
         <div className="admin-topbar">
           <div>
+            <span className="admin-eyebrow">Babcock Investors Club</span>
             <h1 className="admin-title">Admin Console</h1>
             <p className="admin-subtitle">
               Signed in as <strong>{user.email}</strong>{' '}
               {isDemoMode && <span className="demo-badge" style={{ marginLeft: 8 }}>Demo session</span>}
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className="admin-topbar-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button type="button" className="btn btn-outline btn-sm" onClick={refresh} disabled={refreshing}>
               {refreshing ? 'Refreshing…' : '↻ Refresh'}
             </button>
@@ -346,7 +350,7 @@ export default function Admin() {
 
         {/* OVERVIEW — interactive */}
         {tab === 'overview' && (
-          <div className="admin-overview">
+          <div className="admin-overview-wrap">
             <div className="admin-overview-cards">
               <button type="button" className="metric-card static" onClick={() => setTab('events')}>
                 <div className="metric-num">{events.length}</div>
@@ -377,7 +381,7 @@ export default function Admin() {
               ))}
             </div>
 
-            <div className="admin-panel" style={{ marginTop: 32 }}>
+            <div className="admin-panel admin-panel-flush" style={{ marginTop: 24 }}>
               <h2 className="admin-panel-title">Members by Sector</h2>
               {(() => {
                 const counts = Object.fromEntries(
@@ -409,7 +413,7 @@ export default function Admin() {
               })()}
             </div>
 
-            <div className="admin-panel" style={{ marginTop: 32 }}>
+            <div className="admin-panel" style={{ marginTop: 24 }}>
               <h2 className="admin-panel-title">Recent Activity</h2>
               {activity.length === 0 ? (
                 <p className="admin-empty">No activity yet — submissions you receive and content you publish will appear here live.</p>
