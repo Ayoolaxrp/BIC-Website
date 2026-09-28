@@ -3,7 +3,7 @@
    Global & Page-Specific Styles
    ============================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
   --navy: #0a1931;
@@ -2884,3 +2884,149 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 @media (max-width: 640px) {
   .programs-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   RETICLE / SIGIL STRUCTURAL PASS (reticle-design-system skill)
+   Structural visibility: the grid, the type, and the borders do
+   the design work. Translated to BIC tokens (navy/sky, not purple):
+   mono type signals "system fact", radius is 10, hover strengthens
+   the border instead of lifting, and crosses mark intersections.
+   ============================================================ */
+
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --cross: rgba(10, 25, 49, 0.18);
+  --grid-line: rgba(10, 25, 49, 0.045);
+}
+
+/* Faint engineering-grid texture behind the whole page */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 48px);
+  pointer-events: none;
+  z-index: 0;
+}
+#root, main { position: relative; z-index: 1; }
+
+/* Structural crosses at content intersections — homepage bands
+   (intro/engage/metrics/pipeline/…) and generic .section layouts */
+.section.container,
+.section > .container,
+.intro-section > .container,
+.engage-section > .container,
+.metrics-section > .container,
+.pipeline-section > .container,
+.sponsors-section > .container,
+.spotlight-section > .container,
+.cta-section > .container { position: relative; }
+.section.container::before,
+.section > .container::before,
+.intro-section > .container::before,
+.engage-section > .container::before,
+.metrics-section > .container::before,
+.pipeline-section > .container::before,
+.sponsors-section > .container::before,
+.spotlight-section > .container::before,
+.cta-section > .container::before,
+.section.container::after,
+.section > .container::after,
+.intro-section > .container::after,
+.engage-section > .container::after,
+.metrics-section > .container::after,
+.pipeline-section > .container::after,
+.sponsors-section > .container::after,
+.spotlight-section > .container::after,
+.cta-section > .container::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(var(--cross) 0 0) center / 100% 1.5px no-repeat,
+    linear-gradient(var(--cross) 0 0) center / 1.5px 100% no-repeat;
+}
+.section.container::before,
+.section > .container::before,
+.intro-section > .container::before,
+.engage-section > .container::before,
+.metrics-section > .container::before,
+.pipeline-section > .container::before,
+.sponsors-section > .container::before,
+.spotlight-section > .container::before,
+.cta-section > .container::before { left: -6px; }
+.section.container::after,
+.section > .container::after,
+.intro-section > .container::after,
+.engage-section > .container::after,
+.metrics-section > .container::after,
+.pipeline-section > .container::after,
+.sponsors-section > .container::after,
+.spotlight-section > .container::after,
+.cta-section > .container::after { right: -6px; }
+
+/* Mono for everything structural — labels, badges, figures, markers */
+.section-label,
+.admin-eyebrow,
+.admin-login-eyebrow,
+.stat-chip,
+.badge,
+.team-group-title,
+.ribbon-tag,
+.pipe-num,
+.metric-num,
+.cd-num,
+.hstat-num,
+.logo-tagline,
+.footer-wordmark span {
+  font-family: var(--mono);
+}
+
+/* Reticle label tuning: small mono, wide-tracked, normal weight */
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+.admin-eyebrow,
+.admin-login-eyebrow { letter-spacing: 0.2em; font-weight: 500; }
+.ribbon-tag { letter-spacing: 0.12em; font-weight: 600; }
+
+/* Radius unified at 10px for surfaces; CTAs and badges stay pills */
+.admin-login-card,
+.admin-panel,
+.member-status-card,
+.registration-box,
+.vm-card,
+.value-card,
+.achievement-card,
+.team-card,
+.card,
+.event-row,
+.blog-card,
+.newsletter-post,
+.sticky-cta,
+.group-chat-card {
+  border-radius: 10px;
+}
+
+/* Borders, not shadows: hover strengthens the border */
+.card:hover,
+.metric-card.static:hover,
+.team-card:hover,
+.value-card:hover,
+.achievement-card:hover,
+.vm-card:hover,
+.program-card:hover,
+.event-card:hover,
+.blog-card:hover,
+.event-row:hover {
+  box-shadow: none;
+  border-color: rgba(10, 25, 49, 0.22);
+}
+.admin-sub-item:hover,
+.group-chat-card:hover { box-shadow: none; }
