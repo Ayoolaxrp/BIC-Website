@@ -10,7 +10,7 @@ import useCountdown from '../hooks/useCountdown';
 import { asset } from '../lib/assets';
 
 // Next flagship session — mirrors the Events page countdown target.
-const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
+const NEXT_EVENT_DATE = '2026-11-01T10:00:00';
 
 const metrics = [
   { target: 150, suffix: '+', label: 'Active Student Members' },
@@ -236,9 +236,9 @@ export default function Home() {
               <Link to="/events" className="hero-ribbon" aria-label="Next flagship event countdown — view events">
                 <span className="ribbon-tag">Next Up</span>
                 <span>
-                  <strong>Annual Student Finance Summit</strong>
+                  <strong>BIC Welcome Seminar: The Next Chapter</strong>
                   <span className="ribbon-sep"> · </span>
-                  Oct 24, 2026 · Main Auditorium
+                  Nov 1, 2026 · Babcock University
                 </span>
                 <svg className="ribbon-arrow" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
               </Link>

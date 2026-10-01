@@ -12,6 +12,15 @@ const Check = ({ size = 24 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
 );
 
+// Verified partners from the club's official "Meet Our Sponsors" poster (2026 seminar & Stock Pitch 2.0).
+const partners = [
+  { name: 'Fundbox Financial Services', note: 'Sponsor — Annual Investment Seminar 2026' },
+  { name: 'Leadway Assurance', note: 'Sponsor — Annual Investment Seminar 2026' },
+  { name: 'More Ladda (Meristem)', note: 'Sponsor — Annual Investment Seminar 2026' },
+  { name: 'Chapel Hill Denham', note: 'Sponsor — Annual Investment Seminar 2026' },
+  { name: 'Bamboo', note: 'University Bamboo League — inter-university trading competition' },
+];
+
 const whyPartner = [
   {
     title: 'Access Emerging Talent',
@@ -192,6 +201,34 @@ export default function Sponsorship() {
           <a href={deckUrl} download className="btn btn-primary">
             Download Sponsorship Deck (PDF)
           </a>
+        </div>
+      </FadeIn>
+
+      <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
+        <div className="text-center">
+          <span className="section-label">Trusted By</span>
+          <h2 className="section-title">
+            Meet Our <span>Partners</span>
+          </h2>
+          <div className="gold-line"></div>
+          <p className="section-subtitle">
+            Leading financial organizations power our flagship seminar, the Stock Pitch
+            Competition, and inter-university trading leagues — and get visible brand
+            placement across this site, our posters, and our socials.
+          </p>
+        </div>
+        <div className="grid-3" style={{ marginTop: 48 }}>
+          {partners.map((p) => (
+            <TiltCard className="card partner-card" key={p.name} max={6}>
+              <h3 style={{ color: 'var(--navy)', marginBottom: 8, fontSize: '1.15rem' }}>{p.name}</h3>
+              <p style={{ color: '#55617e', fontSize: '0.92rem' }}>{p.note}</p>
+            </TiltCard>
+          ))}
+          <TiltCard className="card partner-card" max={6} style={{ background: 'linear-gradient(150deg, var(--navy) 0%, var(--navy-mid) 100%)', color: 'var(--white)', border: '1px solid rgba(14,165,233,0.5)' }}>
+            <h3 style={{ color: 'var(--white)', marginBottom: 8, fontSize: '1.15rem' }}>Your Brand Here</h3>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.92rem' }}>Partner with BIC to reach 13,000+ students on campus — and appear on this page, our event posters, and our socials.</p>
+            <a href="#inquiry-form" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 14 }} onClick={scrollToInquiry}>Start a Partnership</a>
+          </TiltCard>
         </div>
       </FadeIn>
 

@@ -12,65 +12,92 @@ import { submitRecord } from '../lib/store';
 import { PAYSTACK_PUBLIC_KEY, paystackConfigured } from '../lib/config';
 import { asset } from '../lib/assets';
 
-const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
+// 2026/2027 session calendar — sourced from the official BIC calendar and event posters.
+const NEXT_EVENT_DATE = '2026-11-01T10:00:00';
 
 const upcomingEvents = [
   {
-    id: 'summit-2026',
-    img: asset('/images/bic-2025-3.webp'),
-    alt: 'Annual Finance Summit',
-    title: 'Annual Student Finance Summit 2026',
-    desc: 'Join industry leaders and top alumni as we discuss market trends, investment strategies, and career growth in an ever-changing economic landscape.',
+    id: 'welcome-2026',
+    img: asset('/images/bic-exec-group-2026.webp'),
+    alt: 'BIC executives and members gathered for a seminar',
+    title: 'BIC Welcome Seminar: The Next Chapter',
+    desc: "We launch the 2026/2027 session — introducing the club's new direction, this semester's programs, committees, investment opportunities, and our CFA Society Nigeria relationship. Come see what BIC has planned and how to join.",
     tags: [
-      { label: 'Flagship Summit', cls: 'badge-gold' },
-      { label: 'Networking', cls: 'badge-navy' },
+      { label: 'Seminar', cls: 'badge-gold' },
+      { label: 'Recruitment', cls: 'badge-navy' },
     ],
     details: [
-      { label: 'Date & Time', lines: ['Oct 24, 2026', '10:00 AM - 4:00 PM'] },
-      { label: 'Location', lines: ['Main Auditorium', 'Babcock University'] },
-      { label: 'Tickets', lines: ['Members: Free', 'Non-Members: ₦2,000'] },
+      { label: 'Date & Time', lines: ['Nov 1, 2026', '10:00 AM'] },
+      { label: 'Location', lines: ['Babcock University', 'Venue announced on our socials'] },
+      { label: 'Entry', lines: ['Free for all students'] },
     ],
-    speakerSlots: ['Industry keynote speaker (announced)', 'Alumni panel — finance & audit careers', 'Student sector leads roundtable'],
-    ticketAmount: 2000,
-  },
-  {
-    id: 'ta-masterclass',
-    img: asset('/images/masterclass-poster.webp'),
-    alt: 'Technical Analysis Masterclass',
-    title: 'Technical Analysis Masterclass',
-    desc: 'Learn how to read charts, identify patterns, and make data-driven trading decisions. A perfect hands-on session for beginners.',
-    tags: [
-      { label: 'Workshop', cls: 'badge-green' },
-      { label: 'Education', cls: 'badge-navy' },
-    ],
-    details: [
-      { label: 'Date & Time', lines: ['Nov 05, 2026', '2:00 PM - 5:00 PM'] },
-      { label: 'Location', lines: ['Virtual', '(Zoom link provided)'] },
-    ],
-    speakerSlots: ['Facilitated by BIC sector leads'],
+    speakerSlots: ['President Okara Nissi Bisindor', 'Executive board introductions', 'Committee & sector showcases'],
     ticketAmount: 0,
   },
   {
-    id: 'stock-pitch-2026',
-    img: asset('/images/bic-2025-1.webp'),
-    alt: 'Student Stock Pitch Challenge',
-    title: 'Student Stock Pitch Challenge',
-    desc: 'Compete in our flagship pitch competition — build an investment thesis, defend it before a panel of industry judges, and win prizes plus CV-worthy recognition.',
+    id: 'educational-seminar-1',
+    img: asset('/images/bic-photo-1482.webp'),
+    alt: 'A BIC educational seminar in session',
+    title: 'First BIC Educational Seminar',
+    desc: 'The first deep-dive seminar of the semester, led by our sector chairpersons — practical finance education across Securities, Real Estate, Crypto, Forex, and Personal Finance.',
     tags: [
-      { label: 'Competition', cls: 'badge-gold' },
-      { label: 'Prizes', cls: 'badge-green' },
+      { label: 'Seminar', cls: 'badge-gold' },
+      { label: 'Education', cls: 'badge-green' },
     ],
     details: [
-      { label: 'Date & Time', lines: ['Nov 28, 2026', '12:00 PM - 5:00 PM'] },
-      { label: 'Location', lines: ['Business School', 'Babcock University'] },
+      { label: 'Date & Time', lines: ['Nov 22, 2026', 'Time TBA'] },
+      { label: 'Location', lines: ['Babcock University'] },
+      { label: 'Entry', lines: ['Free for members', 'Non-members welcome'] },
+    ],
+    speakerSlots: ['Sector chairpersons — topics announced on our socials'],
+    ticketAmount: 0,
+  },
+  {
+    id: 'stock-pitch-2',
+    img: asset('/images/bic-stockpitch-2026-poster.webp'),
+    alt: 'Stock Pitch Competition poster — ₦370,000 in prizes',
+    title: 'Stock Pitch Competition 2.0',
+    desc: 'Think you can identify the next winning stock? Build an investment thesis, analyze the market, and pitch before a panel of judges. ₦150,000 first prize, ₦120,000 second, ₦100,000 third — ₦370,000 total, courtesy of our sponsors.',
+    tags: [
+      { label: 'Competition', cls: 'badge-gold' },
+      { label: '₦370k Prizes', cls: 'badge-green' },
+    ],
+    details: [
+      { label: 'Launch', lines: ['Dec 4–6, 2026'] },
+      { label: 'Pitch Day', lines: ['Announced at launch', 'Watch our socials'] },
       { label: 'Entry', lines: ['Members: Free', 'Teams of 2–4'] },
     ],
-    speakerSlots: ['Judging panel: invited industry professionals (announced)'],
+    speakerSlots: ['Judging panel: industry professionals from our partner firms'],
+    ticketAmount: 0,
+  },
+  {
+    id: 'picnic-2026',
+    img: asset('/images/bic-2025-8.webp'),
+    alt: 'BIC members networking at a social event',
+    title: 'End-of-Year Finance Picnic',
+    desc: 'Close the semester the BIC way — food, games, and conversations about markets, money, and the year ahead. Open to all members and friends of the club.',
+    tags: [
+      { label: 'Networking', cls: 'badge-navy' },
+    ],
+    details: [
+      { label: 'Date & Time', lines: ['Dec 14, 2026', 'Time TBA'] },
+      { label: 'Location', lines: ['Babcock University'] },
+      { label: 'Entry', lines: ['Free for members'] },
+    ],
+    speakerSlots: [],
     ticketAmount: 0,
   },
 ];
 
 const pastEvents = [
+  {
+    id: 'seminar-2026',
+    img: asset('/images/bic-seminar-2026-poster.webp'),
+    title: 'Annual Investment Seminar 2026',
+    date: 'Mar 22, 2026 · 11:00 AM',
+    desc: '“Building Wealth with Purpose — Turning Vision into Value.” Students joined financial experts at the 600 Seaters, BUTH for real investment insights, giveaways, and the Stock Pitch 2.0 finale with ₦370,000 in prizes — sponsored by Fundbox Financial Services, Leadway Assurance, More Ladda, and Chapel Hill Denham.',
+    gallery: [asset('/images/bic-exec-group-2026.webp'), asset('/images/bic-photo-1482.webp')],
+  },
   {
     id: 'masterclass-2026',
     img: asset('/images/masterclass-poster.webp'),
@@ -203,13 +230,13 @@ export default function Events() {
         <div className="countdown-split">
           <div className="cd-info">
             <span className="cd-kicker">Next Major Event Starts In</span>
-            <span className="cd-event">Annual Student Finance Summit 2026</span>
+            <span className="cd-event">BIC Welcome Seminar: The Next Chapter</span>
             <span className="cd-meta">
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              Oct 24, 2026 · 10:00 AM
+              Nov 1, 2026 · 10:00 AM
               <span aria-hidden="true">|</span>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.99 1.99 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><circle cx="12" cy="11" r="3" /></svg>
-              Main Auditorium, Babcock University
+              Babcock University
             </span>
           </div>
           <div className="hero-countdown">
