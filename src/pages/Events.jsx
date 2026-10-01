@@ -17,7 +17,7 @@ const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
 const upcomingEvents = [
   {
     id: 'summit-2026',
-    img: asset('/images/events.webp'),
+    img: asset('/images/bic-2025-3.webp'),
     alt: 'Annual Finance Summit',
     title: 'Annual Student Finance Summit 2026',
     desc: 'Join industry leaders and top alumni as we discuss market trends, investment strategies, and career growth in an ever-changing economic landscape.',
@@ -35,7 +35,7 @@ const upcomingEvents = [
   },
   {
     id: 'ta-masterclass',
-    img: asset('/images/about.webp'),
+    img: asset('/images/masterclass-poster.webp'),
     alt: 'Technical Analysis Masterclass',
     title: 'Technical Analysis Masterclass',
     desc: 'Learn how to read charts, identify patterns, and make data-driven trading decisions. A perfect hands-on session for beginners.',
@@ -52,7 +52,7 @@ const upcomingEvents = [
   },
   {
     id: 'stock-pitch-2026',
-    img: asset('/images/events.webp'),
+    img: asset('/images/bic-2025-1.webp'),
     alt: 'Student Stock Pitch Challenge',
     title: 'Student Stock Pitch Challenge',
     desc: 'Compete in our flagship pitch competition — build an investment thesis, defend it before a panel of industry judges, and win prizes plus CV-worthy recognition.',
@@ -72,28 +72,28 @@ const upcomingEvents = [
 
 const pastEvents = [
   {
+    id: 'masterclass-2026',
+    img: asset('/images/masterclass-poster.webp'),
+    title: 'Exclusive Investment Masterclass',
+    date: 'Mar 1, 2026 · 2:00 PM',
+    desc: 'Members mastered the fundamentals of crypto, the stock market, real estate, and forex — learning to analyze opportunities, manage risk, and build a strong investment foundation. Held at the BIC Boardroom, Babcock Superstore.',
+    gallery: [asset('/images/bic-2025-4.webp'), asset('/images/bic-2025-10.webp')],
+  },
+  {
     id: 'mixer-2025',
-    img: asset('/images/hero-bg.webp'),
+    img: asset('/images/bic-2025-8.webp'),
     title: 'End of Semester Mixer',
     date: 'Nov 18, 2025 · 5:00 PM',
     desc: 'Members connected with peers, shared investment ideas, and built their professional networks over refreshments at the Student Center Lounge.',
-    gallery: 6,
+    gallery: [asset('/images/bic-2025-5.webp'), asset('/images/bic-2025-6.webp')],
   },
   {
     id: 'summit-2025',
-    img: asset('/images/events.webp'),
+    img: asset('/images/bic-2025-2.webp'),
     title: 'Annual Student Finance Summit 2025',
     date: 'Oct 24, 2025 · 10:00 AM',
-    desc: 'Our flagship summit brought industry leaders and 400+ students together for panels, masterclasses, and a student investing competition.',
-    gallery: 6,
-  },
-  {
-    id: 'trading-tournament',
-    img: asset('/images/about.webp'),
-    title: 'Mock Trading Tournament',
-    date: 'Feb 14, 2026 · 12:00 PM',
-    desc: 'Students competed in a simulated market environment, managing virtual portfolios under live market conditions.',
-    gallery: 4,
+    desc: 'Our flagship summit brought industry leaders and students together for panels, masterclasses, and a student investing competition.',
+    gallery: [asset('/images/bic-2025-1.webp'), asset('/images/bic-2025-3.webp'), asset('/images/bic-2025-7.webp'), asset('/images/bic-2025-9.webp')],
   },
 ];
 
@@ -127,7 +127,7 @@ export default function Events() {
     .filter((e) => e.is_upcoming !== false)
     .map((e) => ({
       id: e.id,
-      img: e.image_url || asset('/images/events.webp'),
+      img: e.image_url || asset('/images/bic-2025-9.webp'),
       alt: e.title,
       title: e.title,
       desc: e.description || '',
@@ -340,13 +340,15 @@ export default function Events() {
                   <p style={{ color: '#55617e', fontWeight: 600, fontSize: '0.9rem', marginBottom: 16 }}>
                     📅 {event.date}
                   </p>
-                  <div className="gallery-grid">
-                    {Array.from({ length: event.gallery }).map((_, i) => (
-                      <TiltCard className="gallery-item" key={i} max={10} glare={false}>
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      </TiltCard>
-                    ))}
-                  </div>
+                  {event.gallery?.length > 0 && (
+                    <div className="gallery-grid">
+                      {event.gallery.map((src, i) => (
+                        <TiltCard className="gallery-item" key={src} max={10} glare={false}>
+                          <img src={src} alt={`${event.title} — photo ${i + 1}`} loading="lazy" />
+                        </TiltCard>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

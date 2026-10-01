@@ -17,7 +17,7 @@ export default function StickyCta() {
     >
       <div className="sticky-cta-info">
         <strong>Join the Club</strong>
-        <span>₦5,000 once · 50+ student members</span>
+        <span>₦5,000 once · 150+ student members</span>
       </div>
       <Link to="/membership" className="btn btn-primary sticky-cta-btn">
         Join Now

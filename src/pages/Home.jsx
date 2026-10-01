@@ -13,7 +13,7 @@ import { asset } from '../lib/assets';
 const NEXT_EVENT_DATE = '2026-10-24T10:00:00';
 
 const metrics = [
-  { target: 50, suffix: '+', label: 'Active Student Members' },
+  { target: 150, suffix: '+', label: 'Active Student Members' },
   { target: 13000, suffix: '+', label: 'Student Population Reach' },
   { target: 25, suffix: '+', label: 'Seminars & Workshops' },
   { target: 100, suffix: '%', label: 'Practical & Engaging' },
@@ -132,7 +132,7 @@ const journey = [
   { num: '01', title: 'Apply', text: 'Fill the membership form with your Babcock email — takes less than two minutes.' },
   { num: '02', title: 'Activate', text: 'Pay the ₦5,000 fee to unlock sessions, resources, and the member portal.' },
   { num: '03', title: 'Learn', text: 'Bootcamps and weekly sector sessions take you from basics to real analysis.' },
-  { num: '04', title: 'Compete', text: 'Pitch challenges, mock trading tournaments, and AVA-style competitions.' },
+  { num: '04', title: 'Compete', text: 'Pitch challenges, mock trading tournaments, and inter-university trading leagues.' },
   { num: '05', title: 'Lead', text: 'Join a committee, head a sector, and graduate with a CV-worthy track record.' },
 ];
 
@@ -148,7 +148,7 @@ const programmes = [
 
 const events = [
   {
-    img: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800',
+    img: asset('/images/bic-2025-2.webp'),
     alt: 'Annual Student Finance Summit',
     badges: [{ label: 'Flagship Summit', cls: 'badge-gold' }],
     title: 'Annual Student Finance Summit',
@@ -156,7 +156,7 @@ const events = [
     desc: 'Industry leaders and alumni join students to discuss market trends, investment strategies, and career growth.',
   },
   {
-    img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=800',
+    img: asset('/images/bic-2025-4.webp'),
     alt: 'Technical Analysis Masterclass',
     badges: [{ label: 'Workshop', cls: 'badge-green' }],
     title: 'Technical Analysis Masterclass',
@@ -164,7 +164,7 @@ const events = [
     desc: 'Learn how to read charts, identify patterns, and make data-driven trading decisions.',
   },
   {
-    img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=80&w=800',
+    img: asset('/images/bic-2025-8.webp'),
     alt: 'End of Semester Mixer',
     badges: [{ label: 'Networking', cls: 'badge-navy' }],
     title: 'End of Semester Mixer',
@@ -277,7 +277,7 @@ export default function Home() {
             {/* BIV-style credibility strip — replaces the old floating feature items */}
             <div className="hero-stat-strip">
               <div className="hstat">
-                <span className="hstat-num">50+</span>
+                <span className="hstat-num">150+</span>
                 <span className="hstat-label">Active student members</span>
               </div>
               <div className="hstat">
@@ -337,7 +337,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', paddingRight: 24 }}>
             <TiltCard className="intro-img" max={5}>
-              <img src={asset('/images/about.webp')} alt="BIC students" />
+              <img src={asset('/images/bic-2025-6.webp')} alt="BIC students" />
             </TiltCard>
           </div>
         </div>

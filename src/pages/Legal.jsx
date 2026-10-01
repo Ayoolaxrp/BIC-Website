@@ -13,7 +13,7 @@ const sections = [
       'Information we collect: when you submit a membership application, RSVP, contact form, sponsorship inquiry, or newsletter signup, we receive the details you provide (name, email, phone, department, interests, etc.). We use this information solely to process your request, manage membership, and send club communications you have opted into.',
       'Payments: membership fees are processed by Paystack. We do not see or store your card details — Paystack handles all payment data under its own privacy policy.',
       'Storage: form submissions are stored in our Supabase database. Before Supabase is configured, submissions are stored locally in your browser only. We do not sell or share personal data with third parties except the processors needed to operate the site (hosting, payments, email).',
-      'Your rights: you may request access to, correction of, or deletion of your personal data at any time by contacting info@babcockinvestorsclub.org.',
+      'Your rights: you may request access to, correction of, or deletion of your personal data at any time by contacting babcockinvestorsclub@gmail.com.',
       'Cookies: we use local storage for session preferences (e.g. signed-in session). No advertising or cross-site tracking cookies are used.',
     ],
   },
@@ -28,7 +28,7 @@ const sections = [
       'Content ownership: original BIC content (guides, resources, and articles written by the club) is owned by BIC. Curated articles belong to their original publishers and are linked for educational reference with attribution.',
       'Liability: to the maximum extent permitted by law, BIC is not liable for any loss arising from use of this site or participation in club activities. Third-party links (Paystack, Formspree, external articles, social media) are governed by their own terms.',
       'Changes: we may update these terms or the privacy policy at any time. Continued use of the site after changes constitutes acceptance.',
-      'Contact: questions about these terms can be sent to info@babcockinvestorsclub.org.',
+      'Contact: questions about these terms can be sent to babcockinvestorsclub@gmail.com.',
     ],
   },
 ];

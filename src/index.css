@@ -1799,8 +1799,9 @@ input.input-error:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,
 .speaker-chip .author-avatar { width: 30px; height: 30px; font-size: 0.65rem; }
 .speaker-chip span { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
 .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.gallery-item { height: 110px; border-radius: var(--radius); background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 100%); display: flex; align-items: center; justify-content: center; color: var(--sky-blue); transition: var(--transition); }
-.gallery-item:hover { transform: scale(1.03); color: var(--sky-blue-light); }
+.gallery-item { height: 150px; border-radius: var(--radius); overflow: hidden; background: var(--navy-mid); transition: var(--transition); }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+.gallery-item:hover img { transform: scale(1.05); }
 .rsvp-box { background: var(--white); border-radius: var(--radius-lg); padding: 48px; box-shadow: var(--shadow-md); border: 1px solid var(--gray-100); max-width: 720px; margin: 0 auto; }
 
 /* Contact map */

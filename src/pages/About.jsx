@@ -87,14 +87,14 @@ const objectives = [
 
 const achievements = [
   {
-    title: 'AVA Trading Competition',
-    text: 'Members have placed and won in national trading competitions.',
+    title: 'University Bamboo League',
+    text: 'Team BIC competed in Bamboo’s national inter-university trading league — managing live virtual portfolios against teams from 10+ universities.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 21h8m-4-4v4m-7-4h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
     ),
   },
   {
-    title: '50+ Active Members',
+    title: '150+ Active Members',
     text: 'A growing community of engaged, active student investors on campus.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -139,7 +139,7 @@ export default function About() {
       <FadeIn className="section container">
         <div className="grid-2 align-center">
           <TiltCard className="about-img-wrap" max={5}>
-            <img src={asset('/images/about.webp')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
+            <img src={asset('/images/bic-2025-2.webp')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
           </TiltCard>
           <div style={{ paddingLeft: 24 }}>
             <span className="section-label">Our Story</span>
