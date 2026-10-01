@@ -96,7 +96,17 @@ const pastEvents = [
     title: 'Annual Investment Seminar 2026',
     date: 'Mar 22, 2026 · 11:00 AM',
     desc: '“Building Wealth with Purpose — Turning Vision into Value.” Students joined financial experts at the 600 Seaters, BUTH for real investment insights, giveaways, and the Stock Pitch 2.0 finale with ₦370,000 in prizes — sponsored by Fundbox Financial Services, Leadway Assurance, More Ladda, and Chapel Hill Denham.',
-    gallery: [asset('/images/bic-exec-group-2026.webp'), asset('/images/bic-photo-1482.webp')],
+    gallery: [
+      asset('/images/bic-exec-group-2026.webp'),
+      asset('/images/bic-photo-1482.webp'),
+      asset('/images/bic-seminar-panel.webp'),
+      asset('/images/bic-seminar-speaker.webp'),
+      asset('/images/bic-seminar-practical.webp'),
+      asset('/images/bic-seminar-moneyafrica.webp'),
+      asset('/images/bic-presenter.webp'),
+      asset('/images/bic-group-2026.webp'),
+      asset('/images/bic-sponsors-2026-poster.webp'),
+    ],
   },
   {
     id: 'masterclass-2026',

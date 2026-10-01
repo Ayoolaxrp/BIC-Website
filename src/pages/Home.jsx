@@ -337,7 +337,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', paddingRight: 24 }}>
             <TiltCard className="intro-img" max={5}>
-              <img src={asset('/images/bic-2025-6.webp')} alt="BIC students" />
+              <img src={asset('/images/bic-group-2026.webp')} alt="BIC members" />
             </TiltCard>
           </div>
         </div>
