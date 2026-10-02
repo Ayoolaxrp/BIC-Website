@@ -1,16 +1,25 @@
+/* Apple-style glass navigation — the material does the elevation:
+   translucent navy + saturation boost + blur, hairline bottom border.
+   At rest (over the hero) it stays transparent so the keynote hero
+   reads edge to edge; scrolling summons the glass. */
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
   padding: 18px 0;
-  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+  transition:
+    padding 0.35s var(--ease-out-quint, cubic-bezier(0.22, 1, 0.36, 1)),
+    background-color 0.35s ease,
+    border-color 0.35s ease;
 }
 .navbar.scrolled {
-  background: rgba(10,22,40,0.97);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: 12px 0;
-  box-shadow: 0 4px 32px rgba(10,22,40,0.3);
+  background: rgba(10, 22, 40, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 11px 0;
+  box-shadow: none;
 }
 .navbar-inner {
   display: flex;
@@ -27,14 +36,26 @@
 .logo-name { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: .05em; }
 .logo-tagline { font-size: .62rem; color: #7a5e12; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
 
-.navbar-links { display: flex; align-items: center; gap: 32px; }
-.navbar-links a { color: rgba(255,255,255,.82); font-size: .88rem; font-weight: 500; letter-spacing: .03em; position: relative; }
-.navbar-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--sky-blue-light); transition: .3s ease; }
-.navbar-links a:hover { color: #fff; }
-.navbar-links a:hover::after { width: 100%; }
-.navbar-links a.active { color: var(--sky-blue-light); }
-.navbar-links a.active::after { width: 100%; }
+/* Links as quiet pill chips — hover fills, active stays tinted.
+   (Replaces the old underline slide; calmer and more tactile.) */
+.navbar-links { display: flex; align-items: center; gap: 4px; }
+.navbar-links a {
+  color: rgba(255,255,255,.8);
+  font-size: .86rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+.navbar-links a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.navbar-links a.active {
+  color: var(--sky-blue-light);
+  background: rgba(14,165,233,0.14);
+}
 .navbar-cta { display: flex; align-items: center; gap: 18px; margin-left: 24px; }
+.navbar-cta .btn { font-size: 0.88rem; padding: 11px 22px; }
+.navbar-cta .btn:active { transform: scale(0.97); }
 
 .hamburger { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 8px; background: none; border: none; cursor: pointer; }
 .hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: .3s ease; }
@@ -46,7 +67,9 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(8,14,28,0.98);
+  background: rgba(8,14,28,0.92);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
   z-index: 999;
   flex-direction: column;
   align-items: center;
@@ -62,10 +85,10 @@
 }
 
 @media (max-width: 1024px) {
-  .navbar-links { gap: 20px; }
-  .navbar-links a { font-size: 0.84rem; }
+  .navbar-links { gap: 2px; }
+  .navbar-links a { font-size: 0.82rem; padding: 8px 10px; }
   .navbar-cta { gap: 12px; margin-left: 16px; }
-  .navbar-cta .btn { padding: 12px 20px; font-size: 0.88rem; }
+  .navbar-cta .btn { padding: 11px 18px; font-size: 0.86rem; }
 }
 @media (max-width: 900px) {
   .navbar-links, .navbar-cta { display: none; }

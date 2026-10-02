@@ -145,6 +145,26 @@ const photoWall = [
     cls: 'pw-feature',
   },
   {
+    img: '/images/bic-speaker-stage-wide-2026.webp',
+    alt: 'Speaker addressing the hall from the podium',
+    tag: 'Opening Address',
+  },
+  {
+    img: '/images/bic-audience-clapping-2026.webp',
+    alt: 'Members applauding from the blue seminar seats',
+    tag: 'Applause',
+  },
+  {
+    img: '/images/bic-speaker-glasses-2026.webp',
+    alt: 'Speaker in black taking questions on stage',
+    tag: 'Speaker Session',
+  },
+  {
+    img: '/images/bic-speaker-rollup-2026.webp',
+    alt: 'Guest speaker presenting beside the club rollup banner',
+    tag: 'Guest Speaker',
+  },
+  {
     img: '/images/bic-audience-engaged.webp',
     alt: 'BIC members listening in the audience',
     tag: 'The Audience',
@@ -277,7 +297,7 @@ export default function Home() {
               <span className="dot"></span> Leading Student Investment Community
             </motion.div>
             <h1>
-              Empowering <span className="gold">Students</span> Through Financial Education.
+              Empowering <span className="gold">students</span> through financial education.
             </h1>
             <p className="hero-desc">
               Babcock Investors Club (BIC) is a premier student-led community focused on investment
@@ -336,10 +356,9 @@ export default function Home() {
         <div className="intro-grid">
           <div>
             <span className="section-label">About BIC</span>
-            <h2 className="section-title">
+            <h2 className="sec-title">
               Building the next generation of <span>financial leaders.</span>
             </h2>
-            <div className="gold-line left"></div>
             <p style={{ marginBottom: 24, fontSize: '1.1rem', lineHeight: 1.8 }}>
               The Babcock Investors Club aims to build a platform that equips university students
               with financial literacy, investment knowledge, entrepreneurship skills, and industry
@@ -376,16 +395,21 @@ export default function Home() {
       {/* THREE WAYS TO ENGAGE — BIV-style */}
       <FadeIn className="engage-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">How BIC Works</span>
-            <h2 className="section-title">
-              Three Ways to <span>Engage With BIC</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              Not sure where to start? Here's the clear difference between our three core
-              offerings — each designed for a different goal and commitment level.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">How BIC Works</span>
+              <h2 className="sec-title">
+                Three ways to <span>engage</span> with BIC.
+              </h2>
+              <p className="sec-sub">
+                Not sure where to start? Here's the clear difference between our three core
+                offerings — each designed for a different goal and commitment level.
+              </p>
+            </div>
+            <Link to="/membership" className="sec-more">
+              Become a member
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
           <div className="engage-grid">
             {engageWays.map((w) => (
@@ -413,16 +437,17 @@ export default function Home() {
       {/* IMPACT METRICS */}
       <FadeIn className="metrics-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label" style={{ color: "var(--sky-blue-light)", }}>Our Achievements</span>
-            <h2 className="section-title" style={{ color: 'var(--white)' }}>
-              BIC <span>Impact Metrics</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p style={{ color: '#cdd6e8', maxWidth: 600, margin: '0 auto 48px' }}>
-              Through strategic execution and academic collaboration, we have expanded our reach
-              and empowered students across the campus.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label" style={{ color: "var(--sky-blue-light)", }}>Our Achievements</span>
+              <h2 className="sec-title">
+                The numbers <span>behind the club.</span>
+              </h2>
+              <p className="sec-sub">
+                Through strategic execution and academic collaboration, we have expanded our reach
+                and empowered students across the campus.
+              </p>
+            </div>
           </div>
           <div className="metrics-grid">
             {metrics.map((m) => (
@@ -460,7 +485,7 @@ export default function Home() {
             ))}
           </div>
           <p className="pw-caption">
-            <span>05</span> photographs · Annual Investment Seminar 2026 · BIC Media Team
+            <span>09</span> photographs · Annual Investment Seminar 2026 · BIC Media Team
           </p>
         </div>
       </FadeIn>
@@ -468,16 +493,17 @@ export default function Home() {
       {/* MEMBER JOURNEY — BIV-style numbered pipeline */}
       <FadeIn className="pipeline-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label" style={{ color: 'var(--sky-blue-light)' }}>From Application to Alumni</span>
-            <h2 className="section-title">
-              Your BIC <span>Journey</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              Five stages from first click to a CV-worthy track record — structured, supported,
-              and built around real market practice.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label" style={{ color: 'var(--sky-blue-light)' }}>From Application to Alumni</span>
+              <h2 className="sec-title">
+                Your BIC <span>journey.</span>
+              </h2>
+              <p className="sec-sub">
+                Five stages from first click to a CV-worthy track record — structured, supported,
+                and built around real market practice.
+              </p>
+            </div>
           </div>
           <div className="pipeline-track">
             {journey.map((step) => (
@@ -497,16 +523,17 @@ export default function Home() {
       {/* SECTOR COMMUNITIES — BIV-style program cards with stat chips */}
       <FadeIn className="spotlight-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Sector Communities</span>
-            <h2 className="section-title">
-              Learn, Trade &amp; Grow in Your <span>Favourite Market</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              Members join sector communities led by dedicated chairpersons — real markets, real
-              analysis, guided by experienced student leaders.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Sector Communities</span>
+              <h2 className="sec-title">
+                Pick your market. <span>Learn it for real.</span>
+              </h2>
+              <p className="sec-sub">
+                Members join sector communities led by dedicated chairpersons — real markets, real
+                analysis, guided by experienced student leaders.
+              </p>
+            </div>
           </div>
           <div className="programs-grid">
             {sectors.map((s) => (
@@ -563,12 +590,21 @@ export default function Home() {
       {/* EVENTS PREVIEW */}
       <FadeIn className="events-preview">
         <div className="container">
-          <div className="text-center" style={{ marginBottom: 56 }}>
-            <span className="section-label">What We Do</span>
-            <h2 className="section-title">
-              Flagship <span>Programmes</span>
-            </h2>
-            <div className="gold-line"></div>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">What We Do</span>
+              <h2 className="sec-title">
+                Flagship <span>programmes.</span>
+              </h2>
+              <p className="sec-sub">
+                Three signature programmes anchor the calendar — summits, masterclasses, and
+                evenings that turn classmates into contacts.
+              </p>
+            </div>
+            <Link to="/events" className="sec-more">
+              See the full calendar
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
 
           <div className="grid-3">
@@ -610,16 +646,21 @@ export default function Home() {
       {/* SPONSORSHIP BRIEF */}
       <FadeIn className="section bg-off-white">
         <div className="container">
-          <div className="text-center" style={{ marginBottom: 56 }}>
-            <span className="section-label">Partnership Opportunities</span>
-            <h2 className="section-title">
-              Invest in the <span>next generation.</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              BIC offers flexible partnership options designed to align with your organization's
-              objectives and desired level of engagement.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Partnership Opportunities</span>
+              <h2 className="sec-title">
+                Invest in the <span>next generation.</span>
+              </h2>
+              <p className="sec-sub">
+                BIC offers flexible partnership options designed to align with your organization's
+                objectives and desired level of engagement.
+              </p>
+            </div>
+            <Link to="/sponsorship" className="sec-more">
+              View tiers
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
           <div className="grid-3">
             {tiers.map((t) => (
@@ -672,7 +713,7 @@ export default function Home() {
       <FadeIn className="cta-section">
         <div className="container">
           <div className="cta-content">
-            <h2>Ready to Start Your Investment Journey?</h2>
+            <h2>Ready to start your investment journey?</h2>
             <p>
               Join a growing community of students learning, growing, and investing together. Access exclusive
               resources, events, and a powerful network.
