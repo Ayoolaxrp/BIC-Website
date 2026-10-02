@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@reticlehq/react": "^3.3.0",
-    "@reticlehq/vite-plugin": "^3.3.0",
+    "@reticlehq/react": "^3.5.0",
+    "@reticlehq/vite-plugin": "^3.5.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^6.0.5",

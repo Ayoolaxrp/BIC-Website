@@ -70,7 +70,7 @@ if (mode === 'list') {
 async function call(name, args) {
   const msg = await request('tools/call', { name, arguments: args });
   const text = msg.result?.content?.map((c) => c.text).join('\n') ?? JSON.stringify(msg.result ?? msg.error);
-  console.log(`\n=== ${name} ===\n${text.slice(0, 2500)}`);
+  console.log(`\n=== ${name} ===\n${text.slice(0, 60000)}`);
   return text;
 }
 
