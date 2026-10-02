@@ -3040,17 +3040,39 @@ body::before {
 .group-chat-card:hover { box-shadow: none; }
 
 /* ============================================================
-   CLUB LIFE PHOTO WALL — BIV-style mosaic (Home)
-   Asymmetric editorial grid: one 2×2 feature tile, four singles,
-   10px gaps, hairline borders, mono tags. Hover = border + slow zoom.
+   CLUB LIFE PHOTO WALL — editorial mosaic (Home)
+   Left-aligned header (breaks the centered-section template),
+   asymmetric 224/176 row rhythm, 8px hairline gaps, quiet mono
+   tags + photo credit. Hover = border strengthen + calm zoom.
    ============================================================ */
-.photowall-section { padding: 96px 0 104px; background: var(--white); }
+.photowall-section { padding: 104px 0 112px; background: var(--white); }
+.pw-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.pw-title {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  color: var(--navy);
+  margin: 14px 0 12px;
+}
+.pw-sub {
+  max-width: 540px;
+  color: #55617e;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  margin: 0;
+}
 .photowall-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 200px;
-  gap: 10px;
-  margin-top: 56px;
+  grid-template-rows: 224px 176px;
+  gap: 8px;
 }
 .pw-tile {
   position: relative;
@@ -3067,31 +3089,32 @@ body::before {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 700ms ease;
+  transition: transform 500ms ease;
 }
-.pw-tile:hover img { transform: scale(1.035); }
+.pw-tile:hover img { transform: scale(1.025); }
 .pw-feature { grid-column: span 2; grid-row: span 2; }
 .pw-tag {
   position: absolute;
-  left: 12px;
-  bottom: 12px;
+  left: 10px;
+  bottom: 10px;
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--white);
-  background: rgba(10, 25, 49, 0.74);
-  padding: 5px 9px;
-  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(10, 25, 49, 0.62);
+  padding: 4px 8px;
+  border-radius: 4px;
   pointer-events: none;
 }
 .pw-more {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -3102,12 +3125,25 @@ body::before {
   transition: color 200ms ease, border-color 200ms ease;
 }
 .pw-more:hover { color: var(--sky-blue-dark); border-color: var(--sky-blue-dark); }
+.pw-caption {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(10, 25, 49, 0.08);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8b95ab;
+}
+.pw-caption span { color: var(--navy); }
 
 @media (max-width: 900px) {
-  .photowall-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+  .pw-head { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .photowall-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: 168px 148px; }
   .pw-feature { grid-column: span 2; grid-row: span 1; }
 }
 @media (max-width: 560px) {
-  .photowall-section { padding: 72px 0 80px; }
-  .photowall-grid { grid-auto-rows: 124px; gap: 8px; }
+  .photowall-section { padding: 76px 0 84px; }
+  .photowall-grid { grid-template-rows: 118px 104px; gap: 6px; }
 }

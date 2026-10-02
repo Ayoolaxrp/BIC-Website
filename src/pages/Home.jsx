@@ -434,19 +434,22 @@ export default function Home() {
         </div>
       </FadeIn>
 
-      {/* CLUB LIFE PHOTO WALL — BIV-style mosaic of real club photography */}
+      {/* CLUB LIFE PHOTO WALL — editorial mosaic, real club photography */}
       <FadeIn className="photowall-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Club Life</span>
-            <h2 className="section-title">
-              Inside <span>BIC Sessions</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              The faces behind the numbers — seminar panels, sector labs, and summit days
-              photographed by our own media team.
-            </p>
+          <div className="pw-head">
+            <div>
+              <span className="section-label">Club Life</span>
+              <h2 className="pw-title">Inside BIC sessions.</h2>
+              <p className="pw-sub">
+                Panels, sector labs, and summit days — the faces behind the numbers,
+                photographed by our own media team.
+              </p>
+            </div>
+            <Link to="/events" className="pw-more">
+              See the full gallery
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
           <div className="photowall-grid">
             {photoWall.map((p) => (
@@ -456,12 +459,9 @@ export default function Home() {
               </figure>
             ))}
           </div>
-          <div className="text-center" style={{ marginTop: 40 }}>
-            <Link to="/events" className="pw-more">
-              See the full gallery
-              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
+          <p className="pw-caption">
+            <span>05</span> photographs · Annual Investment Seminar 2026 · BIC Media Team
+          </p>
         </div>
       </FadeIn>
 
