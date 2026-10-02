@@ -136,6 +136,36 @@ const journey = [
   { num: '05', title: 'Lead', text: 'Join a committee, head a sector, and graduate with a CV-worthy track record.' },
 ];
 
+// ---- BIV-style photo wall — real club photography, mono-tagged mosaic ----
+const photoWall = [
+  {
+    img: '/images/bic-panel-wide-2026.webp',
+    alt: 'Speaker panel on stage at the Annual Investment Seminar 2026',
+    tag: 'Annual Seminar · Stage Panel',
+    cls: 'pw-feature',
+  },
+  {
+    img: '/images/bic-audience-engaged.webp',
+    alt: 'BIC members listening in the audience',
+    tag: 'The Audience',
+  },
+  {
+    img: '/images/bic-seminar-practical.webp',
+    alt: 'Hands-on forex practical session with live charts',
+    tag: 'Forex Practical Lab',
+  },
+  {
+    img: '/images/bic-exec-group-2026.webp',
+    alt: 'BIC executive team in club polos',
+    tag: 'The Executive Team',
+  },
+  {
+    img: '/images/bic-welcome-desk-2026.webp',
+    alt: 'Wealth ambassador welcoming guests at the registration desk',
+    tag: 'Welcome Desk',
+  },
+];
+
 const programmes = [
   'Annual Student Finance Summit',
   'Stock Pitch Challenge',
@@ -400,6 +430,37 @@ export default function Home() {
                 <Counter target={m.target} suffix={m.suffix} label={m.label} />
               </TiltCard>
             ))}
+          </div>
+        </div>
+      </FadeIn>
+
+      {/* CLUB LIFE PHOTO WALL — BIV-style mosaic of real club photography */}
+      <FadeIn className="photowall-section">
+        <div className="container">
+          <div className="text-center">
+            <span className="section-label">Club Life</span>
+            <h2 className="section-title">
+              Inside <span>BIC Sessions</span>
+            </h2>
+            <div className="gold-line"></div>
+            <p className="section-subtitle">
+              The faces behind the numbers — seminar panels, sector labs, and summit days
+              photographed by our own media team.
+            </p>
+          </div>
+          <div className="photowall-grid">
+            {photoWall.map((p) => (
+              <figure className={`pw-tile ${p.cls || ''}`} key={p.alt}>
+                <img src={asset(p.img)} alt={p.alt} loading="lazy" />
+                <figcaption className="pw-tag">{p.tag}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div className="text-center" style={{ marginTop: 40 }}>
+            <Link to="/events" className="pw-more">
+              See the full gallery
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
         </div>
       </FadeIn>

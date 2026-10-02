@@ -2455,6 +2455,8 @@ button, a, [role="button"], select, .link-btn, .category-btn, .tab-btn, .admin-t
     animation: none !important;
   }
   .fade-in, .card, .tilt-card, .btn, .sticky-cta { transition: none !important; }
+  .pw-tile img { transition: none !important; }
+  .pw-tile:hover img { transform: none !important; }
 }
 
 /* Defensive: never allow horizontal scroll (marquee, orbs, glows are contained) */
@@ -2923,6 +2925,7 @@ body::before {
 .pipeline-section > .container,
 .sponsors-section > .container,
 .spotlight-section > .container,
+.photowall-section > .container,
 .cta-section > .container { position: relative; }
 .section.container::before,
 .section > .container::before,
@@ -2932,6 +2935,7 @@ body::before {
 .pipeline-section > .container::before,
 .sponsors-section > .container::before,
 .spotlight-section > .container::before,
+.photowall-section > .container::before,
 .cta-section > .container::before,
 .section.container::after,
 .section > .container::after,
@@ -2941,6 +2945,7 @@ body::before {
 .pipeline-section > .container::after,
 .sponsors-section > .container::after,
 .spotlight-section > .container::after,
+.photowall-section > .container::after,
 .cta-section > .container::after {
   content: '';
   position: absolute;
@@ -2959,6 +2964,7 @@ body::before {
 .pipeline-section > .container::before,
 .sponsors-section > .container::before,
 .spotlight-section > .container::before,
+.photowall-section > .container::before,
 .cta-section > .container::before { left: -6px; }
 .section.container::after,
 .section > .container::after,
@@ -2968,6 +2974,7 @@ body::before {
 .pipeline-section > .container::after,
 .sponsors-section > .container::after,
 .spotlight-section > .container::after,
+.photowall-section > .container::after,
 .cta-section > .container::after { right: -6px; }
 
 /* Mono for everything structural — labels, badges, figures, markers */
@@ -3031,3 +3038,76 @@ body::before {
 }
 .admin-sub-item:hover,
 .group-chat-card:hover { box-shadow: none; }
+
+/* ============================================================
+   CLUB LIFE PHOTO WALL — BIV-style mosaic (Home)
+   Asymmetric editorial grid: one 2×2 feature tile, four singles,
+   10px gaps, hairline borders, mono tags. Hover = border + slow zoom.
+   ============================================================ */
+.photowall-section { padding: 96px 0 104px; background: var(--white); }
+.photowall-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  gap: 10px;
+  margin-top: 56px;
+}
+.pw-tile {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(10, 25, 49, 0.1);
+  background: var(--navy);
+  transition: border-color 300ms ease;
+}
+.pw-tile:hover { border-color: rgba(10, 25, 49, 0.26); }
+.pw-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 700ms ease;
+}
+.pw-tile:hover img { transform: scale(1.035); }
+.pw-feature { grid-column: span 2; grid-row: span 2; }
+.pw-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: rgba(10, 25, 49, 0.74);
+  padding: 5px 9px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.pw-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--navy);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(10, 25, 49, 0.32);
+  padding-bottom: 5px;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.pw-more:hover { color: var(--sky-blue-dark); border-color: var(--sky-blue-dark); }
+
+@media (max-width: 900px) {
+  .photowall-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+  .pw-feature { grid-column: span 2; grid-row: span 1; }
+}
+@media (max-width: 560px) {
+  .photowall-section { padding: 72px 0 80px; }
+  .photowall-grid { grid-auto-rows: 124px; gap: 8px; }
+}
