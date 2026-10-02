@@ -243,10 +243,11 @@ export default function Membership() {
 
       <FadeIn className="section container">
         {/* HOW IT WORKS */}
-        <div className="text-center" style={{ marginBottom: 40 }}>
-          <span className="section-label">How It Works</span>
-          <h2 className="section-title">Three Steps to <span>Joining</span></h2>
-          <div className="gold-line"></div>
+        <div className="sec-head" style={{ marginBottom: 40 }}>
+          <div>
+            <span className="section-label">How It Works</span>
+            <h2 className="sec-title">Three steps to <span>joining.</span></h2>
+          </div>
         </div>
         <div className="steps-grid">
           {steps.map((s, i) => (
@@ -263,10 +264,9 @@ export default function Membership() {
           {/* BENEFITS */}
           <div>
             <span className="section-label">Why Join?</span>
-            <h2 className="section-title">
-              Invest in your <span>Future.</span>
+            <h2 className="sec-title">
+              Invest in your <span>future.</span>
             </h2>
-            <div className="gold-line left"></div>
             <p>
               Membership at the Babcock Investors Club provides you with the ultimate toolkit to
               master financial markets, build a professional network, and accelerate your career in
@@ -423,10 +423,11 @@ export default function Membership() {
 
         {/* FAQ */}
         <div className="faq-section">
-          <div className="text-center" style={{ marginBottom: 40 }}>
-            <span className="section-label">FAQ</span>
-            <h2 className="section-title">Frequently Asked <span>Questions</span></h2>
-            <div className="gold-line"></div>
+          <div className="sec-head" style={{ marginBottom: 40 }}>
+            <div>
+              <span className="section-label">FAQ</span>
+              <h2 className="sec-title">Frequently asked <span>questions.</span></h2>
+            </div>
           </div>
           <div className="accordion">
             {faqs.map((f, i) => (

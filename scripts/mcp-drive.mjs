@@ -8,10 +8,14 @@ import { readFileSync, writeSync } from 'fs';
 const steps = JSON.parse(readFileSync(process.argv[2], 'utf8'));
 const CAP = parseInt(process.env.MCP_CAP || '6000', 10);
 
-const child = spawn('npx', ['--yes', '@reticlehq/server@latest', 'mcp', '--port', '4400'], {
+// Direct node spawn against the cached @reticlehq/server (npx resolution hangs on this box).
+const SERVER_CMD = process.env.RETICLE_SERVER_CMD
+  ? process.env.RETICLE_SERVER_CMD.split(' ')
+  : ['npx', '--yes', '@reticlehq/server@latest', 'mcp', '--port', '4400'];
+const child = spawn(SERVER_CMD[0], SERVER_CMD.slice(1), {
   cwd: process.cwd(),
   stdio: ['pipe', 'pipe', 'pipe'],
-  shell: true,
+  shell: SERVER_CMD[0] === 'npx',
 });
 
 let buf = '';

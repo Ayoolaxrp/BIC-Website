@@ -205,17 +205,18 @@ export default function Sponsorship() {
       </FadeIn>
 
       <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="text-center">
-          <span className="section-label">Trusted By</span>
-          <h2 className="section-title">
-            Meet Our <span>Partners</span>
-          </h2>
-          <div className="gold-line"></div>
-          <p className="section-subtitle">
-            Leading financial organizations power our flagship seminar, the Stock Pitch
-            Competition, and inter-university trading leagues — and get visible brand
-            placement across this site, our posters, and our socials.
-          </p>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Trusted By</span>
+            <h2 className="sec-title">
+              Meet our <span>partners.</span>
+            </h2>
+            <p className="sec-sub">
+              Leading financial organizations power our flagship seminar, the Stock Pitch
+              Competition, and inter-university trading leagues — and get visible brand
+              placement across this site, our posters, and our socials.
+            </p>
+          </div>
         </div>
         <div className="grid-3" style={{ marginTop: 48 }}>
           {partners.map((p) => (
@@ -234,12 +235,13 @@ export default function Sponsorship() {
 
       {/* WHY PARTNER */}
       <FadeIn className="section container">
-        <div className="text-center">
-          <span className="section-label">Engagement Value</span>
-          <h2 className="section-title">
-            Why Leading Organizations <span>Choose BIC</span>
-          </h2>
-          <div className="gold-line"></div>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Engagement Value</span>
+            <h2 className="sec-title">
+              Why leading organizations <span>choose BIC.</span>
+            </h2>
+          </div>
         </div>
         <div className="why-partner-grid">
           {whyPartner.map((w) => (
@@ -253,12 +255,13 @@ export default function Sponsorship() {
 
       {/* IMPACT */}
       <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="text-center">
-          <span className="section-label">Club Reach</span>
-          <h2 className="section-title">
-            Our <span>Impact</span>
-          </h2>
-          <div className="gold-line"></div>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Club Reach</span>
+            <h2 className="sec-title">
+              Our <span>impact.</span>
+            </h2>
+          </div>
         </div>
         <div className="impact-list-grid">
           {impactList.map((i) => (
@@ -278,10 +281,9 @@ export default function Sponsorship() {
         <div className="community-grid">
           <div>
             <span className="section-label">Our Member Base</span>
-            <h2 className="section-title">
-              Engage a Diverse Community of <span>Future Leaders</span>
+            <h2 className="sec-title">
+              Engage a diverse community of <span>future leaders.</span>
             </h2>
-            <div className="gold-line left"></div>
             <p style={{ lineHeight: 1.7, marginBottom: 20, fontSize: '1.05rem', color: 'var(--gray-700)' }}>
               Babcock Investors Club (BIC) attracts a highly motivated, cross-disciplinary community of
               students. Our members represent the next generation of financial analysts, corporate
@@ -320,12 +322,13 @@ export default function Sponsorship() {
 
       {/* HOW IT WORKS */}
       <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="text-center">
-          <span className="section-label">Simple Process</span>
-          <h2 className="section-title">
-            How <span>Partnership Works</span>
-          </h2>
-          <div className="gold-line"></div>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Simple Process</span>
+            <h2 className="sec-title">
+              How <span>partnership</span> works.
+            </h2>
+          </div>
         </div>
         <div className="steps-grid">
           {howItWorks.map((s) => (
@@ -346,15 +349,16 @@ export default function Sponsorship() {
       {/* TIERS */}
       <FadeIn className="tiers-section" id="benefits">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Sponsorship Tiers</span>
-            <h2 className="section-title">
-              Partnership <span>Opportunities</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              Select a sponsorship tier that aligns with your corporate objectives and engagement plans.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Sponsorship Tiers</span>
+              <h2 className="sec-title">
+                Partnership <span>opportunities.</span>
+              </h2>
+              <p className="sec-sub">
+                Select a sponsorship tier that aligns with your corporate objectives and engagement plans.
+              </p>
+            </div>
           </div>
 
           <div className="tier-grid">
@@ -406,16 +410,17 @@ export default function Sponsorship() {
       {/* BENEFITS */}
       <FadeIn className="benefits-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Outcome-Focused Results</span>
-            <h2 className="section-title">
-              What Our <span>Partners Receive</span>
-            </h2>
-            <div className="gold-line"></div>
-            <p style={{ color: '#55617e', maxWidth: 600, margin: '0 auto' }}>
-              Our corporate packages are structured to yield specific, measurable outcomes that match
-              your organization's core business priorities.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Outcome-Focused Results</span>
+              <h2 className="sec-title">
+                What our <span>partners receive.</span>
+              </h2>
+              <p className="sec-sub">
+                Our corporate packages are structured to yield specific, measurable outcomes that match
+                your organization's core business priorities.
+              </p>
+            </div>
           </div>
           <div className="benefits-grid">
             {partnerBenefits.map((b) => (
@@ -447,8 +452,8 @@ export default function Sponsorship() {
       <FadeIn className="partner-form-section" id="inquiry-form">
         <div className="container">
           <SpotlightCard className="partner-form-box" radius={380}>
-            <div className="text-center" style={{ marginBottom: 32 }}>
-              <h3 style={{ color: 'var(--navy)', fontSize: '1.8rem', fontFamily: "'Playfair Display', serif", marginBottom: 8 }}>
+            <div style={{ marginBottom: 32 }}>
+              <h3 style={{ color: 'var(--navy)', fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 8 }}>
                 Partnership Inquiry
               </h3>
               <p style={{ color: '#55617e' }}>
@@ -524,12 +529,12 @@ export default function Sponsorship() {
       <FadeIn className="cta-section">
         <div className="container">
           <div className="cta-content">
-            <h2 style={{ fontSize: '2.2rem', marginBottom: 16 }}>Let's Build the Future Together</h2>
-            <p style={{ marginBottom: 32, fontSize: '1.1rem', maxWidth: 700, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.7 }}>
+            <h2>Let's build the future together.</h2>
+            <p>
               Partner with BIC to empower financial literacy, support student development, and engage
               the next generation of investors, entrepreneurs, and industry leaders.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <a href="#inquiry-form" className="btn btn-primary" style={{ padding: '14px 28px' }} onClick={scrollToInquiry}>
                 Become a Partner
               </a>

@@ -413,12 +413,11 @@ export default function Events() {
       <FadeIn className="section bg-off-white">
         <div className="container" id="rsvp-box">
           <div className="rsvp-box">
-            <div className="text-center" style={{ marginBottom: 32 }}>
-              <span className="section-label">Event Registration</span>
-              <h2 className="section-title">
-                Reserve Your <span>Spot</span>
-              </h2>
-              <div className="gold-line"></div>
+            <div className="sec-head" style={{ display: 'block', marginBottom: 32 }}>
+              <div>
+                <span className="section-label">Event Registration</span>
+                <h2 className="sec-title" style={{ marginBottom: 12 }}>Reserve your <span>spot.</span></h2>
+              </div>
             </div>
 
             {rsvpDone ? (

@@ -141,12 +141,11 @@ export default function About() {
           <TiltCard className="about-img-wrap" max={5}>
             <img src={asset('/images/bic-seminar-panel.webp')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
           </TiltCard>
-          <div style={{ paddingLeft: 24 }}>
+          <div>
             <span className="section-label">Our Story</span>
-            <h2 className="section-title">
+            <h2 className="sec-title">
               Empowering the next generation of <span>investors.</span>
             </h2>
-            <div className="gold-line left"></div>
             <p style={{ marginBottom: 20 }}>
               The Babcock Investors Club (BIC) was founded with a clear mission: to bridge the gap
               between academic knowledge and real-world financial acumen for university students.
@@ -167,10 +166,11 @@ export default function About() {
       {/* VISION & MISSION + OBJECTIVES */}
       <FadeIn className="section bg-off-white">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Vision &amp; Mission</span>
-            <h2 className="section-title">Why We <span>Exist</span></h2>
-            <div className="gold-line"></div>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Vision &amp; Mission</span>
+              <h2 className="sec-title">Why we <span>exist.</span></h2>
+            </div>
           </div>
           <div className="vm-grid">
             <TiltCard className="vm-card" max={6}>
@@ -206,12 +206,13 @@ export default function About() {
 
       {/* VALUES */}
       <FadeIn className="section container">
-        <div className="text-center">
-          <span className="section-label">Core Values</span>
-          <h2 className="section-title">
-            What <span>Drives</span> Us
-          </h2>
-          <div className="gold-line"></div>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Core Values</span>
+            <h2 className="sec-title">
+              What <span>drives</span> us.
+            </h2>
+          </div>
         </div>
         <div className="values-grid">
           {values.map((v) => (
@@ -226,13 +227,14 @@ export default function About() {
 
       {/* ACHIEVEMENTS */}
       <FadeIn className="section container">
-        <div className="text-center">
-          <span className="section-label">Track Record</span>
-          <h2 className="section-title">Achievements &amp; <span>Recognition</span></h2>
-          <div className="gold-line"></div>
-          <p className="section-subtitle">
-            A growing record of competition wins, community impact, and institutional recognition.
-          </p>
+        <div className="sec-head">
+          <div>
+            <span className="section-label">Track Record</span>
+            <h2 className="sec-title">Achievements &amp; <span>recognition.</span></h2>
+            <p className="sec-sub">
+              A growing record of competition wins, community impact, and institutional recognition.
+            </p>
+          </div>
         </div>
         <div className="achievements-grid">
           {achievements.map((a) => (
@@ -248,13 +250,14 @@ export default function About() {
       {/* TEAM */}
       <FadeIn className="team-section">
         <div className="container">
-          <div className="text-center">
-            <span className="section-label">Executive Team</span>
-            <h2 className="section-title">Leadership</h2>
-            <div className="gold-line"></div>
-            <p className="section-subtitle">
-              Meet the dedicated students driving the vision and operations of Babcock Investors Club.
-            </p>
+          <div className="sec-head">
+            <div>
+              <span className="section-label">Executive Team</span>
+              <h2 className="sec-title">The people <span>leading it.</span></h2>
+              <p className="sec-sub">
+                Meet the dedicated students driving the vision and operations of Babcock Investors Club.
+              </p>
+            </div>
           </div>
 
           {team.map(({ group, members }) => (
