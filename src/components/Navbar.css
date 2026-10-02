@@ -77,7 +77,11 @@
   gap: 28px;
 }
 .mobile-nav.open { display: flex; }
-.mobile-nav a { color: #fff; font-size: 1.4rem; font-weight: 700; letter-spacing: .05em; }
+.mobile-nav a { color: #fff; font-size: 1.4rem; font-weight: 700; letter-spacing: .05em; padding: 6px 14px; }
+/* Keep every link inside the 44px touch minimum at phone sizes */
+@media (max-width: 480px) {
+  .mobile-nav a { padding: 10px 14px; }
+}
 .mobile-nav a:hover, .mobile-nav a.active { color: var(--sky-blue-light); }
 .mobile-close {
   position: absolute; top: 24px; right: 24px;
