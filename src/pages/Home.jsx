@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import FadeIn from '../components/FadeIn';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import FadeIn, { RevealGroup, RevealItem } from '../components/FadeIn';
 import Counter from '../components/Counter';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
@@ -253,17 +253,19 @@ const whyList = [
 
 export default function Home() {
   const countdown = useCountdown(NEXT_EVENT_DATE);
+  const reduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 700], [0, 150]);
-  const heroOpacity = useTransform(scrollY, [0, 550], [1, 0.35]);
-  const badgeScale = useTransform(scrollY, [0, 300], [1, 0.92]);
-  const badgeY = useTransform(scrollY, [0, 300], [0, -18]);
+  // Scroll parallax — every range collapses to static under prefers-reduced-motion.
+  const heroY = useTransform(scrollY, [0, 700], reduceMotion ? [0, 0] : [0, 150]);
+  const heroOpacity = useTransform(scrollY, [0, 550], reduceMotion ? [1, 1] : [1, 0.35]);
+  const badgeScale = useTransform(scrollY, [0, 300], reduceMotion ? [1, 1] : [1, 0.92]);
+  const badgeY = useTransform(scrollY, [0, 300], reduceMotion ? [0, 0] : [0, -18]);
 
   // Layered scroll parallax — each orb moves at a different rate (3D depth)
-  const orb1Y = useTransform(scrollY, [0, 700], [0, -70]);
-  const orb2Y = useTransform(scrollY, [0, 700], [0, -140]);
-  const orb3Y = useTransform(scrollY, [0, 700], [0, -40]);
-  const bgY = useTransform(scrollY, [0, 700], [0, 40]); // background drifts slower (see-through depth)
+  const orb1Y = useTransform(scrollY, [0, 700], reduceMotion ? [0, 0] : [0, -70]);
+  const orb2Y = useTransform(scrollY, [0, 700], reduceMotion ? [0, 0] : [0, -140]);
+  const orb3Y = useTransform(scrollY, [0, 700], reduceMotion ? [0, 0] : [0, -40]);
+  const bgY = useTransform(scrollY, [0, 700], reduceMotion ? [0, 0] : [0, 40]); // background drifts slower (see-through depth)
 
   return (
     <>
@@ -281,6 +283,11 @@ export default function Home() {
 
         <div className="container relative" style={{ zIndex: 2 }}>
           <motion.div className="hero-content fade-in visible" style={{ y: heroY, opacity: heroOpacity }}>
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 110, damping: 20, delay: 0.08 }}
+            >
             {/* BIV-style announcement ribbon — live event banner */}
             {countdown && (
               <Link to="/events" className="hero-ribbon" aria-label="Next flagship event countdown — view events">
@@ -347,6 +354,7 @@ export default function Home() {
                 Join the community
               </div>
             </div>
+            </motion.div>
           </motion.div>
         </div>
       </header>
@@ -393,8 +401,9 @@ export default function Home() {
       </FadeIn>
 
       {/* THREE WAYS TO ENGAGE — BIV-style */}
-      <FadeIn className="engage-section">
+      <section className="engage-section">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label">How BIC Works</span>
@@ -411,9 +420,10 @@ export default function Home() {
               <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <div className="engage-grid">
+          </FadeIn>
+          <RevealGroup className="engage-grid" stagger={0.08}>
             {engageWays.map((w) => (
-              <div className="engage-card" key={w.title}>
+              <RevealItem className="engage-card" key={w.title} lift={4}>
                 <span className={`engage-kind ${w.kindCls}`}>{w.kind}</span>
                 <h3>{w.title}</h3>
                 <p className="engage-audience">{w.audience}</p>
@@ -428,15 +438,16 @@ export default function Home() {
                 <Link to={w.cta.to} className={`btn ${w.cta.cls} engage-cta`}>
                   {w.cta.label}
                 </Link>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
-      </FadeIn>
+      </section>
 
       {/* IMPACT METRICS */}
-      <FadeIn className="metrics-section">
+      <section className="metrics-section">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label" style={{ color: "var(--sky-blue-light)", }}>Our Achievements</span>
@@ -449,19 +460,21 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="metrics-grid">
+          </FadeIn>
+          <RevealGroup className="metrics-grid" stagger={0.08}>
             {metrics.map((m) => (
-              <TiltCard key={m.label} max={7}>
+              <RevealItem key={m.label} lift={3}>
                 <Counter target={m.target} suffix={m.suffix} label={m.label} />
-              </TiltCard>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
-      </FadeIn>
+      </section>
 
       {/* CLUB LIFE PHOTO WALL — editorial mosaic, real club photography */}
-      <FadeIn className="photowall-section">
+      <section className="photowall-section">
         <div className="container">
+          <FadeIn>
           <div className="pw-head">
             <div>
               <span className="section-label">Club Life</span>
@@ -476,23 +489,27 @@ export default function Home() {
               <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <div className="photowall-grid">
+          </FadeIn>
+          <RevealGroup className="photowall-grid" stagger={0.05}>
             {photoWall.map((p) => (
-              <figure className={`pw-tile ${p.cls || ''}`} key={p.alt}>
+              <RevealItem as="figure" className={`pw-tile ${p.cls || ''}`} key={p.alt} lift={4}>
                 <img src={asset(p.img)} alt={p.alt} loading="lazy" />
                 <figcaption className="pw-tag">{p.tag}</figcaption>
-              </figure>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
+          <FadeIn>
           <p className="pw-caption">
             <span>09</span> photographs · Annual Investment Seminar 2026 · BIC Media Team
           </p>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* MEMBER JOURNEY — BIV-style numbered pipeline */}
-      <FadeIn className="pipeline-section">
+      <section className="pipeline-section">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label" style={{ color: 'var(--sky-blue-light)' }}>From Application to Alumni</span>
@@ -505,24 +522,28 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="pipeline-track">
+          </FadeIn>
+          <RevealGroup className="pipeline-track" stagger={0.08}>
             {journey.map((step) => (
-              <div className="pipeline-step" key={step.num}>
+              <RevealItem className="pipeline-step" key={step.num} lift={3}>
                 <span className="pipe-num">{step.num}</span>
                 <h3>{step.title}</h3>
                 <p>{step.text}</p>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
+          <FadeIn>
           <div className="text-center" style={{ marginTop: 44 }}>
             <Link to="/membership" className="btn btn-primary">Start Stage 01 — Apply Now</Link>
           </div>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* SECTOR COMMUNITIES — BIV-style program cards with stat chips */}
-      <FadeIn className="spotlight-section">
+      <section className="spotlight-section">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label">Sector Communities</span>
@@ -535,9 +556,10 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="programs-grid">
+          </FadeIn>
+          <RevealGroup className="programs-grid" stagger={0.08}>
             {sectors.map((s) => (
-              <div className="program-card" key={s.title}>
+              <RevealItem className="program-card" key={s.title} lift={4}>
                 <div className="program-icon">{s.icon}</div>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
@@ -552,9 +574,10 @@ export default function Home() {
                 <Link to="/membership" className="btn btn-outline program-cta">
                   Join This Sector
                 </Link>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
+          <FadeIn>
           <div className="text-center" style={{ marginTop: 56 }}>
             <h3 style={{ color: 'var(--navy)', fontSize: '1.1rem', fontWeight: 700, marginBottom: 20 }}>
               Hands-on leadership through our committees
@@ -568,8 +591,9 @@ export default function Home() {
               ))}
             </div>
           </div>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* SIGNATURE PROGRAMMES MARQUEE */}
       <FadeIn className="sponsors-section">
@@ -588,8 +612,9 @@ export default function Home() {
       </FadeIn>
 
       {/* EVENTS PREVIEW */}
-      <FadeIn className="events-preview">
+      <section className="events-preview">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label">What We Do</span>
@@ -607,9 +632,10 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid-3">
+          </FadeIn>
+          <RevealGroup className="grid-3" stagger={0.09}>
             {events.map((ev) => (
-              <TiltCard className="event-card" key={ev.title} max={6}>
+              <RevealItem className="event-card" key={ev.title} lift={5}>
                 <div className="event-img">
                   <img src={ev.img} alt={ev.alt} loading="lazy" />
                 </div>
@@ -633,19 +659,22 @@ export default function Home() {
                     See Upcoming Sessions
                   </Link>
                 </div>
-              </TiltCard>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
 
+          <FadeIn>
           <div className="text-center" style={{ marginTop: 48 }}>
             <Link to="/events" className="btn btn-navy">View All Events</Link>
           </div>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* SPONSORSHIP BRIEF */}
-      <FadeIn className="section bg-off-white">
+      <section className="section bg-off-white">
         <div className="container">
+          <FadeIn>
           <div className="sec-head">
             <div>
               <span className="section-label">Partnership Opportunities</span>
@@ -662,11 +691,13 @@ export default function Home() {
               <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <div className="grid-3">
+          </FadeIn>
+          <RevealGroup className="grid-3" stagger={0.09}>
             {tiers.map((t) => (
-              <TiltCard
+              <RevealItem
                 className="card partner-tier-card"
                 key={t.name}
+                lift={5}
                 style={{
                   padding: 32,
                   textAlign: 'left',
@@ -694,17 +725,19 @@ export default function Home() {
                 >
                   View Benefits
                 </Link>
-              </TiltCard>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
+          <FadeIn>
           <div className="text-center" style={{ marginTop: 48 }}>
             <p style={{ color: '#55617e', marginBottom: 16 }}>
               Not every organization fits a standard package. We welcome custom discussions.
             </p>
             <Link to="/sponsorship" className="btn btn-navy">Discuss Custom Plans</Link>
           </div>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* MOBILE STICKY CTA — keeps Join BIC reachable while scrolling (mobile only) */}
       <StickyCta />

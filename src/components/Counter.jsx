@@ -1,3 +1,4 @@
+import { useReducedMotion } from 'framer-motion';
 import useInView from '../hooks/useInView';
 import useCountUp from '../hooks/useCountUp';
 
@@ -7,7 +8,9 @@ import useCountUp from '../hooks/useCountUp';
  */
 export default function Counter({ target, suffix = '', label }) {
   const [ref, inView] = useInView(0.5);
-  const value = useCountUp(target, inView);
+  const reduce = useReducedMotion();
+  // Reduced motion: skip the count-up entirely — land on the target instantly.
+  const value = useCountUp(target, inView, { duration: reduce ? 0 : 2000 });
 
   return (
     <div className="metric-card" ref={ref}>
