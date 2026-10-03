@@ -1,9 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-// Self-hosted variable fonts (see index.html — the Google Fonts link was
-// render-blocking and its swap caused heading layout shift).
-import '@fontsource-variable/inter'
-import '@fontsource-variable/space-grotesk'
+// Fonts are declared as @font-face in index.css against preloaded files in
+// public/fonts — do NOT import them via JS (that delays the swap and causes
+// heading layout shift).
 import './index.css'
 import App from './App.jsx'
 
