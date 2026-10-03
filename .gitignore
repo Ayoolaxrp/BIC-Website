@@ -35,3 +35,6 @@ reticle-verify.json
 *.sln
 *.sw?
 .vercel
+
+# Impeccable skill local state
+.impeccable/
