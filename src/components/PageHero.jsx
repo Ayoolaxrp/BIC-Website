@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 export default function PageHero({ crumb, title, description, children }) {
   return (
     <header className="page-hero">
-      <div className="page-hero-grid"></div>
       <div className="container relative z-10 fade-in visible">
         <div className="breadcrumb">
           <Link to="/">Home</Link> <span>/</span> {crumb}

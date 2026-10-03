@@ -400,7 +400,7 @@ export default function Admin() {
                           <span className="sector-bar-count">{counts[s.value]}</span>
                         </div>
                         <div className="sector-bar-track">
-                          <div className="sector-bar-fill" style={{ width: `${(counts[s.value] / max) * 100}%` }} />
+                          <div className="sector-bar-fill" style={{ '--fill': counts[s.value] / max }} />
                         </div>
                       </div>
                     ))}

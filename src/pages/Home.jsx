@@ -279,7 +279,6 @@ export default function Home() {
           <motion.div className="hero-orb three" style={{ y: orb3Y }}></motion.div>
         </motion.div>
         <div className="hero-overlay"></div>
-        <div className="hero-grid"></div>
 
         <div className="container relative" style={{ zIndex: 2 }}>
           <motion.div className="hero-content fade-in visible" style={{ y: heroY, opacity: heroOpacity }}>
