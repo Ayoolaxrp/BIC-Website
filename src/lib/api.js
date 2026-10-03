@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { getSupabase, isSupabaseConfigured } from './supabase';
 import { demoDelete, demoInsert, demoRead, getLocalQueue } from './store';
 
 /**
@@ -13,6 +13,7 @@ import { demoDelete, demoInsert, demoRead, getLocalQueue } from './store';
 
 async function readRows(table, order = 'created_at', ascending = false, limit = 100) {
   if (!isSupabaseConfigured) return demoRead(table);
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from(table)
     .select('*')
@@ -38,6 +39,7 @@ export const fetchNewsletterPosts = () =>
 // ---------------------------------------------------------------------------
 async function adminWrite(table, payload) {
   if (!isSupabaseConfigured) return demoInsert(table, payload);
+  const supabase = await getSupabase();
   const { error } = await supabase.from(table).insert([payload]);
   if (error) return { ok: false, error: error.message };
   return { ok: true };
@@ -45,6 +47,7 @@ async function adminWrite(table, payload) {
 
 async function adminDelete(table, id) {
   if (!isSupabaseConfigured) return demoDelete(table, id);
+  const supabase = await getSupabase();
   const { error } = await supabase.from(table).delete().eq('id', id);
   if (error) return { ok: false, error: error.message };
   return { ok: true };
@@ -77,6 +80,7 @@ export async function fetchSubmissions(table, limit = 50) {
       .sort((a, b) => new Date(b.stored_at) - new Date(a.stored_at))
       .slice(0, limit);
   }
+  const supabase = await getSupabase();
   const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending: false }).limit(limit);
   if (error) {
     console.warn(`[api] read ${table} failed:`, error.message);
@@ -92,6 +96,7 @@ export async function fetchSubmissionCounts() {
     for (const t of SUBMISSION_TABLES) out[t] = queue.filter((r) => r._table === t).length;
     return out;
   }
+  const supabase = await getSupabase();
   const out = {};
   for (const t of SUBMISSION_TABLES) {
     const { count, error } = await supabase.from(t).select('*', { count: 'exact', head: true });

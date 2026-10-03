@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { getSupabase, isSupabaseConfigured } from './supabase';
 
 /**
  * Offline queue — keeps every submission even when Supabase isn't
@@ -29,6 +29,7 @@ function queueLocally(table, payload) {
 export async function submitRecord(table, payload) {
   if (isSupabaseConfigured) {
     try {
+      const supabase = await getSupabase();
       const { error } = await supabase
         .from(table)
         .insert([{ ...payload, created_at: new Date().toISOString() }]);

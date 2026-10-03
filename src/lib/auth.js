@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { getSupabase, isSupabaseConfigured } from './supabase';
 
 /**
  * Auth helpers (Supabase email/password) with a DEMO MODE fallback.
@@ -54,6 +54,7 @@ export async function getSession() {
     const demo = getDemoSession();
     return demo ? { user: toUser(demo) } : null;
   }
+  const supabase = await getSupabase();
   const { data } = await supabase.auth.getSession();
   return data.session;
 }
@@ -72,10 +73,14 @@ const authListeners = new Set();
 
 export function onAuthChange(callback) {
   if (!isDemoMode) {
-    const { data } = supabase.auth.onAuthStateChange((_event, session) =>
-      callback(session?.user ?? null),
-    );
-    return () => data.subscription.unsubscribe();
+    let unsubscribe = () => {};
+    getSupabase().then((supabase) => {
+      const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+        callback(session?.user ?? null),
+      );
+      unsubscribe = () => data.subscription.unsubscribe();
+    });
+    return () => unsubscribe();
   }
   authListeners.add(callback);
   const demo = getDemoSession();
@@ -108,6 +113,7 @@ export async function signIn(email, password) {
     return { ok: true, user };
   }
 
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({
     email: cleanEmail,
     password,
@@ -127,6 +133,7 @@ export async function signInWithGoogle() {
       error: 'Google sign-in activates once Supabase is connected (see README setup). For now, use the test accounts below.',
     };
   }
+  const supabase = await getSupabase();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin },
@@ -146,6 +153,7 @@ export async function updateProfile(userId, updates) {
     }
     return { ok: false, error: 'Profile not found in demo mode.' };
   }
+  const supabase = await getSupabase();
   if (!supabase || !userId) return { ok: false, error: 'Not signed in.' };
   const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
   return error ? { ok: false, error: error.message } : { ok: true };
@@ -159,6 +167,7 @@ export async function signUp(email, password, fullName) {
         'Demo mode: accounts are fixed for preview. Use the test admin or test member login instead (see hint).',
     };
   }
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -172,6 +181,7 @@ export async function signOut() {
   setDemoSession(null); // clear demo session in both modes
   emitAuthChange(null);
   if (isDemoMode) return;
+  const supabase = await getSupabase();
   await supabase.auth.signOut();
 }
 
@@ -190,6 +200,7 @@ export async function getProfile(userId) {
       bio: demo.bio || null,
     };
   }
+  const supabase = await getSupabase();
   if (!supabase || !userId) return null;
   const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
   if (error) return null;
@@ -212,6 +223,7 @@ export async function getMyApplication(email) {
     }
     return null;
   }
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from('member_applications')
     .select('*')
@@ -244,6 +256,7 @@ export async function getMyRsvps(email) {
     }
     return [];
   }
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from('rsvps')
     .select('*')

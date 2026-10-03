@@ -79,7 +79,7 @@ export default function Navbar() {
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="container navbar-inner">
           <Link to="/" className="navbar-logo">
-            <img src={asset('/images/logo.jpg')} alt="BIC Logo" />
+            <img src={asset('/images/logo.jpg')} alt="BIC Logo" width={44} height={44} />
             <div className="logo-text">
               <span className="logo-name">BIC</span>
               <span className="logo-tagline">Babcock Investors</span>

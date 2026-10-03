@@ -289,7 +289,7 @@ export default function Home() {
             >
             {/* BIV-style announcement ribbon — live event banner */}
             {countdown && (
-              <Link to="/events" className="hero-ribbon" aria-label="Next flagship event countdown — view events">
+              <Link to="/events" className="hero-ribbon">
                 <span className="ribbon-tag">Next Up</span>
                 <span>
                   <strong>BIC Welcome Seminar: The Next Chapter</strong>
@@ -311,7 +311,7 @@ export default function Home() {
             </p>
 
             {countdown && (
-              <Link to="/events" className="hero-next-event" aria-label="Countdown to the next flagship event — see events">
+              <Link to="/events" className="hero-next-event">
                 <span className="hero-next-dot" aria-hidden="true"></span>
                 Annual Summit in
                 <strong>
@@ -393,7 +393,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', paddingRight: 24 }}>
             <TiltCard className="intro-img" max={5}>
-              <img src={asset('/images/bic-group-2026.webp')} alt="BIC members" />
+              <img src={asset('/images/bic-group-2026.webp')} alt="BIC members" width={1080} height={1080} />
             </TiltCard>
           </div>
         </div>

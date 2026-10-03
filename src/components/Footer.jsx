@@ -42,7 +42,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-logo">
-              <img src={asset('/images/logo.jpg')} alt="BIC" style={{ height: 40 }} />
+              <img src={asset('/images/logo.jpg')} alt="BIC" width={40} height={40} style={{ height: 40 }} />
               <div className="logo-text">
                 <span className="logo-name">BIC</span>
                 <span className="logo-tagline">Babcock Investors Club</span>

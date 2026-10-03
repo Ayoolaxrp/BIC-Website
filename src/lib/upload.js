@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { getSupabase, isSupabaseConfigured } from './supabase';
 
 /**
  * Upload helper — the single path for admin image / resource uploads.
@@ -64,6 +64,7 @@ export async function uploadFile(file, kind = 'resource', folder = 'resources') 
   const sizeLabel = `${file.type.includes('image') ? 'IMG' : file.type.split('/')[1]?.toUpperCase() || 'FILE'} · ${formatBytes(file.size)}`;
 
   if (isSupabaseConfigured) {
+    const supabase = await getSupabase();
     const bucket = kind === 'image' ? 'bic-images' : 'bic-resources';
     const path = `${folder}/${Date.now()}_${sanitizeName(file.name)}`;
     const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, {
