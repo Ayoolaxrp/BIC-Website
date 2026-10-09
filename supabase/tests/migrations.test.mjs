@@ -13,7 +13,7 @@ const STUBS = `
 create role anon nologin;
 create role authenticated nologin;
 create schema auth;
-create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}');
+create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}', email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as
   $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 create function auth.jwt() returns jsonb language sql stable as
@@ -65,11 +65,13 @@ for (const round of [1, 2]) {
 
 const U1 = '11111111-1111-1111-1111-111111111111';
 const U2 = '22222222-2222-2222-2222-222222222222';
-await db.exec(`insert into auth.users (id, email, raw_user_meta_data) values
-  ('${U1}', 'member@babcock.edu.ng', '{"full_name":"Test Member"}'),
-  ('${U2}', 'admin@babcock.edu.ng', '{}')`);
+const U3 = '33333333-3333-3333-3333-333333333333';
+await db.exec(`insert into auth.users (id, email, raw_user_meta_data, email_confirmed_at) values
+  ('${U1}', 'member@babcock.edu.ng', '{"full_name":"Test Member"}', now()),
+  ('${U2}', 'admin@babcock.edu.ng', '{}', now()),
+  ('${U3}', 'victim@babcock.edu.ng', '{}', null)`);
 await db.exec(`update public.profiles set role = 'admin' where id = '${U2}'`); // as SQL editor would
-ok('signup trigger creates profiles', (await db.query('select count(*)::int n from public.profiles')).rows[0].n === 2);
+ok('signup trigger creates profiles', (await db.query('select count(*)::int n from public.profiles')).rows[0].n === 3);
 
 // Visitors
 let r = await as('anon', null, null, `insert into public.contact_messages (first_name, email, message) values ('A', 'a@b.co', 'hi')`);
@@ -90,10 +92,19 @@ r = await as('anon', null, null, `insert into public.member_applications (full_n
 ok('application insert works', !r.error, r.error);
 ok('self-declared "paid" is forced to pending',
   (await db.query(`select payment_status from public.member_applications where email = 'cheat@b.co'`)).rows[0]?.payment_status === 'pending');
-await db.exec(`insert into public.payments (paystack_ref, payment_type, status, amount_kobo) values ('REAL1', 'membership', 'paid', 250000)`);
+await db.exec(`insert into public.payments (paystack_ref, payment_type, status, amount_kobo, email) values ('REAL1', 'membership', 'paid', 250000, 'Payer@b.co')`);
 await as('anon', null, null, `insert into public.member_applications (full_name, email, paystack_ref) values ('Payer', 'payer@b.co', 'REAL1')`);
 ok('verified payment marks application paid',
   (await db.query(`select payment_status from public.member_applications where email = 'payer@b.co'`)).rows[0]?.payment_status === 'paid');
+r = await as('anon', null, null, `insert into public.member_applications (full_name, email, paystack_ref) values ('Freeloader', 'other@b.co', 'REAL1')`);
+ok('a payment reference cannot back a second application', !!r.error, r.error);
+await db.exec(`insert into public.payments (paystack_ref, payment_type, status, amount_kobo, email) values ('REAL2', 'membership', 'paid', 250000, 'someone@b.co')`);
+await as('anon', null, null, `insert into public.member_applications (full_name, email, paystack_ref) values ('Mismatch', 'different@b.co', 'REAL2')`);
+ok('payment by a different email stays pending',
+  (await db.query(`select payment_status from public.member_applications where email = 'different@b.co'`)).rows[0]?.payment_status === 'pending');
+await as('anon', null, null, `insert into public.contact_messages (email, message, created_at) values ('time@b.co', 'x', '2001-01-01')`);
+ok('server sets created_at on submissions',
+  (await db.query(`select extract(year from created_at)::int y from public.contact_messages where email = 'time@b.co'`)).rows[0]?.y > 2001);
 
 // Members
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `update public.profiles set role = 'admin', bio = 'hi' where id = '${U1}'`);
@@ -105,6 +116,9 @@ ok('member sees only own profile', r.rows?.[0]?.n === 1, JSON.stringify(r));
 await as('anon', null, null, `insert into public.member_applications (full_name, email) values ('Test Member', 'member@babcock.edu.ng')`);
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `select email from public.member_applications`);
 ok('member reads only own application', r.rows?.length === 1 && r.rows[0].email === 'member@babcock.edu.ng', JSON.stringify(r));
+await as('anon', null, null, `insert into public.member_applications (full_name, email) values ('Victim', 'victim@babcock.edu.ng')`);
+r = await as('authenticated', U3, 'victim@babcock.edu.ng', `select count(*)::int n from public.member_applications`);
+ok('unconfirmed sign-up cannot read applications for that email', r.rows?.[0]?.n === 0, JSON.stringify(r));
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `insert into public.rsvps (name, email, event_name) values ('Test Member', 'member@babcock.edu.ng', 'Welcome')`);
 ok('signed-in member can RSVP', !r.error, r.error);
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `select * from public.contact_messages`);
@@ -126,7 +140,7 @@ ok('member cannot upload', !!r.error);
 
 // Function exposure
 const priv = (fn, role) => db.query(`select has_function_privilege('${role}', '${fn}', 'execute') v`).then((x) => x.rows[0].v);
-ok('trigger functions not callable by anon', !(await priv('public.handle_new_user()', 'anon')) && !(await priv('public.apply_membership_payment_status()', 'anon')) && !(await priv('public.notify_send_email()', 'anon')) && !(await priv('public.protect_profile_fields()', 'anon')));
+ok('trigger functions not callable by anon', !(await priv('public.handle_new_user()', 'anon')) && !(await priv('public.apply_membership_payment_status()', 'anon')) && !(await priv('public.notify_send_email()', 'anon')) && !(await priv('public.protect_profile_fields()', 'anon')) && !(await priv('public.set_created_at_now()', 'anon')) && !(await priv('public.email_is_confirmed()', 'anon')));
 ok('is_admin callable for RLS', await priv('public.is_admin()', 'anon'));
 r = await as('anon', null, null, `select * from private.app_config`);
 ok('private config not readable by anon', !!r.error);
@@ -136,6 +150,8 @@ ok('no email calls before config', (await db.query('select count(*)::int n from 
 await db.exec(`insert into private.app_config values ('send_email_url', 'https://example.test/fn'), ('webhook_secret', 's')`);
 await as('anon', null, null, `insert into public.rsvps (name, email, event_name) values ('X', 'x@b.co', 'Welcome')`);
 ok('email call made after config', (await db.query('select count(*)::int n from public._http_log')).rows[0].n === 1);
+await as('anon', null, null, `insert into public.rsvps (name, email, event_name) values ('X', 'x@b.co', 'Again')`);
+ok('second email to the same address within an hour is skipped', (await db.query('select count(*)::int n from public._http_log')).rows[0].n === 1);
 
 const b = (await db.query(`select id, file_size_limit from storage.buckets order by id`)).rows;
 ok('buckets with limits', b.length === 2 && b[0].file_size_limit === 5242880n || b[0].file_size_limit == 5242880, JSON.stringify(b, (k, v) => typeof v === 'bigint' ? Number(v) : v));

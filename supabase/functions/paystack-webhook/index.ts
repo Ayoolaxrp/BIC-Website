@@ -80,7 +80,7 @@ async function computeSignature(secret: string, rawBody: string): Promise<string
 /** Confirm with Paystack that the transaction really succeeded. */
 async function verifyTransaction(
   reference: string,
-): Promise<{ status: string; amount_kobo: number } | null> {
+): Promise<{ status: string; amount_kobo: number; currency: string } | null> {
   if (!PAYSTACK_SECRET_KEY) throw new Error('PAYSTACK_SECRET_KEY is not set');
   const res = await fetch(
     `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
@@ -95,6 +95,7 @@ async function verifyTransaction(
   return {
     status: body.data?.status ?? 'unknown',
     amount_kobo: Number(body.data?.amount ?? 0), // kobo (₦1 = 100 kobo)
+    currency: String(body.data?.currency ?? ''),
   };
 }
 
@@ -141,7 +142,9 @@ Deno.serve(async (req: Request) => {
     }
 
     // 2b. A membership only counts as paid if the full fee was paid.
-    const underpaid = paymentType === 'membership' && verified.amount_kobo < MEMBERSHIP_FEE_KOBO;
+    const underpaid =
+      paymentType === 'membership' &&
+      (verified.currency !== 'NGN' || verified.amount_kobo < MEMBERSHIP_FEE_KOBO);
     if (underpaid) {
       console.error(
         `paystack-webhook: ${reference} paid ${verified.amount_kobo} kobo, below the ${MEMBERSHIP_FEE_KOBO} fee`,

@@ -85,6 +85,7 @@ begin
     new.role  := old.role;
     new.email := old.email;
     new.id    := old.id;
+    new.created_at := old.created_at;
   end if;
   return new;
 end;

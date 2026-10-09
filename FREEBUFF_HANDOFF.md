@@ -16,7 +16,7 @@
 | Apple-style redesign (all pages) | Done, committed `4349ba7` |
 | Club feedback + calendar | Done, committed `70253d2` |
 | Supabase migrations + runbook | Done and tested, committed `854f612` |
-| Cloudflare security audit | **In progress** (see "Unfinished work" below) |
+| Cloudflare security audit | Done (quick profile): 0 confirmed, 4 leads, all 4 fixed in source |
 | Merge to `main` / go live | **Not done. Owner must approve first.** |
 | Supabase project creation | **Owner will do it**, then share details |
 
@@ -63,34 +63,18 @@
 
 ## Unfinished work
 
-### 1. Cloudflare security audit, run-1 (quick profile)
-- Output dir: `C:\Users\User\security-audit-skill\bic-react\run-1\` (outside the repo, on purpose)
-- Done: `run-metadata.json`, `architecture.md`, `coverage-ledger.json` (9 units, valid), hunter prompts in `agents/hunt-access|hunt-payments|hunt-client/prompt.md`.
-- Budget: strict 16 agent calls. **7 used** (4 reconnaissance agents failed on an API rate limit and still count; 3 hunters launched). Remaining: 9. The skill's `quick` profile needs 1 coverage-critic call, then 1 verifier per surviving candidate.
-- The 3 hunters **finished** (7/16 calls used). Results: 5 of 9 units covered clean, 4 candidates (all `needs_validation`, none confirmed yet):
-  1. `supabase/migrations/20261009000200_rls_policies.sql:submission-read-own-trusts-unverified-jwt-email`: members read "their" applications/RSVPs by JWT email; unsafe if Supabase "Confirm email" is off. Fix: keep Confirm email on (add `[auth.email] enable_confirmations = true` to `supabase/config.toml` and a line in `SETUP.md` step 3), and/or require `auth.jwt()->>'email_verified'`.
-  2. `bic-react:member_applications.paystack_ref:non-unique-payment-reuse`: one paid ref can mark many applications paid. Fix: partial UNIQUE index on `member_applications(paystack_ref) where paystack_ref is not null`, and in `apply_membership_payment_status` also require `lower(payments.email) = lower(new.email)`.
-  3. `bic-react:notify_send_email:anon-insert-arbitrary-recipient-email`: anonymous inserts make the club's sender email any address with attacker-chosen subject text. Fix: don't echo free-text `event_name` in the subject (use a fixed subject or look it up in `events`), and add per-email throttling (e.g. skip if the same email got a mail in the last hour).
-  4. `bic-react:send-email:empty-webhook-secret-fail-open`: `send-email` passes an empty `x-webhook-secret` when `WEBHOOK_SECRET` is unset. Fix: `if (!WEBHOOK_SECRET) return 401` before comparing, plus a constant-time compare.
-  - Hardening notes (not findings): add security headers (CSP, frame-ancestors, HSTS, nosniff, referrer-policy) in `vercel.json`; check URL schemes (http/https only) for admin-entered links; stop keeping failed submissions in localStorage; send the "payment received" email only when actually paid; require currency NGN in the webhook fee check.
-  - Full hunter JSON is in this session's transcript. If it's lost, re-run only the coverage critic + verifiers on these fingerprints instead of re-hunting.
-- Remaining phases (follow `~/.claude/skills/security-audit/SKILL.md`, `HUNTING.md`, `VALIDATION-AND-REPORTING.md`):
-  1. Record each hunter's `units[]` result into the ledger (status `covered`/`candidate`/`blocked`, `reviewed_paths`, checks into `local_checks`, fingerprints), then validate.
-  2. One post-wave coverage critic (`research` agent). In `quick`, any units it adds become `deferred` with reason `quick_profile_final_critic`; no second hunter wave.
-  3. One fresh verifier per candidate fingerprint; write `findings.json` (confirmed / needs_validation / rejected).
-  4. Validate, then write `REPORT.md`, `FINDINGS-DETAIL.md`, `NEEDS-VALIDATION.md`, and set `run_status` in `run-metadata.json`. The report must say this is partial (quick) coverage and that no target code was executed (no OS sandbox on this Windows host).
-- **Validators only run under WSL** (Windows lacks the no-follow file protection they require):
-  ```bash
-  MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu -- sh /mnt/c/Users/User/.claude/jobs/1da7da9d/tmp/val.sh ledger
-  MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu -- sh /mnt/c/Users/User/.claude/jobs/1da7da9d/tmp/val.sh findings
-  ```
-  If that helper script is gone (it lives in a temporary job folder), the equivalent is:
-  ```bash
-  MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu -- ~/.cache/sa-node/node-v22.12.0-linux-x64/bin/node \
-    /mnt/c/Users/User/.claude/skills/security-audit/validate-coverage-ledger.cjs \
-    /mnt/c/Users/User/security-audit-skill/bic-react/run-1/coverage-ledger.json
-  ```
-- Fix any **confirmed** findings in the repo on the branch, re-run the checks below, commit and push. `needs_validation` items go to the owner's list.
+### 1. Cloudflare security audit, run-1: DONE
+- Report: `C:\Users\User\security-audit-skill\bic-react\run-1\REPORT.md` (plus `findings.json`, `NEEDS-VALIDATION.md`, `coverage-ledger.json`). Outside the repo on purpose.
+- Result: **0 confirmed vulnerabilities**, 4 `needs_validation` leads, run status `complete` (quick profile = partial pass by definition). 12 of 16 agent calls used. Both validators pass (run under WSL; Windows lacks the file protection they need).
+- All 4 leads are now fixed in source, so none depends on a dashboard setting:
+  1. Payment reference reuse → unique index on `member_applications.paystack_ref` and payer-email match in the paid-status trigger (`supabase/migrations/20261009000600_audit_hardening.sql`).
+  2. Unverified-email reads → own-row RLS now also requires a confirmed email (`email_is_confirmed()`), plus `[auth.email] enable_confirmations = true` in `supabase/config.toml`.
+  3. Club sender as a relay → at most one confirmation email per address per hour (`private.email_log`), fixed RSVP subject (no echoed text).
+  4. `send-email` fail-open → refuses all requests when `WEBHOOK_SECRET` is empty; constant-time compare.
+  - Also: security headers in `vercel.json`/`netlify.toml`, NGN currency check in the webhook, honest "payment not confirmed yet" email wording, server-set `created_at`.
+- `npm run test:db` now runs 33 checks (fresh database and upgrade from the old schema).
+- Owner checks still worth doing after setup (from the report): `supabase secrets list` shows a non-empty `WEBHOOK_SECRET`; Auth "Confirm email" on.
+- Not done: a full Content-Security-Policy (only `frame-ancestors` is set). Adding `script-src`/`connect-src` needs a live test with Paystack and Supabase so checkout isn't broken.
 
 ### 2. After the owner creates Supabase (they will share the details)
 Follow `supabase/SETUP.md` exactly. With the project ref and database password:
@@ -110,12 +94,12 @@ Then set Vercel env vars `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (Produ
 
 ## Acceptance Criteria
 - [ ] `npm run build` passes
-- [ ] `npm run test:db` passes (28 checks)
+- [ ] `npm run test:db` passes (33 checks)
 - [ ] No visible em/en-dashes, "₦5,000", bare "50+", Bamboo, AVA, "Demo mode", `babcockinvestorsclub.org`, placeholder names, or gold colour on any public page
 - [ ] No horizontal scroll at 390px and 1440px on Home, About, Membership, Events, Blog, Partners, Contact
 - [ ] Every button readable on its background (no navy-on-navy)
 - [ ] Forms show the WhatsApp/email notice while Supabase is not configured
-- [ ] Security audit run-1 reaches a terminal state (validators pass, or `run_status: "incomplete"` with the reason disclosed)
+- [x] Security audit run-1 complete; validators pass; leads fixed
 - [ ] `design-reviewer` passes on any UI change
 
 ## Validation Commands (RUN BEFORE DELIVERY)

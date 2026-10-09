@@ -2,8 +2,8 @@
 
 Everything the site needs is in `supabase/migrations/`, in order. Each file is
 safe to run more than once, on a brand-new project or on one that ran the old
-`schema.sql`. Tested with `npm run test:db` (28 checks: access rules, payments,
-email trigger, re-runs, upgrade from the old schema).
+`schema.sql`. Tested with `npm run test:db` (33 checks: access rules, payments,
+email trigger and throttle, re-runs, upgrade from the old schema).
 
 Until these steps are done the live site stays honest: forms show
 "email or WhatsApp us" instead of pretending to save, and member login is hidden.
@@ -27,6 +27,7 @@ each file from `supabase/migrations/` in filename order and press **Run**:
 3. `20261009000300_storage.sql`
 4. `20261009000400_payments.sql`
 5. `20261009000500_email_notifications.sql`
+6. `20261009000600_audit_hardening.sql`
 
 **B. Supabase CLI.**
 
@@ -41,8 +42,9 @@ npx supabase db push
 
 ## 3. Auth settings
 
-Authentication → Providers → **Email**: on. Authentication → URL
-Configuration:
+Authentication → Providers → **Email**: on, with **Confirm email** and
+**Secure email change** both on (they are by default; leave them on).
+Authentication → URL Configuration:
 
 - Site URL: `https://bic-react.vercel.app` (change when the club domain is live)
 - Redirect URLs: add `https://bic-react.vercel.app/**` and
