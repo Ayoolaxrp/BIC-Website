@@ -1,0 +1,8 @@
+# Minimal Supabase CLI config so `supabase link` / `supabase db push` work.
+# Migrations live in supabase/migrations/. See supabase/SETUP.md.
+project_id = "bic"
+
+[auth.email]
+# Members' own-data reads also require a confirmed email in RLS (migration 0600),
+# but keep confirmation on so unconfirmed sign-ups never get a session.
+enable_confirmations = true

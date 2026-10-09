@@ -23,6 +23,7 @@ import { getLocalQueue } from '../lib/store';
 import { uploadFile, formatBytes } from '../lib/upload';
 import { SECTORS, sectorLabel } from '../lib/sectors';
 import { getCurrentUser, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut } from '../lib/auth';
+import { googleAuthEnabled } from '../lib/config';
 
 const TABS = ['overview', 'events', 'articles', 'resources', 'newsletter', 'submissions'];
 
@@ -72,7 +73,7 @@ function FileField({ name, kind = 'image', label, hint }) {
       setSize('');
       return;
     }
-    setSize(`${file.type.split('/')[1]?.toUpperCase() || 'FILE'} · ${formatBytes(file.size)}${file.size > maxMb * 1024 * 1024 ? ' — exceeds ' + maxMb + ' MB limit' : ''}`);
+    setSize(`${file.type.split('/')[1]?.toUpperCase() || 'FILE'} · ${formatBytes(file.size)}${file.size > maxMb * 1024 * 1024 ? ', over the ' + maxMb + ' MB limit' : ''}`);
     if (kind === 'image') {
       const reader = new FileReader();
       reader.onload = () => setPreview(reader.result);
@@ -84,7 +85,7 @@ function FileField({ name, kind = 'image', label, hint }) {
 
   return (
     <Field label={label} hint={hint}>
-      <input ref={inputRef} type="file" name={name} accept={kind === 'image' ? 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml' : 'application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/csv,text/plain,application/zip'} onChange={onChange} />
+      <input ref={inputRef} type="file" name={name} accept={kind === 'image' ? 'image/png,image/jpeg,image/webp,image/gif' : 'application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/csv,text/plain,application/zip'} onChange={onChange} />
       {size && <span style={{ fontSize: '0.78rem', color: '#55617e' }}>{size}</span>}
       {kind === 'image' && preview && (
         <img src={preview} alt="Preview" className="admin-upload-preview" />
@@ -269,7 +270,7 @@ export default function Admin() {
           </div>
           {!isSupabaseConfigured && (
             <div className="form-status visible demo" style={{ marginBottom: 16 }}>
-              <strong>Demo mode:</strong> Supabase isn't connected yet — the console runs on
+              <strong>Demo mode:</strong> Supabase isn't connected yet, so the console runs on
               local demo data with no stored accounts. Add your keys to sign in for real.
             </div>
           )}
@@ -287,7 +288,7 @@ export default function Admin() {
               {loginBusy ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          {!isDemoMode && (
+          {!isDemoMode && googleAuthEnabled && (
             <>
               <div className="auth-divider"><span>or</span></div>
               <button
@@ -304,8 +305,8 @@ export default function Admin() {
 
           <p className="admin-hint" style={{ marginTop: 16 }}>
             {isDemoMode
-              ? 'Demo mode stores nothing — connect Supabase to sign in with a real account.'
-              : 'First time? Create the admin user in Supabase and run the promotion SQL from supabase/schema.sql — see README.'}
+              ? 'Demo mode stores nothing. Connect Supabase to sign in with a real account.'
+              : 'First time? Create the admin user in Supabase and make yourself admin with step 5 of supabase/SETUP.md.'}
           </p>
         </div>
       </section>
@@ -375,7 +376,7 @@ export default function Admin() {
                   key={s.table}
                   onClick={() => { setActiveSubmission(s.table); setTab('submissions'); }}
                 >
-                  <div className="metric-num">{counts[s.table] ?? '—'}</div>
+                  <div className="metric-num">{counts[s.table] ?? '…'}</div>
                   <div className="metric-label">{s.label} · review →</div>
                 </button>
               ))}
@@ -389,7 +390,7 @@ export default function Admin() {
                 );
                 const max = Math.max(1, ...Object.values(counts));
                 if (applications.length === 0) {
-                  return <p className="admin-empty">No member applications yet — sector data will appear here as students apply.</p>;
+                  return <p className="admin-empty">No member applications yet. Sector data will appear here as students apply.</p>;
                 }
                 return (
                   <div className="sector-bars">
@@ -416,7 +417,7 @@ export default function Admin() {
             <div className="admin-panel" style={{ marginTop: 24 }}>
               <h2 className="admin-panel-title">Recent Activity</h2>
               {activity.length === 0 ? (
-                <p className="admin-empty">No activity yet — submissions you receive and content you publish will appear here live.</p>
+                <p className="admin-empty">No activity yet. Submissions you receive and content you publish will appear here live.</p>
               ) : (
                 <ul className="admin-activity">
                   {activity.map((a) => (
@@ -469,14 +470,14 @@ export default function Admin() {
                 <Field label="Location"><input type="text" name="location" placeholder="Main Auditorium, Babcock University" /></Field>
                 <Field label="Type"><input type="text" name="event_type" placeholder="Summit | Workshop | Competition" /></Field>
               </div>
-              <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB. PNG, JPG, WEBP, GIF or SVG." />
-              <Field label="…or image URL (optional)"><input type="url" name="image_url" placeholder="https://images.unsplash.com/..." /></Field>
+              <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB. PNG, JPG, WEBP or GIF." />
+              <Field label="…or image URL (optional)"><input type="url" name="image_url" placeholder="https://..." /></Field>
               <label className="admin-check">
                 <input type="checkbox" name="is_upcoming" defaultChecked /> This is an upcoming event
               </label>
             </AdminForm>
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Events</h2>
-            <ItemList rows={events} onDelete={(id) => deleteEvent(id).then(flash)} empty="No events yet — add your first one above." />
+            <ItemList rows={events} onDelete={(id) => deleteEvent(id).then(flash)} empty="No events yet. Add your first one above." />
           </div>
         )}
 
@@ -523,7 +524,7 @@ export default function Admin() {
                   </Field>
                   <Field label="Published Date"><input type="text" name="published_date" placeholder="e.g. Aug 12, 2026 (leave blank for today)" /></Field>
                 </div>
-                <Field label="Summary (1–2 sentences, shown on cards)"><textarea name="summary" required></textarea></Field>
+                <Field label="Summary (1 or 2 sentences, shown on cards)"><textarea name="summary" required></textarea></Field>
                 <Field label="Article Body"><textarea name="body" required rows={10} placeholder="Write the full article here. Paragraphs are kept automatically."></textarea></Field>
                 <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB." />
               </AdminForm>
@@ -564,13 +565,13 @@ export default function Admin() {
                     <option>Forex &amp; Trading</option>
                   </select>
                 </Field>
-                <Field label="Summary (1–2 sentences)"><textarea name="summary" required></textarea></Field>
+                <Field label="Summary (1 or 2 sentences)"><textarea name="summary" required></textarea></Field>
                 <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB." />
-                <Field label="…or cover image URL (optional)"><input type="url" name="cover_url" placeholder="https://images.unsplash.com/..." /></Field>
+                <Field label="…or cover image URL (optional)"><input type="url" name="cover_url" placeholder="https://..." /></Field>
               </AdminForm>
             )}
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Articles</h2>
-            <ItemList rows={articles} onDelete={(id) => deleteArticle(id).then(flash)} empty="No articles yet — add your first one above." />
+            <ItemList rows={articles} onDelete={(id) => deleteArticle(id).then(flash)} empty="No articles yet. Add your first one above." />
           </div>
         )}
 
@@ -606,7 +607,7 @@ export default function Admin() {
               </div>
             </AdminForm>
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Resources</h2>
-            <ItemList rows={resources} onDelete={(id) => deleteResource(id).then(flash)} empty="No resources yet — add your first one above." />
+            <ItemList rows={resources} onDelete={(id) => deleteResource(id).then(flash)} empty="No resources yet. Add your first one above." />
           </div>
         )}
 
@@ -626,7 +627,7 @@ export default function Admin() {
               <Field label="Body (plain text / markdown)"><textarea name="body" required rows={6} placeholder="Write the newsletter content here..."></textarea></Field>
             </AdminForm>
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Published Posts</h2>
-            <ItemList rows={news} onDelete={(id) => deleteNewsletterPost(id).then(flash)} empty="No newsletter posts yet — write your first one above." />
+            <ItemList rows={news} onDelete={(id) => deleteNewsletterPost(id).then(flash)} empty="No newsletter posts yet. Write your first one above." />
           </div>
         )}
 
@@ -642,7 +643,7 @@ export default function Admin() {
                   className={`admin-tab${activeSubmission === s.table ? ' active' : ''}`}
                   onClick={() => setActiveSubmission(s.table)}
                 >
-                  {s.label} <span className="admin-count">({counts[s.table] ?? '—'})</span>
+                  {s.label} <span className="admin-count">({counts[s.table] ?? '…'})</span>
                 </button>
               ))}
             </div>

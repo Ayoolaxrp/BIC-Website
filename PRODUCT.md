@@ -27,14 +27,14 @@ A premier student-led community focused on investment awareness, networking, lea
 - Nigerian university context: ₦ pricing, Nigerian Exchange references, WhatsApp as the community-channel norm (sector group invite links are placeholders pending real links from the club — see Capabilities).
 - Membership year/fee: ₦5,000 (what it covers is stated in the membership FAQ).
 - Event programming is seasonal and named (e.g. "BIC Welcome Seminar: The Next Chapter", "Stock Pitch Competition 2.0", "University Bamboo League") — the photo wall and event history are real club memory.
-- Live at https://bic-react.vercel.app (Vercel, auto-deploy from `main`; repo `Ayoolaxrp/BIC-Website`). The router also supports GitHub-Pages-style sub-path hosting.
+- Live at https://www.babcockinvestorsclub.com (also bic-react.vercel.app; Vercel, auto-deploy from `main`; repo `Ayoolaxrp/BIC-Website`). The router also supports GitHub-Pages-style sub-path hosting.
 
 ## Capabilities and Constraints
 
 - **Public pages:** Home, About, Events (+ RSVP), Membership (application + FAQ), Sponsorship (partners, tiers, inquiry form), Blog/Articles, Contact, Legal, 404.
 - **Authenticated:** Member Portal and Admin Console (role-gated).
 - **Stack (existing, not a choice to relitigate):** React 19 + Vite + TypeScript, framer-motion, react-router 7; Supabase for auth/database/storage; Paystack for payments; self-hosted variable fonts.
-- **Open items (do not treat as done):** sector WhatsApp group links are `REPLACE_*` placeholders awaiting real invite links; the Supabase `payment_status` column migration (`paystack_webhook.sql`) is documented but unapplied.
+- **Open items (do not treat as done):** sector WhatsApp group links are `REPLACE_*` placeholders awaiting real invite links; the Supabase `payment_status` column migration (`supabase/migrations`) is documented but unapplied.
 
 ## Brand Commitments
 

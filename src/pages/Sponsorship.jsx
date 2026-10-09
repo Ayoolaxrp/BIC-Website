@@ -1,145 +1,68 @@
-import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
-import TiltCard from '../components/TiltCard';
-import SpotlightCard from '../components/SpotlightCard';
 import useSubmission from '../hooks/useSubmission';
-import { SECTORS } from '../lib/sectors';
-import { asset } from '../lib/assets';
+import OfflineNotice from '../components/OfflineNotice';
+import { supabaseConfigured } from '../lib/config';
+import { RESPONSE_TIME, mailto } from '../lib/contact';
 
-const Check = ({ size = 24 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+const Check = ({ size = 18 }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
 );
 
 // Verified partners from the club's official "Meet Our Sponsors" poster (2026 seminar & Stock Pitch 2.0).
 const partners = [
-  { name: 'Fundbox Financial Services', note: 'Sponsor — Annual Investment Seminar 2026' },
-  { name: 'Leadway Assurance', note: 'Sponsor — Annual Investment Seminar 2026' },
-  { name: 'More Ladda (Meristem)', note: 'Sponsor — Annual Investment Seminar 2026' },
-  { name: 'Chapel Hill Denham', note: 'Sponsor — Annual Investment Seminar 2026' },
-  { name: 'Bamboo', note: 'University Bamboo League — inter-university trading competition' },
+  { name: 'Fundbox Financial Services', note: 'Annual Investment Seminar 2026' },
+  { name: 'Leadway Assurance', note: 'Annual Investment Seminar 2026' },
+  { name: 'More Ladda (Meristem)', note: 'Annual Investment Seminar 2026' },
+  { name: 'Chapel Hill Denham', note: 'Annual Investment Seminar 2026' },
 ];
 
-const whyPartner = [
-  {
-    title: 'Access Emerging Talent',
-    text: 'Connect with ambitious, career-ready students pursuing professional paths in finance, business management, technology, entrepreneurship, corporate consulting, and asset/investment management.',
-  },
-  {
-    title: 'Strengthen Brand Presence',
-    text: 'Increase your corporate visibility among the campus student population through workshops, flagship conferences, panel networking events, customized digital campaigns, and targeted campus initiatives.',
-  },
-  {
-    title: 'Support Financial Literacy',
-    text: "Demonstrate your organization's social commitment to corporate responsibility by actively developing financially informed, capable university students and preparing future national business leaders.",
-  },
-  {
-    title: 'Build Strategic Relationships',
-    text: 'Engage directly with the student population through mentorship programs, speaking opportunities, pitch competitions, exclusive recruitment initiatives, and collaborative educational partnerships.',
-  },
-];
-
-const impactList = [
-  { title: 'Babcock University', text: "Rooted in one of Nigeria's premier private universities with a reputation for academic excellence." },
-  { title: '13,000+ Reach', text: 'Direct exposure and engagement across a diverse, active, and fast-growing campus community.' },
-  { title: 'Programs & Literacy', text: 'Continuous investment masterclasses, simulated portfolios, and personal finance bootcamps.' },
-  { title: 'Networking Events', text: 'Interactive career meetups linking ambitious students with successful alumni and top corporate managers.' },
-  { title: 'Workshops & Seminars', text: 'Year-round professional training programs covering critical market strategies and business analysis tools.' },
-  { title: 'Career & Business', text: 'Incubating student entrepreneurship initiatives and prepping members for corporate roles.' },
-];
-
-const interestTags = [
-  'Finance & Investment',
-  'Entrepreneurship',
-  'Business Strategy',
-  'Technology & Innovation',
-  'Wealth Building',
-  'Leadership Development',
-];
-
-const deckUrl = asset('/resources/bic-sponsorship-deck.pdf');
-
-const howItWorks = [
-  {
-    step: '01',
-    title: 'Send an Inquiry',
-    text: 'Tell us about your goals via the inquiry form below — most partners hear back within 24 hours.',
-  },
-  {
-    step: '02',
-    title: 'Review the Deck',
-    text: 'We share our sponsorship prospectus with full tier details, reach, and activations. It is also available as a free download.',
-  },
-  {
-    step: '03',
-    title: 'Activate & Measure',
-    text: 'We agree on deliverables, activate the partnership, and report on engagement and outcomes throughout the term.',
-  },
+const offers = [
+  { title: 'Meet students early', text: 'Speak at sessions, judge the stock pitch and mentor members studying finance, business and tech.' },
+  { title: 'Be seen on campus', text: 'Your brand on event posters, stage banners, this site and our socials.' },
+  { title: 'Recruit interns', text: 'Reach members who already research companies and trade on paper.' },
+  { title: 'Fund financial literacy', text: 'Back free sessions that teach students to budget, save and invest.' },
 ];
 
 const tiers = [
   {
     name: 'Headline Partner',
-    tag: 'Strategic Partner',
-    featured: true,
-    desc: 'Exclusive strategic partnership. Maximum brand visibility, direct student engagement, premium event slots, and year-round corporate recognition.',
+    desc: 'Our exclusive top tier, with the most visibility, direct student engagement and year-round recognition.',
     features: [
-      'Maximum campus visibility & logo placement',
-      'Headline speaking slot at flagship Summit',
-      'Direct talent recruitment & pipeline access',
-      'Custom-branded educational bootcamp or project',
-      'Year-round recognition in all club media',
+      'Main logo placement across campus events',
+      'Speaking slot at the flagship seminar',
+      'Recruitment access to members',
+      'A co-branded bootcamp or project',
+      'Recognition in club media all year',
     ],
-    cta: 'Choose Headline',
   },
   {
     name: 'Gold Partner',
-    tag: 'Enhanced Visibility',
-    featured: false,
-    desc: 'Enhanced brand visibility. Strong event presence, digital media recognition, direct student interaction opportunities, and program exposure.',
+    desc: 'Strong event presence and digital recognition, with direct time with students.',
     features: [
-      'Prominent logo placement on homepage & banners',
-      'Dedicated speaking slot at 1 major Workshop',
-      'Digital promo & dedicated student newsletter blast',
-      'CV pool access of top-performing members',
+      'Logo on the homepage and event banners',
+      'Speaking slot at one major workshop',
+      'A dedicated newsletter feature',
+      'CV pool of active members',
     ],
-    cta: 'Choose Gold',
   },
   {
     name: 'Silver Partner',
-    tag: 'Community Sponsor',
-    featured: false,
-    desc: 'Community support partner. Meaningful visibility across selected educational programs, summits, and communication channels.',
+    desc: 'Visibility across selected programmes and club channels.',
     features: [
-      'Logo display on website partners section',
-      'Group recognition in post-event emails',
-      'Social media shoutout (1x per term)',
-      'VIP access passes to flagship club events',
+      'Logo on the partners section of this site',
+      'Recognition in post-event emails',
+      'One social media feature per term',
+      'Passes to flagship club events',
     ],
-    cta: 'Choose Silver',
   },
 ];
 
-const partnerBenefits = [
-  'Direct access to highly motivated student talent',
-  'Premium corporate brand visibility on university campus',
-  'High-impact event speaking & presentation opportunities',
-  'Fast-track recruitment and student hiring channels',
-  'Product awareness campaigns & direct campus demos',
-  'Strategic social media exposure to target demographics',
-  'Measurable community impact and CSR recognition',
-  'Long-term strategic relationships with future leaders',
-];
-
-const customPlans = [
-  'Educational Collaborations',
-  'In-Kind Sponsorships',
-  'Career Development Programs',
-  'Recruitment Initiatives',
-  'Product Demonstrations',
-  'Training Partnerships',
-  'Strategic Alliances',
+const steps = [
+  { title: 'Send an enquiry', text: `Tell us what you want to achieve. We reply ${RESPONSE_TIME}.` },
+  { title: 'Agree the plan', text: 'We talk through the options and agree what you get, and when.' },
+  { title: 'Run it and report', text: 'We deliver the partnership and report back on attendance and reach.' },
 ];
 
 const scrollToInquiry = (e) => {
@@ -148,7 +71,7 @@ const scrollToInquiry = (e) => {
 };
 
 export default function Sponsorship() {
-  const { status, result, submit, reset } = useSubmission('sponsorship_inquiries');
+  const { status, submit, reset } = useSubmission('sponsorship_inquiries');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -168,383 +91,155 @@ export default function Sponsorship() {
   return (
     <>
       <Seo
-        title="Partner With BIC"
-        description="Invest in the next generation of investors, entrepreneurs, and business leaders. Partner with the Babcock Investors Club."
+        title="Partner with BIC"
+        description="Sponsor a seminar, speak to members or recruit interns at Babcock University's student investment club."
       />
-      <PageHero crumb="Partners" title="Partner With BIC">
-        <p style={{ fontSize: '1.3rem', color: 'var(--sky-blue-light)', marginBottom: 24, fontWeight: 500 }}>
-          Invest in the next generation of investors, entrepreneurs, and business leaders.
-        </p>
-        <p style={{ maxWidth: 800, margin: '0 auto 32px', lineHeight: 1.8, fontSize: '1.05rem' }}>
-          Babcock Investors Club (BIC) provides organizations with meaningful opportunities to engage
-          ambitious university students through financial literacy initiatives, investment education,
-          entrepreneurship programs, industry events, and career development experiences. Whether your
-          goal is brand visibility, talent acquisition, community impact, or strategic engagement, BIC
-          offers a platform to connect with future professionals and decision-makers.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <a href="#inquiry-form" className="btn btn-primary" style={{ padding: '14px 28px' }} onClick={scrollToInquiry}>
-            Become a Partner
-          </a>
-          <Link to="/contact" className="btn btn-outline" style={{ padding: '14px 28px' }}>
-            Request Sponsorship Deck
-          </Link>
+      <PageHero
+        crumb="Partners"
+        title="Partner with BIC"
+        description="Sponsor a seminar, speak to members or recruit interns. We work with organisations that want to reach Babcock students who take money seriously."
+      >
+        <div className="h-actions" style={{ marginTop: 28 }}>
+          <a href="#inquiry-form" className="btn btn-primary" onClick={scrollToInquiry}>Send an enquiry</a>
+          <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
         </div>
       </PageHero>
 
-      <FadeIn className="deck-cta-band">
-        <div className="container deck-cta-inner">
-          <div>
-            <h2 style={{ fontSize: "1.5rem" }}>Want the full breakdown?</h2>
-            <p>Get the complete prospectus — tiers, reach, activations, and pricing — as a PDF.</p>
-          </div>
-          <a href={deckUrl} download className="btn btn-primary">
-            Download Sponsorship Deck (PDF)
-          </a>
-        </div>
-      </FadeIn>
-
-      <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="sec-head">
-          <div>
-            <span className="section-label">Trusted By</span>
-            <h2 className="sec-title">
-              Meet our <span>partners.</span>
-            </h2>
-            <p className="sec-sub">
-              Leading financial organizations power our flagship seminar, the Stock Pitch
-              Competition, and inter-university trading leagues — and get visible brand
-              placement across this site, our posters, and our socials.
-            </p>
-          </div>
-        </div>
-        <div className="grid-3" style={{ marginTop: 48 }}>
-          {partners.map((p) => (
-            <TiltCard className="card partner-card" key={p.name} max={6}>
-              <h3 style={{ color: 'var(--navy)', marginBottom: 8, fontSize: '1.15rem' }}>{p.name}</h3>
-              <p style={{ color: '#55617e', fontSize: '0.92rem' }}>{p.note}</p>
-            </TiltCard>
-          ))}
-          <TiltCard className="card partner-card" max={6} style={{ background: 'linear-gradient(150deg, var(--navy) 0%, var(--navy-mid) 100%)', color: 'var(--white)', border: '1px solid rgba(14,165,233,0.5)' }}>
-            <h3 style={{ color: 'var(--white)', marginBottom: 8, fontSize: '1.15rem' }}>Your Brand Here</h3>
-            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.92rem' }}>Partner with BIC to reach 13,000+ students on campus — and appear on this page, our event posters, and our socials.</p>
-            <a href="#inquiry-form" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 14 }} onClick={scrollToInquiry}>Start a Partnership</a>
-          </TiltCard>
-        </div>
-      </FadeIn>
-
-      {/* WHY PARTNER */}
-      <FadeIn className="section container">
-        <div className="sec-head">
-          <div>
-            <span className="section-label">Engagement Value</span>
-            <h2 className="sec-title">
-              Why leading organizations <span>choose BIC.</span>
-            </h2>
-          </div>
-        </div>
-        <div className="why-partner-grid">
-          {whyPartner.map((w) => (
-            <TiltCard className="why-partner-card" key={w.title} max={6}>
-              <h3>{w.title}</h3>
-              <p>{w.text}</p>
-            </TiltCard>
-          ))}
-        </div>
-      </FadeIn>
-
-      {/* IMPACT */}
-      <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="sec-head">
-          <div>
-            <span className="section-label">Club Reach</span>
-            <h2 className="sec-title">
-              Our <span>impact.</span>
-            </h2>
-          </div>
-        </div>
-        <div className="impact-list-grid">
-          {impactList.map((i) => (
-            <TiltCard className="impact-list-item" key={i.title} max={6}>
-              <Check size={24} />
-              <div>
-                <h3>{i.title}</h3>
-                <p>{i.text}</p>
-              </div>
-            </TiltCard>
-          ))}
-        </div>
-      </FadeIn>
-
-      {/* COMMUNITY */}
-      <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="community-grid">
-          <div>
-            <span className="section-label">Our Member Base</span>
-            <h2 className="sec-title">
-              Engage a diverse community of <span>future leaders.</span>
-            </h2>
-            <p style={{ lineHeight: 1.7, marginBottom: 20, fontSize: '1.05rem', color: 'var(--gray-700)' }}>
-              Babcock Investors Club (BIC) attracts a highly motivated, cross-disciplinary community of
-              students. Our members represent the next generation of financial analysts, corporate
-              founders, strategic consultants, savvy investors, corporate executives, and key
-              decision-makers.
-            </p>
-            <p style={{ fontSize: '0.95rem', color: '#55617e' }}>
-              Our platform allows partner organizations to strategically interact with student
-              demographics matching their recruitment and marketing profiles.
-            </p>
-          </div>
-          <div>
-            <h3 style={{ color: 'var(--navy)', marginBottom: 16, fontSize: '1.1rem', fontWeight: 700 }}>
-              Our members actively pursue growth in:
-            </h3>
-            <div className="interest-tag-grid">
-              {interestTags.map((t) => (
-                <div className="interest-tag-item" key={t}>{t}</div>
-              ))}
-            </div>
-            <div className="sector-preview">
-              <p style={{ fontSize: '0.9rem', color: '#55617e', marginBottom: 10 }}>
-                Members also join <strong>sector communities</strong>, each led by an executive:
-              </p>
-              <div className="sector-chip-row">
-                {SECTORS.filter((s) => s.value !== 'General').map((s) => (
-                  <Link to="/membership" className="sector-chip" key={s.value} title={`${s.label} — ${s.desc} (join via membership)`}>
-                    {s.label.split(' &')[0]} →
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </FadeIn>
-
-      {/* HOW IT WORKS */}
-      <FadeIn className="section container" style={{ borderTop: '1px solid var(--gray-100)' }}>
-        <div className="sec-head">
-          <div>
-            <span className="section-label">Simple Process</span>
-            <h2 className="sec-title">
-              How <span>partnership</span> works.
-            </h2>
-          </div>
-        </div>
-        <div className="steps-grid">
-          {howItWorks.map((s) => (
-            <TiltCard className="step-card" key={s.step} max={7}>
-              <div className="step-num">{s.step}</div>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </TiltCard>
-          ))}
-        </div>
-        <div className="text-center" style={{ marginTop: 40 }}>
-          <a href={deckUrl} download className="btn btn-navy" style={{ padding: '14px 32px' }}>
-            Download Sponsorship Deck (PDF)
-          </a>
-        </div>
-      </FadeIn>
-
-      {/* TIERS */}
-      <FadeIn className="tiers-section" id="benefits">
+      {/* PAST PARTNERS: names only, no category labels */}
+      <section className="section">
         <div className="container">
-          <div className="sec-head">
-            <div>
-              <span className="section-label">Sponsorship Tiers</span>
-              <h2 className="sec-title">
-                Partnership <span>opportunities.</span>
-              </h2>
-              <p className="sec-sub">
-                Select a sponsorship tier that aligns with your corporate objectives and engagement plans.
-              </p>
-            </div>
-          </div>
+          <FadeIn className="sec-head">
+            <h2 className="sec-title">Organisations that have backed BIC.</h2>
+          </FadeIn>
+          <ul className="partner-list">
+            {partners.map((p) => (
+              <li key={p.name}>
+                <strong>{p.name}</strong>
+                <span>{p.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
+      {/* WHAT YOU GET */}
+      <section className="section bg-off-white">
+        <div className="container">
+          <FadeIn className="sec-head">
+            <h2 className="sec-title">What a partnership gets you.</h2>
+          </FadeIn>
+          <ul className="offer-list">
+            {offers.map((o) => (
+              <li key={o.title}>
+                <h3>{o.title}</h3>
+                <p>{o.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* TIERS: equal standing, no "most popular" */}
+      <section className="section" id="benefits">
+        <div className="container">
+          <FadeIn className="sec-head">
+            <h2 className="sec-title">Three ways to partner.</h2>
+            <p className="sec-sub">Send an enquiry for prices and details. If none of these fit, tell us what you have in mind.</p>
+          </FadeIn>
           <div className="tier-grid">
             {tiers.map((t) => (
-              <TiltCard className={`tier-card${t.featured ? ' featured' : ''}`} key={t.name} max={6}>
-                <div
-                  className="tier-tag"
-                  style={
-                    t.name === 'Gold Partner'
-                      ? { background: 'rgba(22,101,52,0.1)', color: '#065f46' }
-                      : t.name === 'Silver Partner'
-                        ? { background: 'rgba(15,23,42,0.05)', color: 'var(--navy)' }
-                        : undefined
-                  }
-                >
-                  {t.tag}
-                </div>
+              <div className="tier-card" key={t.name}>
                 <h3>{t.name}</h3>
                 <p className="tier-desc">{t.desc}</p>
                 <ul className="tier-features">
                   {t.features.map((f) => (
-                    <li key={f}><Check size={18} /> {f}</li>
+                    <li key={f}><Check /> {f}</li>
                   ))}
                 </ul>
-                <a href="#inquiry-form" className={t.featured ? 'btn btn-primary' : 'btn btn-outline'} style={{ width: '100%', justifyContent: 'center' }} onClick={scrollToInquiry}>
-                  {t.cta}
-                </a>
-              </TiltCard>
-            ))}
-          </div>
-
-          <div className="custom-partner-card">
-            <h3>Custom Partnership</h3>
-            <p>
-              Not every organization fits a standard corporate package. We actively welcome
-              discussions regarding unique engagement plans and targeted collaborations that benefit
-              both your business and our members.
-            </p>
-            <ul className="custom-list">
-              {customPlans.map((c) => <li key={c}>{c}</li>)}
-            </ul>
-            <a href="#inquiry-form" className="btn btn-navy" style={{ marginTop: 24, padding: '14px 32px' }} onClick={scrollToInquiry}>
-              Discuss Custom Plans
-            </a>
-          </div>
-        </div>
-      </FadeIn>
-
-      {/* BENEFITS */}
-      <FadeIn className="benefits-section">
-        <div className="container">
-          <div className="sec-head">
-            <div>
-              <span className="section-label">Outcome-Focused Results</span>
-              <h2 className="sec-title">
-                What our <span>partners receive.</span>
-              </h2>
-              <p className="sec-sub">
-                Our corporate packages are structured to yield specific, measurable outcomes that match
-                your organization's core business priorities.
-              </p>
-            </div>
-          </div>
-          <div className="benefits-grid">
-            {partnerBenefits.map((b) => (
-              <TiltCard className="benefit-item" key={b} max={7}>
-                <Check size={24} />
-                {b}
-              </TiltCard>
+              </div>
             ))}
           </div>
         </div>
-      </FadeIn>
+      </section>
 
-      {/* COMMITMENT */}
-      <FadeIn className="commitment-section">
-        <div className="container">
-          <div className="commitment-box">
-            <h3>Our Commitment</h3>
-            <p>
-              BIC is committed to delivering measurable value to our partners through professional
-              execution, transparent communication, brand visibility, student engagement
-              opportunities, and meaningful collaboration. We view every sponsorship as a long-term
-              strategic relationship rather than a one-time transaction.
-            </p>
+      {/* HOW IT WORKS + FORM */}
+      <section className="section bg-off-white" id="inquiry-form">
+        <div className="container partner-form-layout">
+          <div>
+            <h2 className="sec-title">How it works.</h2>
+            <ol className="h-steps h-steps-stack">
+              {steps.map((s) => (
+                <li key={s.title}>
+                  <h3>{s.title}</h3>
+                  <p>{s.text}</p>
+                </li>
+              ))}
+            </ol>
           </div>
-        </div>
-      </FadeIn>
 
-      {/* INQUIRY FORM */}
-      <FadeIn className="partner-form-section" id="inquiry-form">
-        <div className="container">
-          <SpotlightCard className="partner-form-box" radius={380}>
-            <div style={{ marginBottom: 32 }}>
-              <h3 style={{ color: 'var(--navy)', fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 8 }}>
-                Partnership Inquiry
-              </h3>
-              <p style={{ color: '#55617e' }}>
-                Fill out the form below and our partnerships team will get back to you shortly.
-              </p>
-            </div>
-
+          {supabaseConfigured ? (
+          <div className="partner-form-box">
+            <h3 className="form-title">Partnership enquiry</h3>
             <form onSubmit={handleSubmit}>
               <div className="grid-2" style={{ gap: 16 }}>
                 <div className="form-group">
-                  <label>Contact Name</label>
-                  <input type="text" name="contact_name" required placeholder="Jane Doe" />
+                  <label htmlFor="p-name">Your name</label>
+                  <input id="p-name" type="text" name="contact_name" required autoComplete="name" />
                 </div>
                 <div className="form-group">
-                  <label>Company / Organization Name</label>
-                  <input type="text" name="company_name" required placeholder="Acme Corporation" />
+                  <label htmlFor="p-company">Organisation</label>
+                  <input id="p-company" type="text" name="company_name" required autoComplete="organization" />
                 </div>
               </div>
               <div className="grid-2" style={{ gap: 16 }}>
                 <div className="form-group">
-                  <label>Corporate Email</label>
-                  <input type="email" name="email" required placeholder="partner@acme.com" />
+                  <label htmlFor="p-email">Work email</label>
+                  <input id="p-email" type="email" name="email" required autoComplete="email" />
                 </div>
                 <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" name="phone" required placeholder="+234 800 000 0000" />
+                  <label htmlFor="p-phone">Phone</label>
+                  <input id="p-phone" type="tel" name="phone" required autoComplete="tel" placeholder="+234" />
                 </div>
               </div>
               <div className="form-group">
-                <label>Sponsorship Interest</label>
-                <select name="sponsorship_interest" required defaultValue="">
-                  <option value="" disabled>Select an option</option>
+                <label htmlFor="p-interest">Interested in</label>
+                <select id="p-interest" name="sponsorship_interest" required defaultValue="">
+                  <option value="" disabled>Choose one</option>
                   <option value="headline">Headline Partner</option>
                   <option value="gold">Gold Partner</option>
-                  <option value="silver">Silver Sponsor</option>
-                  <option value="custom">Custom Collaboration / Other</option>
+                  <option value="silver">Silver Partner</option>
+                  <option value="custom">Something else</option>
                 </select>
               </div>
               <div className="form-group">
-                <label>Message / Details</label>
-                <textarea
-                  name="message"
-                  required
-                  placeholder="Tell us about your organization's goals and how you'd like to collaborate..."
-                ></textarea>
+                <label htmlFor="p-message">What would you like to do with BIC?</label>
+                <textarea id="p-message" name="message" required></textarea>
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', padding: 16, fontSize: '1.05rem', justifyContent: 'center', marginTop: 16 }}
-                disabled={status === 'sending'}
-              >
-                {status === 'sending' ? 'Sending...' : 'Submit Inquiry'}
+              <button type="submit" className="btn btn-primary btn-full" style={{ marginTop: 8 }} disabled={status === 'sending'}>
+                {status === 'sending' ? 'Sending…' : 'Send enquiry'}
               </button>
 
               {status === 'success' && (
-                <div className="form-status visible success">
-                  ✓ Inquiry sent! {result?.source === 'local'
-                    ? 'Saved on this device — connect Supabase to store it in the cloud.'
-                    : "We'll respond within 24 hours."}
+                <div className="form-status visible success" role="status">
+                  Enquiry sent. We reply {RESPONSE_TIME}.
                 </div>
               )}
               {status === 'error' && (
-                <div className="form-status visible error">Something went wrong. Please try again.</div>
+                <div className="form-status visible error" role="alert">That didn't send. Please email us instead.</div>
               )}
             </form>
-          </SpotlightCard>
-        </div>
-      </FadeIn>
-
-      {/* FINAL CTA */}
-      <FadeIn className="cta-section">
-        <div className="container">
-          <div className="cta-content">
-            <h2>Let's build the future together.</h2>
-            <p>
-              Partner with BIC to empower financial literacy, support student development, and engage
-              the next generation of investors, entrepreneurs, and industry leaders.
-            </p>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <a href="#inquiry-form" className="btn btn-primary" style={{ padding: '14px 28px' }} onClick={scrollToInquiry}>
-                Become a Partner
-              </a>
-              <Link to="/contact" className="btn btn-outline" style={{ padding: '14px 28px', borderColor: 'var(--white)', color: 'var(--white)' }}>
-                Request deck
-              </Link>
-            </div>
           </div>
+          ) : (
+            <OfflineNotice
+              title="Partnership enquiry"
+              text="The enquiry form is not switched on yet."
+              subject="Partnership with BIC"
+              message="Hello BIC, we would like to talk about partnering with the club. Organisation: "
+            />
+          )}
         </div>
-      </FadeIn>
+      </section>
     </>
   );
 }

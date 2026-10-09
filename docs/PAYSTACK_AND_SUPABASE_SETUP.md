@@ -15,12 +15,12 @@ modifies application code.
 
 | What | Path |
 |---|---|
-| Full database schema (tables, triggers, RLS, storage) | `supabase/schema.sql` |
-| Schema v3 review draft (adds `articles.author`, `rsvps.event_id`, indexes) | `supabase/schema.review.sql` |
-| Paystack webhook schema (`payment_status`, `payments` ledger, race-closer) | `supabase/paystack_webhook.sql` |
+| Full database schema (tables, triggers, RLS, storage) | `supabase/migrations (see supabase/SETUP.md)` |
+| Schema v3 review draft (adds `articles.author`, `rsvps.event_id`, indexes) | `supabase/migrations (see supabase/SETUP.md)` |
+| Paystack webhook schema (`payment_status`, `payments` ledger, race-closer) | `supabase/migrations (see supabase/SETUP.md)` |
 | Webhook Edge Function (HMAC verify → Paystack Verify → DB write) | `supabase/functions/paystack-webhook/index.ts` |
 | Webhook runbook (testing + troubleshooting) | `supabase/PAYSTACK_WEBHOOK.md` |
-| Admin promotion SQL | `supabase/promote-admins.sql` |
+| Admin promotion SQL | `supabase/migrations (see supabase/SETUP.md)` |
 | Frontend payment hook (loads `inline.js`, opens checkout) | `src/hooks/usePaystack.js` |
 | Runtime key validation (`paystackConfigured`) | `src/lib/config.js` |
 | Pages that take payments | `src/pages/Membership.jsx`, `src/pages/Events.jsx` |
@@ -52,19 +52,19 @@ ledger row (service role) and flips `member_applications.payment_status` to
 ### Step 2 — Apply the base schema
 
 1. Dashboard → **SQL Editor → New query**.
-2. Open `supabase/schema.sql` from this repo, copy the entire file, paste, **Run**.
+2. Open `supabase/migrations (see supabase/SETUP.md)` from this repo, copy the entire file, paste, **Run**.
 3. Expected result: *"Success. No rows returned"* — it is idempotent, so re-running
    is safe.
 
-> `schema.review.sql` is a v3 draft that additionally adds `articles.author`
+> `supabase/migrations` is a v3 draft that additionally adds `articles.author`
 > (the Admin console's article form inserts it), an optional `rsvps.event_id`,
 > and performance indexes. If the Admin console article publishing errors with
-> *"column author does not exist"*, run `schema.review.sql` instead — it
+> *"column author does not exist"*, run `supabase/migrations` instead — it
 > preserves everything in v2 and is also idempotent.
 
 ### Step 3 — Apply the payments/webhook schema
 
-1. SQL Editor → paste the full contents of `supabase/paystack_webhook.sql` → **Run**.
+1. SQL Editor → paste the full contents of `supabase/migrations (see supabase/SETUP.md)` → **Run**.
    (This is the documented prerequisite of the webhook function; it needs
    `member_applications` from Step 2.)
 2. This adds:
@@ -173,11 +173,11 @@ order by 2, 1;
    Google button — add your redirect URL in the Google Cloud console if you
    enable it).
 2. **Authentication → URL Configuration**: set **Site URL** to
-   `https://bic-react.vercel.app` and add
-   `https://bic-react.vercel.app/**` to **Redirect URLs**.
+   `https://www.babcockinvestorsclub.com` and add
+   `https://www.babcockinvestorsclub.com/**` (see supabase/SETUP.md for the full list) to **Redirect URLs**.
 3. Each executive signs up at `/member` (or is created under
    **Authentication → Users**), then gets promoted:
-   - Open `supabase/promote-admins.sql`, replace the placeholder emails with
+   - Open `supabase/migrations (see supabase/SETUP.md)`, replace the placeholder emails with
      real ones, run it in the SQL Editor.
    - `role='admin'` drives `public.is_admin()`, which every admin policy above
      depends on — no promoted admin, no admin console access.
@@ -251,7 +251,7 @@ supabase secrets set \
   webhook authenticates via its own HMAC signature check.
 - The **service_role** key bypasses RLS — that is by design and safe *only*
   because it stays server-side in Supabase secrets.
-- Webhook schema prerequisite: `paystack_webhook.sql` (Step 3) must be applied
+- Webhook schema prerequisite: `supabase/migrations` (Step 3) must be applied
   **before** the function runs, or the upsert into `payments` 500s.
 
 ### Step 10 — Point Paystack at the function

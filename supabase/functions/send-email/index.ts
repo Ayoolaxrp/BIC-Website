@@ -2,7 +2,7 @@
 // BIC — send-email Supabase Edge Function (Deno)
 // ============================================================================
 // Sends transactional confirmation emails via Resend (https://resend.com).
-// Called by the database triggers in ../email_triggers.sql whenever a row is
+// Called by the database triggers in ../migrations/20261009000500_email_notifications.sql whenever a row is
 // inserted into `member_applications` (membership application confirmation)
 // or `rsvps` (event RSVP confirmation).
 //
@@ -15,7 +15,7 @@
 //   supabase secrets set RESEND_API_KEY=re_... \
 //     FROM_EMAIL="Babcock Investors Club <onboarding@resend.dev>" \
 //     WEBHOOK_SECRET=<long random string> \
-//     SITE_URL=https://babcockinvestorsclub.org
+//     SITE_URL=https://www.babcockinvestorsclub.com
 //
 // Test locally:
 //   supabase functions serve send-email
@@ -30,7 +30,7 @@ const FROM_EMAIL =
   Deno.env.get('FROM_EMAIL') ??
   'Babcock Investors Club <onboarding@resend.dev>';
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? '';
-const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://babcockinvestorsclub.org';
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://www.babcockinvestorsclub.com';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -122,24 +122,41 @@ function layout(title: string, bodyHtml: string): string {
 </html>`;
 }
 
+/** Constant-time string comparison (same approach as paystack-webhook). */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 function applicationEmail(record: Record<string, unknown>): {
   subject: string;
   html: string;
   text: string;
 } {
   const name = escapeHtml(record.full_name ?? 'there');
-  const ref = escapeHtml(record.paystack_ref ?? 'pending');
+  const ref = escapeHtml(record.paystack_ref ?? '');
+  // Only a payment verified by paystack-webhook counts (payment_status is set
+  // server-side by the 0400 trigger; visitors cannot set it).
+  const paid = record.payment_status === 'paid';
+  const statusHtml = paid
+    ? `<strong style="color:#011B33;">Payment:</strong> ₦2,500 received${ref ? ` (reference ${ref})` : ''}.`
+    : `<strong style="color:#011B33;">Payment:</strong> not confirmed yet. The membership team will tell you how to pay the ₦2,500 fee.`;
+  const statusText = paid
+    ? `Payment: ₦2,500 received${ref ? ` (reference ${ref})` : ''}.`
+    : 'Payment: not confirmed yet. The membership team will tell you how to pay the ₦2,500 fee.';
   const html = layout(
-    'Application Received 🎉',
+    'Application received',
     `<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">Hi ${name},</p>
      <p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">
-       Thank you for applying to join the Babcock Investors Club! Your membership
-       application and payment have been received.
+       Thank you for applying to join the Babcock Investors Club. Your membership
+       application has been received.
      </p>
      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e3e8ef;border-radius:8px;margin:16px 0;">
        <tr><td style="padding:14px 18px;font-size:13px;color:#475569;">
-         <strong style="color:#011B33;">Payment reference:</strong> ${ref}<br/>
-         <strong style="color:#011B33;">Status:</strong> Received — the executive team will onboard you at the next session.
+         ${statusHtml}<br/>
+         <strong style="color:#011B33;">Next:</strong> the executive team will onboard you at the next session.
        </td></tr>
      </table>
      <p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">
@@ -150,12 +167,12 @@ function applicationEmail(record: Record<string, unknown>): {
   );
   const text =
     `Hi ${name},\n\n` +
-    `Thank you for applying to join the Babcock Investors Club! Your membership application and payment have been received.\n\n` +
-    `Payment reference: ${ref}\n` +
-    `Status: Received — the executive team will onboard you at the next session.\n\n` +
+    `Thank you for applying to join the Babcock Investors Club. Your membership application has been received.\n\n` +
+    `${statusText}\n` +
+    `Next: the executive team will onboard you at the next session.\n\n` +
     `Keep an eye on your email and our socials for session schedules and next steps.\n\n` +
     `Welcome aboard!\nBabcock Investors Club\n${SITE_URL}`;
-  return { subject: 'Your BIC Membership Application Was Received', html, text };
+  return { subject: 'Your BIC membership application', html, text };
 }
 
 function rsvpEmail(record: Record<string, unknown>): {
@@ -166,7 +183,7 @@ function rsvpEmail(record: Record<string, unknown>): {
   const name = escapeHtml(record.name ?? 'there');
   const event = escapeHtml(record.event_name ?? 'your selected event');
   const html = layout(
-    'RSVP Confirmed ✅',
+    'RSVP confirmed',
     `<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">Hi ${name},</p>
      <p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">
        You're on the list for <strong style="color:#011B33;">${event}</strong>.
@@ -182,7 +199,7 @@ function rsvpEmail(record: Record<string, unknown>): {
     `You're on the list for ${event}.\n\n` +
     `Registration details, the venue/joining link, and reminders will be shared on our socials and on the website as the date approaches.\n\n` +
     `See you there!\nBabcock Investors Club\n${SITE_URL}`;
-  return { subject: `You're In — ${event}`, html, text };
+  return { subject: 'Your BIC RSVP is confirmed', html, text };
 }
 
 // ---------------------------------------------------------------------------
@@ -195,7 +212,9 @@ Deno.serve(async (req: Request) => {
   }
 
   // Only the DB trigger/webhook may call this — verify the shared secret.
-  if (req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
+  // Fails closed: with no secret configured, nothing is accepted.
+  const provided = req.headers.get('x-webhook-secret') ?? '';
+  if (!WEBHOOK_SECRET || !safeEqual(provided, WEBHOOK_SECRET)) {
     return json({ ok: false, error: 'Unauthorized' }, 401);
   }
 
@@ -225,7 +244,7 @@ Deno.serve(async (req: Request) => {
   } catch (err) {
     console.error('send-email error:', err instanceof Error ? err.message : err);
     return json(
-      { ok: false, error: err instanceof Error ? err.message : 'Internal error' },
+      { ok: false, error: 'Internal error' },
       500,
     );
   }

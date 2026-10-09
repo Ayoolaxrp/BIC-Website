@@ -1,8 +1,6 @@
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
-import TiltCard from '../components/TiltCard';
-import { getInitials } from '../utils/initials';
 import { asset } from '../lib/assets';
 
 const values = [
@@ -87,40 +85,34 @@ const objectives = [
 
 const achievements = [
   {
-    title: 'University Bamboo League',
-    text: 'Team BIC competed in Bamboo’s national inter-university trading league — managing live virtual portfolios against teams from 10+ universities.',
+    title: 'Stock Pitch 2.0',
+    text: 'Our student stock pitch competition, with ₦370,000 in prizes at the 2026 Investment Seminar.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 21h8m-4-4v4m-7-4h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
     ),
   },
   {
     title: '150+ Active Members',
-    text: 'A growing community of engaged, active student investors on campus.',
+    text: 'Students from across departments who attend sessions and run the committees.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
     ),
   },
   {
-    title: '25+ Seminars & Workshops',
-    text: 'Masterclasses on stocks, forex, crypto, and personal finance.',
+    title: 'Annual Investment Seminar',
+    text: 'Our flagship event, sponsored in 2026 by Fundbox, Leadway Assurance, More Ladda and Chapel Hill Denham.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
     ),
   },
   {
-    title: 'Certificates of Service',
-    text: 'Executives and active members are recognized at convocation.',
+    title: 'Certificates of Recognition',
+    text: 'The club presents certificates to executives and members for their service.',
     icon: (
       <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
     ),
   },
 ];
-
-const LinkedInIcon = () => (
-  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-  </svg>
-);
 
 export default function About() {
   return (
@@ -138,26 +130,20 @@ export default function About() {
       {/* STORY */}
       <FadeIn className="section container">
         <div className="grid-2 align-center">
-          <TiltCard className="about-img-wrap" max={5}>
-            <img src={asset('/images/bic-seminar-panel.webp')} alt="About BIC" style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
-          </TiltCard>
+          <div className="about-img-wrap">
+            <img src={asset('/images/bic-2025-3.webp')} alt="Two BIC members presenting at a club seminar" width={1600} height={1067} style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', width: '100%', display: 'block' }} />
+          </div>
           <div>
-            <span className="section-label">Our Story</span>
-            <h2 className="sec-title">
-              Empowering the next generation of <span>investors.</span>
-            </h2>
+            <h2 className="sec-title">A club for students who want to understand money.</h2>
             <p style={{ marginBottom: 20 }}>
-              The Babcock Investors Club (BIC) was founded with a clear mission: to bridge the gap
-              between academic knowledge and real-world financial acumen for university students.
-            </p>
-            <p style={{ marginBottom: 20 }}>
-              We recognized that many students graduate without the practical skills needed to
-              manage wealth, understand markets, and build financial independence. BIC was created
-              to be the premier platform for students to learn, network, and grow.
+              Most students graduate knowing how to earn but not how to invest. BIC started at
+              Babcock University to close that gap with practical sessions, run by students, on
+              how markets actually work.
             </p>
             <p>
-              Today, we are a thriving community of aspiring analysts, entrepreneurs, and future
-              industry leaders, driven by excellence, professionalism, and innovation.
+              Members join a sector, research real companies and assets, pitch them to each other
+              and compete in trading challenges. Committees run the events, the money and the
+              media, so leading the club is part of the learning too.
             </p>
           </div>
         </div>
@@ -168,27 +154,26 @@ export default function About() {
         <div className="container">
           <div className="sec-head">
             <div>
-              <span className="section-label">Vision &amp; Mission</span>
-              <h2 className="sec-title">Why we <span>exist.</span></h2>
+              <h2 className="sec-title">Why we exist.</h2>
             </div>
           </div>
           <div className="vm-grid">
-            <TiltCard className="vm-card" max={6}>
+            <div className="vm-card">
               <h3>Our Vision</h3>
               <p>
-                To be Nigeria's premier student-led investment community — producing financially
+                To be Nigeria's premier student-led investment community, producing financially
                 intelligent graduates who build wealth, lead markets, and shape the future of the
                 economy.
               </p>
-            </TiltCard>
-            <TiltCard className="vm-card" max={6}>
+            </div>
+            <div className="vm-card">
               <h3>Our Mission</h3>
               <p>
                 To empower every student with practical financial literacy, real-world investment
                 skills, and professional networks through structured learning, mentorship, and
-                hands-on experience — no barriers, just growth.
+                hands-on experience. No barriers, just growth.
               </p>
-            </TiltCard>
+            </div>
           </div>
           <div className="objectives">
             <h3>Our Objectives</h3>
@@ -208,19 +193,18 @@ export default function About() {
       <FadeIn className="section container">
         <div className="sec-head">
           <div>
-            <span className="section-label">Core Values</span>
             <h2 className="sec-title">
-              What <span>drives</span> us.
+              What drives us.
             </h2>
           </div>
         </div>
         <div className="values-grid">
           {values.map((v) => (
-            <TiltCard className="value-card" key={v.title} max={8}>
+            <div className="value-card" key={v.title}>
               <div className="value-icon">{v.icon}</div>
               <h3>{v.title}</h3>
               <p>{v.text}</p>
-            </TiltCard>
+            </div>
           ))}
         </div>
       </FadeIn>
@@ -229,8 +213,7 @@ export default function About() {
       <FadeIn className="section container">
         <div className="sec-head">
           <div>
-            <span className="section-label">Track Record</span>
-            <h2 className="sec-title">Achievements &amp; <span>recognition.</span></h2>
+            <h2 className="sec-title">Achievements &amp; recognition.</h2>
             <p className="sec-sub">
               A growing record of competition wins, community impact, and institutional recognition.
             </p>
@@ -238,11 +221,11 @@ export default function About() {
         </div>
         <div className="achievements-grid">
           {achievements.map((a) => (
-            <TiltCard className="achievement-card" key={a.title} max={8}>
+            <div className="achievement-card" key={a.title}>
               <div className="achievement-icon">{a.icon}</div>
               <h3>{a.title}</h3>
               <p>{a.text}</p>
-            </TiltCard>
+            </div>
           ))}
         </div>
       </FadeIn>
@@ -252,8 +235,7 @@ export default function About() {
         <div className="container">
           <div className="sec-head">
             <div>
-              <span className="section-label">Executive Team</span>
-              <h2 className="sec-title">The people <span>leading it.</span></h2>
+              <h2 className="sec-title">The people leading it.</h2>
               <p className="sec-sub">
                 Meet the dedicated students driving the vision and operations of Babcock Investors Club.
               </p>
@@ -263,30 +245,14 @@ export default function About() {
           {team.map(({ group, members }) => (
             <div key={group}>
               <h3 className="team-group-title">{group}</h3>
-              <div className="team-grid">
+              <ul className="team-list">
                 {members.map((m) => (
-                  <TiltCard className="team-card" key={m.name} max={7} glare={false}>
-                    <div className="team-img placeholder-avatar">
-                      <span>{getInitials(m.name)}</span>
-                    </div>
-                    <div className="team-info">
-                      <h3>{m.name}</h3>
-                      <p>{m.role}</p>
-                      <div className="team-social">
-                        <a
-                          href="https://www.linkedin.com/company/babcock-investors-club/"
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`${m.name} — BIC on LinkedIn`}
-                          title="BIC on LinkedIn"
-                        >
-                          <LinkedInIcon />
-                        </a>
-                      </div>
-                    </div>
-                  </TiltCard>
+                  <li key={m.name}>
+                    <strong>{m.name}</strong>
+                    <span>{m.role}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ))}
         </div>

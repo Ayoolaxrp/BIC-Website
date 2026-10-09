@@ -2,18 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCurrentUser, getMyApplication, getMyRsvps, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut, signUp, updateProfile } from '../lib/auth';
+import { googleAuthEnabled } from '../lib/config';
 import Seo from '../components/Seo';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
 import { asset } from '../lib/assets';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
 
-const MEMBER_RESOURCES = [
-  { name: "Beginner's Guide to Investing", file: asset('/resources/bic-beginners-guide-to-investing.pdf'), size: 'PDF · 4.4 KB' },
-  { name: 'Nigerian Stock Market 101', file: asset('/resources/bic-nigerian-stock-market-101.pdf'), size: 'PDF · 3.9 KB' },
-  { name: 'Mock Trading Tournament Rules', file: asset('/resources/bic-mock-trading-rules.pdf'), size: 'PDF · 3.2 KB' },
-  { name: 'Personal Budgeting Template', file: asset('/resources/bic-budget-template.csv'), size: 'CSV · 538 B' },
-  { name: 'Sponsorship Prospectus', file: asset('/resources/bic-sponsorship-deck.pdf'), size: 'PDF · 3.2 KB' },
-];
+const MEMBER_RESOURCES = [];
 
 function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }) {
   return (
@@ -31,7 +26,7 @@ function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }
   );
 }
 
-export default function Member() {
+function MemberPortal() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [application, setApplication] = useState(null);
@@ -163,7 +158,7 @@ export default function Member() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
           {isDemoMode && (
             <div className="form-status visible demo" style={{ marginBottom: 16, maxWidth: 460, marginLeft: 'auto', marginRight: 'auto' }}>
-              <strong>Demo mode:</strong> no accounts are stored — connect Supabase to sign in for real.
+              <strong>Demo mode:</strong> no accounts are stored. Connect Supabase to sign in for real.
             </div>
           )}
           <AuthCard
@@ -181,7 +176,7 @@ export default function Member() {
             {mode === 'signup' && (
               <div className="form-group">
                 <label>Full Name</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" />
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             )}
             <div className="form-group">
@@ -203,7 +198,7 @@ export default function Member() {
               <input type="password" required minLength={6} value={pass} onChange={(e) => setPass(e.target.value)} placeholder="At least 6 characters" />
             </div>
           </AuthCard>
-          {!isDemoMode && (
+          {!isDemoMode && googleAuthEnabled && (
             <>
               <div className="auth-divider" style={{ maxWidth: 460, margin: '14px auto 0' }}><span>or</span></div>
               <div className="text-center">
@@ -327,7 +322,7 @@ export default function Member() {
                 {profile?.bio && <p><strong>Bio:</strong> {profile.bio}</p>}
                 {!profile?.sector && !profile?.phone && !profile?.bio && (
                   <p style={{ color: '#55617e', fontSize: '0.9rem' }}>
-                    Add your sector, phone, and a short bio — your sector tells the club which community to onboard you into.
+                    Add your sector, phone, and a short bio. Your sector tells the club which community to onboard you into.
                   </p>
                 )}
               </div>
@@ -341,14 +336,14 @@ export default function Member() {
             <h2 className="admin-panel-title" style={{ marginTop: 0 }}>Membership Status</h2>
             <p className="admin-subtitle">
               {application
-                ? `Application submitted on ${new Date(application.created_at).toLocaleDateString()} — Reference: ${application.paystack_ref || 'pending'}. The exec team will onboard you at the next session.`
-                : 'No membership application found for this email yet. Submit one to unlock full member benefits.'}
+                ? `Application submitted on ${new Date(application.created_at).toLocaleDateString()}. Reference: ${application.paystack_ref || 'pending'}. The exec team will onboard you at the next session.`
+                : 'No membership application found for this email yet. Apply to become a member.'}
             </p>
           </div>
           {application ? (
             <span className="badge badge-green">Application Received</span>
           ) : (
-            <Link to="/membership" className="btn btn-primary">Apply Now (₦5,000)</Link>
+            <Link to="/membership" className="btn btn-primary">Apply now (₦2,500)</Link>
           )}
         </div>
 
@@ -357,7 +352,7 @@ export default function Member() {
           <h2 className="admin-panel-title">Member Resources</h2>
           <p className="admin-subtitle">
             Free downloads for registered members
-            {profile?.sector ? ` — showing your ${sectorLabel(profile.sector)} picks first.` : '.'}
+            {profile?.sector ? `. Showing your ${sectorLabel(profile.sector)} picks first.` : '.'}
           </p>
           {sectorResources.length > 0 && (
             <div style={{ marginBottom: 24 }}>
@@ -431,7 +426,7 @@ export default function Member() {
         <div className="admin-panel" style={{ marginTop: 32 }}>
           <h2 className="admin-panel-title">Recent Club Updates</h2>
           {recentPosts.length === 0 && recentArticles.length === 0 ? (
-            <p className="admin-empty">Nothing new yet — check back soon.</p>
+            <p className="admin-empty">Nothing new yet. Check back soon.</p>
           ) : (
             <ul className="admin-list">
               {recentPosts.map((p) => (
@@ -490,4 +485,33 @@ export default function Member() {
       </motion.div>
     </section>
   );
+}
+
+/**
+ * Member accounts need Supabase Auth. Until it is connected, show a plain
+ * "coming soon" page instead of a demo login that stores nothing.
+ */
+function MemberComingSoon() {
+  return (
+    <>
+      <Seo title="Member portal" noindex />
+      <header className="page-hero">
+        <div className="container">
+          <h1>Member accounts are coming soon.</h1>
+          <p>
+            Once they are live you will be able to see your membership status, RSVPs and member
+            resources here. Until then, apply on the membership page and the team will contact you.
+          </p>
+          <div className="h-actions" style={{ marginTop: 28 }}>
+            <Link to="/membership" className="btn btn-primary">Join BIC</Link>
+            <Link to="/contact" className="btn btn-outline">Contact the club</Link>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}
+
+export default function Member() {
+  return isDemoMode ? <MemberComingSoon /> : <MemberPortal />;
 }

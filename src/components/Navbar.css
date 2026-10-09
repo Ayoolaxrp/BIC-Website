@@ -1,100 +1,150 @@
-/* Apple-style glass navigation — the material does the elevation:
-   translucent navy + saturation boost + blur, hairline bottom border.
-   At rest (over the hero) it stays transparent so the keynote hero
-   reads edge to edge; scrolling summons the glass. */
+/* Navigation as a material, not a slab: translucent navy with blur and
+   a saturation lift, so content scrolls visibly underneath. It is the
+   same at every scroll position (no scroll listener, no state swap).
+   No hard bottom border; a soft edge shadow separates it only where
+   it floats over content. */
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  padding: 18px 0;
-  border-bottom: 1px solid transparent;
-  transition:
-    padding 0.35s var(--ease-out-quint, cubic-bezier(0.22, 1, 0.36, 1)),
-    background-color 0.35s ease,
-    border-color 0.35s ease;
-}
-.navbar.scrolled {
-  background: rgba(10, 22, 40, 0.72);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background: rgba(10, 25, 49, 0.78);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 11px 0;
-  box-shadow: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+  padding-top: env(safe-area-inset-top);
 }
 .navbar-inner {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
 }
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
-.navbar-logo img { height: 44px; width: auto; }
-.logo-text { display: flex; flex-direction: column; }
-.logo-name { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: .05em; }
-.logo-tagline { font-size: .62rem; color: #7a5e12; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
+.navbar-logo img { width: 36px; height: 36px; border-radius: 9px; }
+.logo-name {
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
 
-/* Links as quiet pill chips — hover fills, active stays tinted.
-   (Replaces the old underline slide; calmer and more tactile.) */
-.navbar-links { display: flex; align-items: center; gap: 4px; }
+.navbar-links { display: flex; align-items: center; gap: 2px; }
 .navbar-links a {
-  color: rgba(255,255,255,.8);
-  font-size: .86rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: .01em;
-  padding: 8px 14px;
+  letter-spacing: 0;
+  padding: 8px 12px;
   border-radius: 999px;
-  transition: color 0.25s ease, background-color 0.25s ease;
+  transition: color 150ms ease, background-color 150ms ease;
 }
-.navbar-links a:hover { color: #fff; background: rgba(255,255,255,0.1); }
-.navbar-links a.active {
-  color: var(--sky-blue-light);
-  background: rgba(14,165,233,0.14);
+.navbar-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.navbar-links a.active { color: #fff; background: rgba(255, 255, 255, 0.12); }
+
+.navbar-cta { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.navbar-cta .btn { min-height: 36px; padding: 8px 18px; font-size: 0.875rem; }
+.navbar-login-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.875rem;
+  font-weight: 500;
 }
-.navbar-cta { display: flex; align-items: center; gap: 18px; margin-left: 24px; }
-.navbar-cta .btn { font-size: 0.88rem; padding: 11px 22px; }
-.navbar-cta .btn:active { transform: scale(0.97); }
+.navbar-login-link:hover { color: #fff; }
 
-.hamburger { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 8px; background: none; border: none; cursor: pointer; }
-.hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: .3s ease; }
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-.mobile-nav {
+/* The menu button turns into the close button in place, so the control
+   that opened the sheet is the one that dismisses it. */
+.hamburger {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(8,14,28,0.92);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  z-index: 999;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 5px;
+  width: 44px; height: 44px;
+  margin-right: -10px;
 }
-.mobile-nav.open { display: flex; }
-.mobile-nav a { color: #fff; font-size: 1.4rem; font-weight: 700; letter-spacing: .05em; padding: 6px 14px; }
-/* Keep every link inside the 44px touch minimum at phone sizes */
-@media (max-width: 480px) {
-  .mobile-nav a { padding: 10px 14px; }
+.hamburger span {
+  display: block;
+  width: 20px; height: 1.5px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 250ms var(--ease-out), opacity 150ms ease;
 }
-.mobile-nav a:hover, .mobile-nav a.active { color: var(--sky-blue-light); }
-.mobile-close {
-  position: absolute; top: 24px; right: 24px;
-  color: #fff; font-size: 1.8rem; cursor: pointer; background: none; border: none;
-}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-@media (max-width: 1024px) {
-  .navbar-links { gap: 2px; }
-  .navbar-links a { font-size: 0.82rem; padding: 8px 10px; }
-  .navbar-cta { gap: 12px; margin-left: 16px; }
-  .navbar-cta .btn { padding: 11px 18px; font-size: 0.86rem; }
+/* Mobile sheet: drops from the bar and retracts along the same path. */
+.mobile-nav {
+  position: fixed;
+  top: calc(64px + env(safe-area-inset-top));
+  left: 0; right: 0; bottom: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 16px 24px calc(32px + env(safe-area-inset-bottom));
+  background: rgba(10, 25, 49, 0.94);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(-8px);
+  visibility: hidden;
+  transform-origin: top center;
+  transition: opacity 200ms ease, transform 250ms var(--ease-out), visibility 0s linear 250ms;
+}
+.mobile-nav.open {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: opacity 200ms ease, transform 250ms var(--ease-out), visibility 0s;
+}
+.mobile-nav a:not(.btn) {
+  color: #fff;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mobile-nav a.active { color: var(--mint-light); }
+.mobile-nav .navbar-login-link { font-size: 1.0625rem; font-weight: 500; border-bottom: 0; margin-top: 16px; }
+.mobile-nav .btn { margin-top: 8px; justify-content: center; }
+
+@media (max-width: 1100px) {
+  .navbar-links a { padding: 8px 9px; font-size: 0.84rem; }
+  .logo-name { display: none; }
 }
 @media (max-width: 900px) {
   .navbar-links, .navbar-cta { display: none; }
   .hamburger { display: flex; }
+  .logo-name { display: inline; }
+}
+@media (min-width: 901px) {
+  .mobile-nav { display: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .navbar, .mobile-nav { background: var(--navy); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .navbar { background: var(--navy); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav, .mobile-nav.open { transform: none; transition: opacity 150ms ease, visibility 0s; }
+  .hamburger span { transition: none; }
 }

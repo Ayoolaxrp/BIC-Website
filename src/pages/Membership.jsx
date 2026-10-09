@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
-import SpotlightCard from '../components/SpotlightCard';
-import TiltCard from '../components/TiltCard';
+import OfflineNotice from '../components/OfflineNotice';
 import usePaystack from '../hooks/usePaystack';
 import { submitRecord } from '../lib/store';
 import { SECTORS } from '../lib/sectors';
-import { PAYSTACK_PUBLIC_KEY, paystackConfigured } from '../lib/config';
+import { PAYSTACK_PUBLIC_KEY, paystackConfigured, supabaseConfigured } from '../lib/config';
 
-const MEMBERSHIP_FEE = 5000; // NGN
+const MEMBERSHIP_FEE = 2500; // NGN, set by the club Oct 2026
 
 const benefits = [
   {
@@ -60,14 +59,14 @@ const committees = [
 const steps = [
   {
     title: 'Complete the Form',
-    text: 'Tell us about yourself — it takes less than two minutes.',
+    text: 'Tell us about yourself. It takes about two minutes.',
     icon: (
       <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
     ),
   },
   {
-    title: 'Pay the ₦5,000 Fee',
-    text: 'Check out securely via Paystack — or pay in person while online payments are being set up.',
+    title: 'Pay the ₦2,500 Fee',
+    text: 'Pay securely through Paystack, or in person while online payment is being set up.',
     icon: (
       <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h2m-5 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2z" /></svg>
     ),
@@ -91,20 +90,20 @@ const faqs = [
     a: 'Any registered Babcock University student, from 100 to 500 level, in any department. Just use your official @babcock.edu.ng email to register.',
   },
   {
-    q: 'What does the ₦5,000 membership fee cover?',
+    q: 'What does the ₦2,500 membership fee cover?',
     a: 'The fee funds club sessions, educational resources, event logistics, and prizes. Members get access to all weekly sessions, sector communities, committees, and discounted or free entry to flagship events.',
   },
   {
     q: 'How much of my time does membership require?',
-    a: 'As little as 1–2 hours a week. Attend sessions that fit your schedule, and optionally join a committee or sector to go deeper. Commitment scales with how much you want to get out of it.',
+    a: 'As little as one or two hours a week. Attend sessions that fit your schedule, and optionally join a committee or sector to go deeper. Commitment scales with how much you want to get out of it.',
   },
   {
     q: 'Is this investment advice?',
-    a: 'No. BIC content, workshops, and competitions are strictly educational. We teach you how markets and investing work — we never advise you to buy or sell any specific asset.',
+    a: 'No. BIC content, workshops, and competitions are strictly educational. We teach you how markets and investing work. We never advise you to buy or sell any specific asset.',
   },
   {
     q: 'What happens after I graduate?',
-    a: 'Active members receive certificates of service, and you become part of the BIC alumni network — many of whom now work in banking, audit, asset management, and venture capital.',
+    a: 'Active members receive certificates of service, and you stay part of the BIC alumni network after you graduate.',
   },
 ];
 
@@ -167,7 +166,7 @@ export default function Membership() {
       if (res.ok) {
         setFormMsg({
           type: 'success',
-          text: 'Application received! Online payment is being set up — the membership team will contact you at your Babcock email to complete your ₦5,000 registration.',
+          text: 'Application received! Online payment is being set up, so the membership team will contact you at your Babcock email to complete your ₦2,500 registration.',
         });
         formRef.current.reset();
         setSelectedInterests([]);
@@ -245,27 +244,25 @@ export default function Membership() {
         {/* HOW IT WORKS */}
         <div className="sec-head" style={{ marginBottom: 40 }}>
           <div>
-            <span className="section-label">How It Works</span>
-            <h2 className="sec-title">Three steps to <span>joining.</span></h2>
+            <h2 className="sec-title">Three steps to joining.</h2>
           </div>
         </div>
         <div className="steps-grid">
           {steps.map((s, i) => (
-            <TiltCard className="step-card" key={s.title} max={7}>
+            <div className="step-card" key={s.title}>
               <div className="step-num">{i + 1}</div>
               <div className="step-icon">{s.icon}</div>
               <h3>{s.title}</h3>
               <p>{s.text}</p>
-            </TiltCard>
+            </div>
           ))}
         </div>
 
         <div className="membership-grid">
           {/* BENEFITS */}
           <div>
-            <span className="section-label">Why Join?</span>
             <h2 className="sec-title">
-              Invest in your <span>future.</span>
+              Invest in your future.
             </h2>
             <p>
               Membership at the Babcock Investors Club provides you with the ultimate toolkit to
@@ -288,12 +285,20 @@ export default function Membership() {
 
           {/* REGISTRATION FORM */}
           <div>
-            <SpotlightCard className="registration-box" radius={360}>
-              <h3>Membership Application</h3>
+            {!supabaseConfigured ? (
+              <OfflineNotice
+                title="Apply to join BIC"
+                text="Online applications are not switched on yet. The membership fee is ₦2,500."
+                subject="Membership application"
+                message={'Hello BIC, I would like to join the club.\nFull name: \nMatric number: \nDepartment: \nLevel: \nSector of interest: '}
+              />
+            ) : (
+            <div className="registration-box">
+              <h3>Membership application</h3>
               <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label>Full Name</label>
-                  <input type="text" name="full_name" required placeholder="John Doe" />
+                  <input type="text" name="full_name" required />
                 </div>
                 <div className="grid-2" style={{ gap: 16 }}>
                   <div className="form-group">
@@ -394,13 +399,13 @@ export default function Membership() {
                         ? 'Preparing payment...'
                         : 'Submitting application...'
                       : paystackConfigured
-                        ? 'Proceed to Payment (₦5,000)'
+                        ? 'Proceed to Payment (₦2,500)'
                         : 'Submit Application'}
                   </button>
                   {!paystackConfigured && (
                     <p className="form-note" style={{ marginTop: 10 }}>
-                      Online payment is being set up — submit your application now and the
-                      membership team will contact you to complete your ₦5,000 registration.{' '}
+                      Online payment is being set up. Submit your application now and the
+                      membership team will contact you to complete your ₦2,500 registration.{' '}
                       <Link to="/contact">Questions? Contact us.</Link>
                     </p>
                   )}
@@ -417,7 +422,8 @@ export default function Membership() {
                   Fees fund club activities and resources. BIC content is educational only and is not financial advice.
                 </p>
               </form>
-            </SpotlightCard>
+            </div>
+            )}
           </div>
         </div>
 
@@ -425,8 +431,7 @@ export default function Membership() {
         <div className="faq-section">
           <div className="sec-head" style={{ marginBottom: 40 }}>
             <div>
-              <span className="section-label">FAQ</span>
-              <h2 className="sec-title">Frequently asked <span>questions.</span></h2>
+              <h2 className="sec-title">Frequently asked questions.</h2>
             </div>
           </div>
           <div className="accordion">

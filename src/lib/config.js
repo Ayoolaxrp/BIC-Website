@@ -16,3 +16,9 @@ export const paystackConfigured =
 export const supabaseConfigured =
   Boolean(import.meta.env.VITE_SUPABASE_URL) &&
   Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
+
+/**
+ * Google sign-in shows only when the Google provider is enabled in Supabase
+ * (Authentication > Providers > Google). Set VITE_GOOGLE_AUTH=true then.
+ */
+export const googleAuthEnabled = import.meta.env.VITE_GOOGLE_AUTH === 'true';

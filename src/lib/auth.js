@@ -136,7 +136,7 @@ export async function signInWithGoogle() {
   const supabase = await getSupabase();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin },
+    options: { redirectTo: `${window.location.origin}/member` },
   });
   return error ? { ok: false, error: error.message } : { ok: true };
 }
@@ -171,7 +171,9 @@ export async function signUp(email, password, fullName) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    // Confirmation link returns to the member page on whichever domain the
+    // visitor used (must be listed under Supabase Auth > Redirect URLs).
+    options: { data: { full_name: fullName }, emailRedirectTo: `${window.location.origin}/member` },
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true, user: data.user };

@@ -15,7 +15,7 @@ import { getSupabase, isSupabaseConfigured } from './supabase';
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 export const MAX_RESOURCE_BYTES = 3.5 * 1024 * 1024; // 3.5 MB
 
-const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml'];
+const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const RESOURCE_TYPES = [
   'application/pdf',
   'application/vnd.ms-excel',
@@ -58,7 +58,7 @@ export async function uploadFile(file, kind = 'resource', folder = 'resources') 
     return { ok: false, error: `File is too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum is ${limitMb}.` };
   }
   if (allowed.length && !allowed.includes(file.type)) {
-    return { ok: false, error: kind === 'image' ? 'Please choose an image (PNG, JPG, WEBP, GIF, SVG).' : 'File type not allowed. Use PDF, Excel, Word, CSV, TXT or ZIP.' };
+    return { ok: false, error: kind === 'image' ? 'Please choose an image (PNG, JPG, WEBP or GIF).' : 'File type not allowed. Use PDF, Excel, Word, CSV, TXT or ZIP.' };
   }
 
   const sizeLabel = `${file.type.includes('image') ? 'IMG' : file.type.split('/')[1]?.toUpperCase() || 'FILE'} · ${formatBytes(file.size)}`;

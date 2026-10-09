@@ -37,7 +37,7 @@ club input before launch.
 
 ## 3. Data layer & roles (Supabase)
 
-`schema.sql` (v2) creates: `profiles` (role: member/admin), `events`, `articles`,
+`supabase/migrations` (v2) creates: `profiles` (role: member/admin), `events`, `articles`,
 `resources`, `newsletter_posts`, and submission tables (`member_applications`,
 `contact_messages`, `sponsorship_inquiries`, `rsvps`, `subscribers`) — all with
 **Row Level Security**:
@@ -84,7 +84,7 @@ not appear in normal Chrome.
 ## 6. Open items requiring club input
 
 1. **Keys**: `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` / `VITE_PAYSTACK_PUBLIC_KEY`
-   → `.env` (README has the full walkthrough; schema.sql is ready).
+   → `.env` (README has the full walkthrough; supabase/migrations is ready).
 2. **Admin user**: after deploy, create the account at `/member`, then promote with
    `update profiles set role='admin' where email='...';`
 3. **LinkedIn**: live (linkedin.com/company/babcock-investors-club) — wired into footer, contact, and About team cards.

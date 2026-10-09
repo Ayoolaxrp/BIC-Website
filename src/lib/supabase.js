@@ -1,7 +1,7 @@
 /**
  * Supabase client — lazy. The site works fully without it — forms fall back
  * to local storage — but once VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are
- * set in .env, every submission is stored in Postgres (see supabase/schema.sql).
+ * set in .env, every submission is stored in Postgres (see supabase/migrations (see supabase/SETUP.md)).
  *
  * The SDK (~70 KiB gz) is loaded via dynamic import on first use, so it never
  * blocks the initial render of public pages.

@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { submitRecord } from '../lib/store';
 import { asset } from '../lib/assets';
+import { supabaseConfigured } from '../lib/config';
+import { BIC_INSTAGRAM, BIC_LINKEDIN, CLUB_EMAIL, CLUB_PHONE, CLUB_PHONE_E164, CLUB_TAGLINE, mailto } from '../lib/contact';
 
-export const BIC_LINKEDIN = 'https://www.linkedin.com/company/babcock-investors-club/';
-
-export const BIC_INSTAGRAM = 'https://www.instagram.com/babcock_investors_club/';
 
 const IG = () => (
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
@@ -42,13 +41,14 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-logo">
-              <img src={asset('/images/logo.jpg')} alt="BIC" width={40} height={40} style={{ height: 40 }} />
-              <div className="logo-text">
-                <span className="logo-name">BIC</span>
-                <span className="logo-tagline">Babcock Investors Club</span>
-              </div>
+              <img src={asset('/images/logo.png')} alt="" width={36} height={36} />
+              <span className="logo-name">Babcock Investors Club</span>
             </div>
-            <p>Empowering students through financial education, investment awareness, and professional networking.</p>
+            <p>{CLUB_TAGLINE}</p>
+            <p className="footer-note">
+              <a href={mailto('Hello BIC')}>{CLUB_EMAIL}</a><br />
+              <a href={`tel:+${CLUB_PHONE_E164}`}>{CLUB_PHONE}</a>
+            </p>
             <div className="footer-social">
               {[
                 [BIC_INSTAGRAM, <IG />, 'Instagram'],
@@ -59,35 +59,45 @@ export default function Footer() {
             </div>
           </div>
           <div className="footer-col">
-            <h2>Quick Links</h2>
+            <h2>Club</h2>
             <ul>
-              {[['/', 'Home'], ['/about', 'About BIC'], ['/membership', 'Membership'], ['/events', 'Events'], ['/blog', 'Blog'], ['/member', 'Member Portal'], ['/contact', 'Contact']].map(([to, label]) => (
+              {[['/about', 'About'], ['/membership', 'Membership'], ['/events', 'Events'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
                 <li key={to}><Link to={to}>{label}</Link></li>
               ))}
             </ul>
           </div>
           <div className="footer-col">
-            <h2>Partnerships</h2>
+            <h2>Members &amp; partners</h2>
             <ul>
-              <li><Link to="/sponsorship">Become a Sponsor</Link></li>
-              <li><Link to="/sponsorship">Sponsorship Tiers</Link></li>
-              <li><Link to="/sponsorship">Brand Collaboration</Link></li>
+              {supabaseConfigured && <li><Link to="/member">Member portal</Link></li>}
+              <li><Link to="/sponsorship">Partner with BIC</Link></li>
+              <li><Link to="/contact">Contact the club</Link></li>
             </ul>
           </div>
           <div className="footer-col">
             <h2>Newsletter</h2>
-            <p style={{ fontSize: '.85rem', color: 'rgba(255,255,255,.5)', marginBottom: 16 }}>Get market updates and event news.</p>
+            {supabaseConfigured ? (
+            <>
+            <p className="footer-note">Event dates and market notes from the club.</p>
             <form className="footer-newsletter" onSubmit={handleNewsletter}>
-              <input type="email" name="email" placeholder="Email address" required />
-              <button type="submit" className="btn btn-primary btn-full" style={{ padding: '10px' }} disabled={newsStatus === 'sending'}>
-                {newsStatus === 'sending' ? 'Subscribing...' : 'Subscribe'}
+              <label htmlFor="footer-email" className="visually-hidden">Email address</label>
+              <input id="footer-email" type="email" name="email" placeholder="you@babcock.edu.ng" autoComplete="email" required />
+              <button type="submit" className="btn btn-primary btn-full" disabled={newsStatus === 'sending'}>
+                {newsStatus === 'sending' ? 'Subscribing…' : 'Subscribe'}
               </button>
             </form>
             {newsStatus === 'success' && (
-              <p className="news-status ok">✓ Subscribed! Watch your inbox for market updates.</p>
+              <p className="news-status ok" role="status">You're subscribed.</p>
             )}
             {newsStatus === 'error' && (
-              <p className="news-status err">Couldn't subscribe right now — please try again.</p>
+              <p className="news-status err" role="alert">That didn't go through. Please try again.</p>
+            )}
+            </>
+            ) : (
+              <p className="footer-note">
+                Email sign-up is coming soon. For event dates, follow us on{' '}
+                <a href={BIC_INSTAGRAM} target="_blank" rel="noreferrer">Instagram</a>.
+              </p>
             )}
           </div>
         </div>
@@ -95,21 +105,11 @@ export default function Footer() {
           Babcock Investors Club content is for educational purposes only and does not constitute
           financial, investment, or legal advice. The club is a student-led organization at Babcock University.
         </p>
-        <div className="footer-wordmark" aria-hidden="true">
-          <span>BIC</span>
-        </div>
         <div className="footer-bottom">
           <p>© 2026 Babcock Investors Club. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-            <Link to="/legal#privacy">Privacy Policy</Link>
-            <Link to="/legal#terms">Terms of Service</Link>
-            <button
-              type="button"
-              className="footer-cookie-btn"
-              onClick={() => window.dispatchEvent(new CustomEvent('bic:open-consent'))}
-            >
-              Cookie Preferences
-            </button>
+          <div className="footer-legal">
+            <Link to="/legal#privacy">Privacy</Link>
+            <Link to="/legal#terms">Terms</Link>
           </div>
         </div>
       </div>
