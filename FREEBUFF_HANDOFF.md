@@ -17,12 +17,12 @@
 | Club feedback + calendar | Done, committed `70253d2` |
 | Supabase migrations + runbook | Done and tested, committed `854f612` |
 | Cloudflare security audit | Done (quick profile): 0 confirmed, 4 leads, all 4 fixed in source |
+| Speed, forms, brand, legal | Done 2026-10-09 (PR #2): content renders instantly, SDK/animation libs off public pages, aligned forms + interest chips, blue brand hero, `/privacy` and `/terms` |
 | Merge to `main` / go live | Done 2026-10-09 (PR #1). Live site tested: all pages 200, security headers sent, live Contact form saves to Supabase |
 | Supabase project | Created by owner (ref in `.env`, region eu-west-1). All 6 migrations applied and verified 2026-10-09; Vercel env vars set (Production/Preview/Development) |
 
 ## Required Skills (IN ORDER)
-1. `apple-design` (installed at `~/.claude/skills/apple-design`, from github.com/emilkowalski/skills). The design authority for every UI change.
-2. `design-taste-frontend`. Anti-slop checklist; run it after any visual change.
+1. `apple-design` (installed at `~/.claude/skills/apple-design`, from github.com/emilkowalski/skills). **Owner rule (Oct 2026): use ONLY this skill for design on this project.**
 3. `security-audit` (Cloudflare's official skill, updated to github.com/cloudflare/security-audit-skill `main`). Only to finish the audit run described below.
 
 ## Agents to Invoke
@@ -39,7 +39,7 @@
    - Next major event: "BIC 2026/2027: Welcome to the Next Chapter", **November 2026, Babcock University** (month only, no countdown, no exact day).
    - Club tagline: "Building a community of smart, confident investors."
 3. **Design system** (see `DESIGN.md`, `src/styles/system.css`):
-   - One accent: **green**. Mint `#4fc58f` on navy, deep green `#14593f` on white. The club rejected yellow/gold.
+   - One accent: **BIC blue** from the club posters. `--brand #1a73e8` for buttons, `--brand-ink #1259c3` for text on white, `--brand-light #6aa8ff` on navy. Green only for success. The club rejected gold.
    - System font first (SF Pro on Apple), Inter fallback. Tracking tightens as size grows.
    - Shapes: controls are pills, surfaces 18px, inputs 12px.
    - No eyebrow labels, no two-tone headlines, **no em-dashes or en-dashes in visible text**, no placeholder names (Jane Doe/Acme), no hover lifts or glows, no countdowns.
@@ -120,7 +120,7 @@ If `check2.cjs` is gone, the equivalent: serve `dist/` locally, open each page a
 - `lessons/LOG.md` records the non-obvious lessons; append to it.
 - Commit as `Ayoolaxrp <awodeyiayoola@gmail.com>` (already set in this repo's git config) and end messages with the Co-Authored-By line used in recent commits.
 - `main` deploys production on every push. Run the validation commands before pushing.
-- Supabase redirect URLs are not yet verified by Claude: needs `SUPABASE_ACCESS_TOKEN` in `.env` (Management API). Required list is in `supabase/SETUP.md` step 3.
+- Supabase Auth verified 2026-10-09 via the Management API (`SUPABASE_ACCESS_TOKEN` in `.env`): Site URL is the www domain; redirect list has www, apex, bic-react.vercel.app and localhost; Confirm email and Secure email change on.
 - Google sign-in is hidden unless `VITE_GOOGLE_AUTH=true` (provider is off in Supabase).
 
 ## Post-Delivery
