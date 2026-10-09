@@ -3,8 +3,8 @@
 ## Project Context
 - **Type**: Marketing site (Vite + React 19 SPA) with a Supabase back end (forms, member accounts, admin console) and Paystack payments
 - **Repo**: `C:\Users\User\Projects\bic-website\bic-react` → GitHub `Ayoolaxrp/BIC-Website`
-- **Branch**: `redesign/apple-restraint` (pushed; last commit `854f612`). `main` is the live site and is untouched.
-- **Live site**: https://bic-react.vercel.app (still the OLD design until this branch is merged)
+- **Branch**: merged into `main` via PR #1 on 2026-10-09 (`2ff884a`). Work on `main` (or a new branch + PR) from now on.
+- **Live site**: https://www.babcockinvestorsclub.com (apex redirects to www; also bic-react.vercel.app). The redesign is live.
 - **Preview of this branch**: Vercel builds it automatically on push (needs a Vercel login to view)
 - **Request**: (1) remove everything that looks like AI slop, using the Apple design skill; (2) apply the club's WhatsApp feedback and the 2026/27 calendar; (3) write all Supabase migrations so the owner can create the project and deploy; (4) run the Cloudflare security audit skill so it is deployment-ready.
 - **Date**: 2026-10-09
@@ -17,7 +17,7 @@
 | Club feedback + calendar | Done, committed `70253d2` |
 | Supabase migrations + runbook | Done and tested, committed `854f612` |
 | Cloudflare security audit | Done (quick profile): 0 confirmed, 4 leads, all 4 fixed in source |
-| Merge to `main` / go live | **Not done. Owner must approve first.** |
+| Merge to `main` / go live | Done 2026-10-09 (PR #1). Live site tested: all pages 200, security headers sent, live Contact form saves to Supabase |
 | Supabase project | Created by owner (ref in `.env`, region eu-west-1). All 6 migrations applied and verified 2026-10-09; Vercel env vars set (Production/Preview/Development) |
 
 ## Required Skills (IN ORDER)
@@ -47,7 +47,7 @@
    - New dark (navy) containers must be added to the `.surface-dark` list in `src/styles/system.css`, otherwise buttons render navy-on-navy.
    - Edit `src/styles/system.css`; do not append new override layers to `src/index.css` (that is what made the old site look AI-built; see `lessons/LOG.md`).
 4. **Honest forms.** When Supabase is not configured, forms render `<OfflineNotice>` (WhatsApp + email) instead of pretending to save. A failed save must show as failed. Do not reintroduce "saved on this device" success messages.
-5. **Never** commit `.env`, put the Supabase service_role key or Paystack secret key in the frontend or Vercel, push to `main`, or deploy to production without the owner's explicit OK.
+5. **Never** commit `.env`, or put the Supabase service_role key or Paystack secret key in the frontend or Vercel. Pushing to `main` deploys production: run the checks first.
 6. Do not delete or overwrite the club's Vision/Mission text on About; it is the club's own wording.
 
 ## Files to Work On
@@ -119,7 +119,9 @@ If `check2.cjs` is gone, the equivalent: serve `dist/` locally, open each page a
 - Long heredocs with mixed quotes break in this shell; write scripts to files with the Write tool and run them.
 - `lessons/LOG.md` records the non-obvious lessons; append to it.
 - Commit as `Ayoolaxrp <awodeyiayoola@gmail.com>` (already set in this repo's git config) and end messages with the Co-Authored-By line used in recent commits.
-- Push only to `redesign/apple-restraint`.
+- `main` deploys production on every push. Run the validation commands before pushing.
+- Supabase redirect URLs are not yet verified by Claude: needs `SUPABASE_ACCESS_TOKEN` in `.env` (Management API). Required list is in `supabase/SETUP.md` step 3.
+- Google sign-in is hidden unless `VITE_GOOGLE_AUTH=true` (provider is off in Supabase).
 
 ## Post-Delivery
 After Freebuff delivers, the main thread runs:
