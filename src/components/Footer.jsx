@@ -108,8 +108,8 @@ export default function Footer() {
         <div className="footer-bottom">
           <p>© 2026 Babcock Investors Club. All rights reserved.</p>
           <div className="footer-legal">
-            <Link to="/legal#privacy">Privacy</Link>
-            <Link to="/legal#terms">Terms</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
           </div>
         </div>
       </div>

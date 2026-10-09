@@ -42,6 +42,14 @@
   --green: #14593f;         /* deep green on white, 8.4:1 */
   --green-light: #1f7a55;
   --green-tint: #e8f1ec;
+  /* BIC blue, from the club's posters and logo. Primary actions and
+     emphasis everywhere; green is kept for success states only. */
+  --brand: #1a73e8;          /* white text on it: 4.6:1 */
+  --brand-hover: #1662c4;
+  --brand-ink: #1259c3;      /* blue text on white: 6.4:1 */
+  --brand-light: #6aa8ff;    /* blue text on navy: 6.9:1 */
+  --brand-tint: #eef4ff;
+  --accent-ink: var(--brand-ink);
   --gold: var(--mint);
   --gold-light: var(--mint-light);
   --gold-ink: var(--green);
@@ -694,11 +702,7 @@ p { color: var(--gray-700); line-height: 1.6; }
   margin-bottom: var(--space-2);
   letter-spacing: 0.01em;
 }
-.form-group + .form-group,
-.form-group + div,
-div + .form-group {
-  margin-top: var(--space-4);
-}
+/* Field rhythm comes from .form-group margin-bottom only (see system.css). */
 .form-group input,
 .form-group select,
 .form-group textarea {

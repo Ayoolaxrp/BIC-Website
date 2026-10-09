@@ -29,7 +29,14 @@
     <link rel="preconnect" href="https://js.paystack.co" />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Painted before any JavaScript runs, then replaced by the app: the nav bar
+         and the navy top of the page appear instantly instead of a white screen. -->
+    <style>
+      body { margin: 0; background: #fff; }
+      .boot-nav { height: 64px; background: #0a1931; }
+      .boot-hero { min-height: min(92svh, 880px); background: #0a1931; }
+    </style>
+    <div id="root"><div class="boot-nav"></div><div class="boot-hero"></div></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

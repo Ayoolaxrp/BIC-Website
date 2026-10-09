@@ -4,9 +4,10 @@ description: Student investment club at Babcock University. Calm, confident, rea
 colors:
   navy: "#0a1931"
   navy-mid: "#15305b"
-  gold: "#c9a54a"
-  gold-light: "#dfc277"
-  gold-ink: "#7a5c12"
+  brand: "#1a73e8"
+  brand-ink: "#1259c3"
+  brand-light: "#6aa8ff"
+  brand-tint: "#eef4ff"
   green: "#14593f"
   green-tint: "#e8f1ec"
   white: "#ffffff"
@@ -30,16 +31,16 @@ shape:
 
 Source of truth: `src/styles/system.css` (loaded after `src/index.css`) and the
 tokens in `:root` at the top of `src/index.css`. Nav lives in
-`src/components/Navbar.css`. Built against the **apple-design** skill
-(emilkowalski/skills) and checked with **design-taste-frontend**.
+`src/components/Navbar.css`. Built strictly with the **apple-design** skill (emilkowalski/skills). Owner rule since
+Oct 2026: no other design skills on this project.
 
 ## Rules
 
-- **Colour.** Navy, white and black carry the page. Two accents from the brief, each
-  with one job: **gold lives on navy** (primary button on dark, brand moments),
-  **deep green lives on white** (links, small labels, success). Any navy surface
-  (`.surface-dark`, `.page-hero`, `.footer`, `.cta-section`, `.navbar`) re-points the
-  accent variables to gold and inverts buttons automatically.
+- **Colour.** Navy, white and black carry the page. **BIC blue** (`#1a73e8`, from the
+  club's posters and logo) is the one accent: primary buttons everywhere, deep blue
+  `#1259c3` for text on white, light blue `#6aa8ff` on navy. Green is for success
+  states only. The club rejected gold (Oct 2026). Any navy surface (`.surface-dark`,
+  `.page-hero`, `.footer`, `.navbar`) re-points the accent variables automatically.
 - **Type.** System face first, so Apple devices get SF Pro. Tracking tightens as
   size grows. Emphasis comes from weight, never from colouring half a headline.
   No mono except for machine values.

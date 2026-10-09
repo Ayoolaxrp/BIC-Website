@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import FadeIn from '../components/FadeIn';
 import Seo from '../components/Seo';
 import { asset } from '../lib/assets';
 import { mailto } from '../lib/contact';
@@ -12,7 +11,16 @@ const NEXT_EVENT = {
   where: 'Babcock University',
 };
 
-// Sponsors of the 2026 Investment Seminar, from the club's "Meet our sponsors" poster.
+// Every figure here is club-confirmed or printed on the club's own posters:
+// 150+ members (club, Oct 2026); ₦370,000 prizes and the four sponsors
+// (Investment Seminar 2026 posters); four sectors (club structure).
+const proof = [
+  { value: '150+', label: 'active members' },
+  { value: '₦370k', label: 'in Stock Pitch 2.0 prizes, 2026' },
+  { value: '4', label: 'market sectors' },
+  { value: '4', label: 'corporate sponsors in 2026' },
+];
+
 const sponsors = ['Fundbox Financial Services', 'Leadway Assurance', 'More Ladda (Meristem)', 'Chapel Hill Denham'];
 
 const sectors = [
@@ -20,14 +28,6 @@ const sectors = [
   { name: 'Forex', text: 'Currency markets, position sizing and practice on simulated accounts.' },
   { name: 'Crypto & digital assets', text: 'How blockchains and digital assets work, and how to manage the risk.' },
   { name: 'Real estate', text: 'Property, REITs and the basics of building wealth through land.' },
-];
-
-// Only figures the club has confirmed (150+ members, Oct 2026) or that
-// are structural facts of the club itself.
-const facts = [
-  { value: '150+', label: 'active members' },
-  { value: '4', label: 'market sectors' },
-  { value: '7', label: 'student committees' },
 ];
 
 const steps = [
@@ -48,56 +48,63 @@ export default function Home() {
     <>
       <Seo />
 
-      {/* HERO: one message, one action, one real photograph */}
-      <header className="h-hero surface-dark">
-        <div className="container h-hero-grid">
-          <div className="h-hero-copy">
-            <h1>Learn to invest before you graduate.</h1>
-            <p className="h-hero-sub">
-              The student investment club at Babcock University. Sessions on stocks, forex,
-              crypto and real estate, run by students.
-            </p>
-            <div className="h-actions">
-              <Link to="/membership" className="btn btn-primary">Join BIC</Link>
-              <Link to="/events" className="btn btn-outline">See events</Link>
-            </div>
+      {/* HERO: a full-bleed club photograph, one message, one action.
+          The next event floats on a translucent material strip. */}
+      <header className="hx surface-dark">
+        <img
+          className="hx-photo"
+          src={asset('/images/bic-2025-1.webp')}
+          alt=""
+          width={1600}
+          height={1067}
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="hx-scrim" aria-hidden="true" />
+        <div className="container hx-inner">
+          <h1>Learn to invest before you graduate.</h1>
+          <p className="hx-sub">
+            The student investment club at Babcock University. Stocks, forex, crypto and real
+            estate, taught by students, for students.
+          </p>
+          <div className="h-actions">
+            <Link to="/membership" className="btn btn-primary btn-lg">Join BIC</Link>
+            <Link to="/events" className="btn btn-glass btn-lg">See events</Link>
           </div>
-          <figure className="h-hero-media">
-            <img
-              src={asset('/images/bic-2025-1.webp')}
-              alt="A BIC member presenting at the podium beside two fellow members"
-              width={1600}
-              height={1067}
-              fetchPriority="high"
-              decoding="async"
-            />
-          </figure>
         </div>
+        <Link to="/events" className="hx-next">
+          <span className="hx-next-kicker">Next</span>
+          <span className="hx-next-title">{NEXT_EVENT.title}</span>
+          <span className="hx-next-meta">{NEXT_EVENT.when}, {NEXT_EVENT.where}</span>
+          <span className="hx-next-arrow" aria-hidden="true">→</span>
+        </Link>
       </header>
 
-      {/* NEXT EVENT: month and place only, as the club asked */}
-      <section className="h-next" aria-label="Next event">
-        <div className="container h-next-inner">
-          <div>
-            <p className="h-next-kicker">Upcoming event</p>
-            <p className="h-next-title">{NEXT_EVENT.title}</p>
-            <p className="h-next-meta">{NEXT_EVENT.when}, {NEXT_EVENT.where}</p>
-          </div>
-          <Link to="/events" className="btn btn-outline">Event details</Link>
+      {/* PROOF: only numbers the club can stand behind */}
+      <section className="hp" aria-label="BIC in numbers">
+        <div className="container">
+          <dl className="hp-grid">
+            {proof.map((f) => (
+              <div key={f.label}>
+                <dd>{f.value}</dd>
+                <dt>{f.label}</dt>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
-      {/* SECTORS: a plain two-column list, no cards */}
+      {/* SECTORS */}
       <section className="h-section">
         <div className="container">
-          <FadeIn className="h-head">
+          <div className="h-head">
             <h2>Four markets. Pick one and go deep.</h2>
             <p>
               Every member joins a sector led by a student chairperson. You learn a market by
               researching it, pitching it and trading it on paper.
             </p>
-          </FadeIn>
-          <ul className="h-sectors">
+          </div>
+          <ul className="hs-grid">
             {sectors.map((s) => (
               <li key={s.name}>
                 <h3>{s.name}</h3>
@@ -108,12 +115,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CLUB LIFE: real photography, no overlays */}
+      {/* CLUB LIFE: real photography, nothing laid over it */}
       <section className="h-section h-section-flush">
         <div className="container">
-          <FadeIn className="h-head">
+          <div className="h-head">
             <h2>What a BIC session looks like.</h2>
-          </FadeIn>
+          </div>
           <div className="h-gallery">
             {gallery.map((g) => (
               <figure key={g.src} className={g.cls || ''}>
@@ -127,57 +134,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MEMBERSHIP: how joining works, plus the facts we can stand behind */}
+      {/* PARTNERS */}
       <section className="h-section bg-off-white">
+        <div className="container hb">
+          <div>
+            <p className="hb-kicker">Backed by</p>
+            <ul className="hb-list">
+              {sponsors.map((name) => <li key={name}>{name}</li>)}
+            </ul>
+            <p className="hb-note">Sponsors of the BIC Annual Investment Seminar 2026.</p>
+          </div>
+          <div className="hb-cta">
+            <h2>Reach students who care about money.</h2>
+            <p>
+              Sponsor a seminar, speak at a session or recruit interns. Partners are named on this
+              site, on our event posters and across our socials.
+            </p>
+            <div className="h-actions">
+              <Link to="/sponsorship" className="btn btn-primary">Partner with BIC</Link>
+              <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* JOIN: the closing statement */}
+      <section className="hj surface-dark">
         <div className="container">
-          <FadeIn className="h-head">
-            <h2>Joining takes a few minutes.</h2>
-            <p>Open to every Babcock student, in any department. No finance background needed.</p>
-          </FadeIn>
-          <ol className="h-steps">
-            {steps.map((s) => (
+          <h2>Joining takes a few minutes.</h2>
+          <p className="hj-sub">Open to every Babcock student, in any department. No finance background needed.</p>
+          <ol className="hj-steps">
+            {steps.map((s, i) => (
               <li key={s.title}>
+                <span className="hj-num">{i + 1}</span>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
               </li>
             ))}
           </ol>
-          <div className="h-join">
-            <dl className="h-facts">
-              {facts.map((f) => (
-                <div key={f.label}>
-                  <dt>{f.label}</dt>
-                  <dd>{f.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <Link to="/membership" className="btn btn-primary">Join BIC</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* PARTNERS: who has backed the club, then one quiet tile */}
-      <section className="h-section">
-        <div className="container">
-          <div className="h-sponsors">
-            <p>Our 2026 Investment Seminar was sponsored by</p>
-            <ul>
-              {sponsors.map((name) => <li key={name}>{name}</li>)}
-            </ul>
-          </div>
-          <FadeIn className="h-partner surface-dark">
-            <div>
-              <h2>Reach students who care about money.</h2>
-              <p>
-                Sponsor a seminar, speak at a session or recruit interns. Partners are named on
-                this site, on our event posters and across our socials.
-              </p>
-            </div>
-            <div className="h-actions">
-              <Link to="/sponsorship" className="btn btn-primary">Partner with BIC</Link>
-              <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
-            </div>
-          </FadeIn>
+          <Link to="/membership" className="btn btn-primary btn-lg">Join BIC</Link>
         </div>
       </section>
     </>

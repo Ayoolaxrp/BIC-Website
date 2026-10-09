@@ -1,6 +1,5 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { motion, MotionConfig } from 'framer-motion';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -12,75 +11,94 @@ import useLabelAssociation from './hooks/useLabelAssociation';
 const routerBase =
   import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL.replace(/\/+$/, '');
 
-// Code-split every route so the initial bundle stays lean.
-const Home = lazy(() => import('./pages/Home'));
-const About = lazy(() => import('./pages/About'));
-const Membership = lazy(() => import('./pages/Membership'));
-const Events = lazy(() => import('./pages/Events'));
-const Blog = lazy(() => import('./pages/Blog'));
-const ArticlePage = lazy(() => import('./pages/ArticlePage'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Sponsorship = lazy(() => import('./pages/Sponsorship'));
-const Member = lazy(() => import('./pages/Member'));
-const Admin = lazy(() => import('./pages/Admin'));
-const Legal = lazy(() => import('./pages/Legal'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+// Code-split every route so the first page stays small; the rest are
+// fetched in the background once the first page has painted (see below).
+const loaders = {
+  home: () => import('./pages/Home'),
+  about: () => import('./pages/About'),
+  membership: () => import('./pages/Membership'),
+  events: () => import('./pages/Events'),
+  blog: () => import('./pages/Blog'),
+  article: () => import('./pages/ArticlePage'),
+  contact: () => import('./pages/Contact'),
+  sponsorship: () => import('./pages/Sponsorship'),
+  member: () => import('./pages/Member'),
+  admin: () => import('./pages/Admin'),
+  legal: () => import('./pages/Legal'),
+  notFound: () => import('./pages/NotFound'),
+};
+const Home = lazy(loaders.home);
+const About = lazy(loaders.about);
+const Membership = lazy(loaders.membership);
+const Events = lazy(loaders.events);
+const Blog = lazy(loaders.blog);
+const ArticlePage = lazy(loaders.article);
+const Contact = lazy(loaders.contact);
+const Sponsorship = lazy(loaders.sponsorship);
+const Member = lazy(loaders.member);
+const Admin = lazy(loaders.admin);
+const Legal = lazy(loaders.legal);
+const NotFound = lazy(loaders.notFound);
 
-function AnimatedRoutes() {
+// Public pages a visitor is likely to open next. Prefetching them while the
+// browser is idle makes every in-site navigation instant (no blank wait).
+const PREFETCH = ['home', 'about', 'membership', 'events', 'blog', 'contact', 'sponsorship', 'legal'];
+
+function usePrefetchRoutes() {
+  useEffect(() => {
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1200));
+    const cancel = window.cancelIdleCallback || clearTimeout;
+    const id = idle(() => PREFETCH.forEach((k) => loaders[k]().catch(() => {})));
+    return () => cancel(id);
+  }, []);
+}
+
+function AppRoutes() {
   const location = useLocation();
   // Global a11y fix-up: associate visible form labels with their controls
   // on every route (axe: `label`, `select-name`).
   useLabelAssociation([location.pathname]);
+  usePrefetchRoutes();
 
   return (
-    // The new page cross-fades in immediately. No exit animation and no
-    // mode="wait": navigation never waits on the previous page to leave.
-    <motion.main
-        key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
-        <Suspense fallback={<div style={{ minHeight: '55vh' }} />}>
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/membership" element={<Membership />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<ArticlePage />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/sponsorship" element={<Sponsorship />} />
-            <Route path="/member" element={<Member />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </motion.main>
+    // Keyed so each page gets a short CSS cross-fade in. Nothing waits on the
+    // previous page, and reduced-motion turns it off (system.css).
+    <main key={location.pathname} className="page-enter">
+      <Suspense fallback={<div className="page-pending" aria-busy="true" />}>
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/membership" element={<Membership />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<ArticlePage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/sponsorship" element={<Sponsorship />} />
+          <Route path="/member" element={<Member />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/privacy" element={<Legal doc="privacy" />} />
+          <Route path="/terms" element={<Legal doc="terms" />} />
+          <Route path="/legal" element={<LegalRedirect />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </main>
   );
 }
 
-export default function App() {
-  // Respect the OS-level reduced-motion preference (a11y): disable motion
-  // globally when the user asks for less animation.
-  const [reducedMotion, setReducedMotion] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
+/** Old links were /legal#privacy and /legal#terms. */
+function LegalRedirect() {
+  const { hash } = useLocation();
+  return <Navigate to={hash === '#terms' ? '/terms' : '/privacy'} replace />;
+}
 
+export default function App() {
   return (
     <BrowserRouter basename={routerBase}>
-      <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
-        <ScrollToTop />
-        <Navbar />
-        <AnimatedRoutes />
-        <Footer />
-      </MotionConfig>
+      <ScrollToTop />
+      <Navbar />
+      <AppRoutes />
+      <Footer />
     </BrowserRouter>
   );
 }

@@ -35,3 +35,16 @@
   email match, or one fee can mark many applications paid.
 - The audit validators need POSIX no-follow I/O; on this Windows host run them with
   Node under WSL (`MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu -- ...`).
+
+## 2026-10-09: speed, forms, brand
+
+- **"Slow" was mostly waiting, not size.** Sections were hidden until scrolled into
+  view, every route lazy-loaded on click, the Supabase SDK (~54 KB gz) loaded for
+  every visitor just to learn nobody was signed in, and framer-motion (~39 KB gz)
+  loaded only for a page fade. Fixed: visible content, idle route prefetch, SDK only
+  when a stored session or auth link exists (`src/lib/auth.js`), CSS page fade.
+- **Selector reach.** `.form-group input` also styled checkboxes (44px tall, rounded).
+  Exclude checkbox/radio from text-field rules.
+- **Sibling margins misalign grids.** `.form-group + .form-group { margin-top }` pushed
+  the second column of every two-field row down. Use one margin direction.
+- **Brand colour comes from the club's own posters** (bright blue), not a palette guess.
