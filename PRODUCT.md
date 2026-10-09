@@ -34,7 +34,7 @@ A premier student-led community focused on investment awareness, networking, lea
 - **Public pages:** Home, About, Events (+ RSVP), Membership (application + FAQ), Sponsorship (partners, tiers, inquiry form), Blog/Articles, Contact, Legal, 404.
 - **Authenticated:** Member Portal and Admin Console (role-gated).
 - **Stack (existing, not a choice to relitigate):** React 19 + Vite + TypeScript, framer-motion, react-router 7; Supabase for auth/database/storage; Paystack for payments; self-hosted variable fonts.
-- **Open items (do not treat as done):** sector WhatsApp group links are `REPLACE_*` placeholders awaiting real invite links; the Supabase `payment_status` column migration (`paystack_webhook.sql`) is documented but unapplied.
+- **Open items (do not treat as done):** sector WhatsApp group links are `REPLACE_*` placeholders awaiting real invite links; the Supabase `payment_status` column migration (`supabase/migrations`) is documented but unapplied.
 
 ## Brand Commitments
 

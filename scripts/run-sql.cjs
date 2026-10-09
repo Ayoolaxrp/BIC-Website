@@ -3,7 +3,8 @@
 // ============================================================================
 // Usage:
 //   PGHOST=db.<ref>.supabase.co PGPORT=5432 PGDATABASE=postgres PGUSER=postgres \
-//   PGPASSWORD='...' node scripts/run-sql.cjs supabase/schema.review.sql
+//   PGPASSWORD='...' node scripts/run-sql.cjs supabase/migrations
+//   (a folder runs every .sql file in it, in filename order; see supabase/SETUP.md)
 //
 // Runs each file as a single multi-statement query (safe: these files are
 // idempotent). Prints a table list afterward as a sanity check.
@@ -18,7 +19,11 @@ if (!PGHOST || !PGPASSWORD) {
   process.exit(1);
 }
 
-const files = process.argv.slice(2);
+const files = process.argv.slice(2).flatMap((arg) =>
+  fs.existsSync(arg) && fs.statSync(arg).isDirectory()
+    ? fs.readdirSync(arg).filter((f) => f.endsWith('.sql')).sort().map((f) => path.join(arg, f))
+    : [arg],
+);
 if (!files.length) {
   console.error('Usage: node scripts/run-sql.cjs <sqlfile> [sqlfile ...]');
   process.exit(1);

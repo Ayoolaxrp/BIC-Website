@@ -11,7 +11,7 @@ Files in this package:
 
 - `functions/paystack-webhook/index.ts` — the Edge Function (HMAC signature
   check → Paystack Verify API → record + mark paid).
-- `paystack_webhook.sql` — schema additions (`payment_status`, `payments`
+- `supabase/migrations` — schema additions (`payment_status`, `payments`
   ledger, race-closing trigger, RLS).
 - Frontend edits (already applied): `usePaystack.js` now passes `metadata`
   through to Paystack; `Membership.jsx` tags checkout as `payment_type:
@@ -22,8 +22,8 @@ Files in this package:
 
 ## Step 1 — Apply the schema
 
-Run `supabase/paystack_webhook.sql` in the Supabase **SQL Editor**
-(prerequisite: `schema.review.sql` already applied). Idempotent — safe to re-run.
+Run `supabase/migrations (see supabase/SETUP.md)` in the Supabase **SQL Editor**
+(prerequisite: `supabase/migrations` already applied). Idempotent — safe to re-run.
 
 ## Step 2 — Deploy the function
 

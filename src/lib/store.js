@@ -34,6 +34,8 @@ export async function submitRecord(table, payload) {
         .from(table)
         .insert([{ ...payload, created_at: new Date().toISOString() }]);
       if (!error) return { ok: true, source: 'supabase' };
+      // Unique violation (e.g. an email already subscribed): the record exists.
+      if (error.code === '23505') return { ok: true, source: 'supabase' };
       console.warn(`[store] Supabase insert into ${table} failed — queuing locally:`, error.message);
     } catch (err) {
       console.warn(`[store] Supabase error for ${table} — queuing locally:`, err.message);

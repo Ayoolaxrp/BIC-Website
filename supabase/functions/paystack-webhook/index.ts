@@ -33,6 +33,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const PAYSTACK_SECRET_KEY = Deno.env.get('PAYSTACK_SECRET_KEY') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+// Minimum amount that counts as a paid membership, in kobo. ₦2,500 = 250000.
+// Set MEMBERSHIP_FEE_KOBO as a function secret if the club changes the fee.
+const MEMBERSHIP_FEE_KOBO = Number(Deno.env.get('MEMBERSHIP_FEE_KOBO') ?? '250000');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -137,6 +140,14 @@ Deno.serve(async (req: Request) => {
       return json({ received: true }, 200); // don't record failed transactions
     }
 
+    // 2b. A membership only counts as paid if the full fee was paid.
+    const underpaid = paymentType === 'membership' && verified.amount_kobo < MEMBERSHIP_FEE_KOBO;
+    if (underpaid) {
+      console.error(
+        `paystack-webhook: ${reference} paid ${verified.amount_kobo} kobo, below the ${MEMBERSHIP_FEE_KOBO} fee`,
+      );
+    }
+
     // 3. Record the payment — idempotent via unique paystack_ref (Paystack
     //    retries failed deliveries, so the same event can arrive twice).
     const { error: payErr } = await supabase.from('payments').upsert(
@@ -145,7 +156,7 @@ Deno.serve(async (req: Request) => {
         payment_type: paymentType,
         email: email || null,
         amount_kobo: verified.amount_kobo,
-        status: 'paid',
+        status: underpaid ? 'failed' : 'paid',
         event_id: paymentType === 'ticket' ? (metadata.event_id ?? null) : null,
         event_name: paymentType === 'ticket' ? (metadata.event_name ?? null) : null,
         raw: txn,
@@ -156,7 +167,7 @@ Deno.serve(async (req: Request) => {
     if (payErr) throw payErr;
 
     // 4. Membership fee → mark the application paid (idempotent update).
-    if (paymentType === 'membership') {
+    if (paymentType === 'membership' && !underpaid) {
       const { error: appErr } = await supabase
         .from('member_applications')
         .update({

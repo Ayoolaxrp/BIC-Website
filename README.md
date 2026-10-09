@@ -35,7 +35,7 @@ browser. Add keys to unlock the full experience.
 
 1. Create a free project at <https://supabase.com> → **New project** (name: `bic`, region:
    choose closest to Nigeria, e.g. `eu-central-1` or `eu-west-2`). Wait for provisioning.
-2. Open **SQL Editor** → paste the entire contents of `supabase/schema.sql` → **Run**.
+2. Open **SQL Editor** → paste the entire contents of `supabase/migrations (see supabase/SETUP.md)` → **Run**.
    This creates all tables, triggers, and row-level-security policies. Safe to re-run.
 3. Enable email auth: **Authentication → Providers → Email** (enabled by default).
    For development you may disable "Confirm email" so you can sign in instantly;
@@ -53,7 +53,7 @@ browser. Add keys to unlock the full experience.
 6. **Create your admin users** (do this after the site is deployed, or now):
    - Go to the site → `/member` → **Create an account** (use a real email + password).
    - Or create the user in **Authentication → Users → Add user**.
-   - Then run **`supabase/promote-admins.sql`** in the SQL Editor — it promotes
+   - Then run **`supabase/migrations (see supabase/SETUP.md)`** in the SQL Editor — it promotes
      all 23 executives to admin in one shot. **Edit the placeholder emails first**
      to each exec's real registered email. It also assigns each sector chairperson
      their community (`sector` column), which drives sector-tagged resources.

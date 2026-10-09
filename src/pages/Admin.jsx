@@ -84,7 +84,7 @@ function FileField({ name, kind = 'image', label, hint }) {
 
   return (
     <Field label={label} hint={hint}>
-      <input ref={inputRef} type="file" name={name} accept={kind === 'image' ? 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml' : 'application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/csv,text/plain,application/zip'} onChange={onChange} />
+      <input ref={inputRef} type="file" name={name} accept={kind === 'image' ? 'image/png,image/jpeg,image/webp,image/gif' : 'application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/csv,text/plain,application/zip'} onChange={onChange} />
       {size && <span style={{ fontSize: '0.78rem', color: '#55617e' }}>{size}</span>}
       {kind === 'image' && preview && (
         <img src={preview} alt="Preview" className="admin-upload-preview" />
@@ -305,7 +305,7 @@ export default function Admin() {
           <p className="admin-hint" style={{ marginTop: 16 }}>
             {isDemoMode
               ? 'Demo mode stores nothing. Connect Supabase to sign in with a real account.'
-              : 'First time? Create the admin user in Supabase and run the promotion SQL from supabase/schema.sql (see README).'}
+              : 'First time? Create the admin user in Supabase and make yourself admin with step 5 of supabase/SETUP.md.'}
           </p>
         </div>
       </section>
@@ -469,8 +469,8 @@ export default function Admin() {
                 <Field label="Location"><input type="text" name="location" placeholder="Main Auditorium, Babcock University" /></Field>
                 <Field label="Type"><input type="text" name="event_type" placeholder="Summit | Workshop | Competition" /></Field>
               </div>
-              <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB. PNG, JPG, WEBP, GIF or SVG." />
-              <Field label="…or image URL (optional)"><input type="url" name="image_url" placeholder="https://images.unsplash.com/..." /></Field>
+              <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB. PNG, JPG, WEBP or GIF." />
+              <Field label="…or image URL (optional)"><input type="url" name="image_url" placeholder="https://..." /></Field>
               <label className="admin-check">
                 <input type="checkbox" name="is_upcoming" defaultChecked /> This is an upcoming event
               </label>
@@ -566,7 +566,7 @@ export default function Admin() {
                 </Field>
                 <Field label="Summary (1 or 2 sentences)"><textarea name="summary" required></textarea></Field>
                 <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB." />
-                <Field label="…or cover image URL (optional)"><input type="url" name="cover_url" placeholder="https://images.unsplash.com/..." /></Field>
+                <Field label="…or cover image URL (optional)"><input type="url" name="cover_url" placeholder="https://..." /></Field>
               </AdminForm>
             )}
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Articles</h2>

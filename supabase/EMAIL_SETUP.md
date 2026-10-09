@@ -15,14 +15,14 @@ Files in this package:
 
 - `functions/send-email/index.ts` — the Edge Function that builds and sends the
   emails through the Resend API.
-- `email_triggers.sql` — DB triggers that call the function on insert.
+- `supabase/migrations` — DB triggers that call the function on insert.
 - this runbook.
 
 ---
 
 ## Step 0 — What you need
 
-- A Supabase project with the schema from `schema.review.sql` applied (tables
+- A Supabase project with the schema from `supabase/migrations` applied (tables
   `member_applications` + `rsvps` must exist).
 - A Resend account and API key (see Step 1).
 - Supabase CLI for deploying the function (`npm i -g supabase`, or
@@ -70,7 +70,7 @@ supabase secrets set \
 
 ## Step 3 — Add the database triggers
 
-Open `supabase/email_triggers.sql`, replace the two placeholders
+Open `supabase/migrations (see supabase/SETUP.md)`, replace the two placeholders
 (`YOUR_PROJECT_REF`, `CHANGE_ME_WEBHOOK_SECRET` — must equal the
 `WEBHOOK_SECRET` you set above), then run the file in the Supabase **SQL
 Editor**. It is safe to re-run.
@@ -115,11 +115,11 @@ Editor**. It is safe to re-run.
 
 | Symptom | Cause / fix |
 |---|---|
-| `401 Unauthorized` in function logs | `x-webhook-secret` in `email_triggers.sql` ≠ `WEBHOOK_SECRET` secret. Fix and re-run the SQL. |
+| `401 Unauthorized` in function logs | `x-webhook-secret` in `supabase/migrations` ≠ `WEBHOOK_SECRET` secret. Fix and re-run the SQL. |
 | `404` calling the function URL | Function not deployed (`supabase functions deploy send-email --no-verify-jwt`) or wrong project ref. |
 | Emails send but never arrive | Using `onboarding@resend.dev` — only delivers to the Resend account owner's inbox. Verify a domain. |
 | `Resend API error 403` | API key is restricted or the from-address isn't allowed yet. |
-| No email at all, inserts still work | Check `supabase functions logs send-email`; ensure `email_triggers.sql` was run **after** deploying the function. |
+| No email at all, inserts still work | Check `supabase functions logs send-email`; ensure `supabase/migrations` was run **after** deploying the function. |
 | `schema "supabase_functions" does not exist` | Deploy any Edge Function first (it provisions the schema), then re-run the SQL. |
 
 ---

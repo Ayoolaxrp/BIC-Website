@@ -2,7 +2,7 @@
 // BIC — send-email Supabase Edge Function (Deno)
 // ============================================================================
 // Sends transactional confirmation emails via Resend (https://resend.com).
-// Called by the database triggers in ../email_triggers.sql whenever a row is
+// Called by the database triggers in ../migrations/20261009000500_email_notifications.sql whenever a row is
 // inserted into `member_applications` (membership application confirmation)
 // or `rsvps` (event RSVP confirmation).
 //
@@ -15,7 +15,7 @@
 //   supabase secrets set RESEND_API_KEY=re_... \
 //     FROM_EMAIL="Babcock Investors Club <onboarding@resend.dev>" \
 //     WEBHOOK_SECRET=<long random string> \
-//     SITE_URL=https://babcockinvestorsclub.org
+//     SITE_URL=https://bic-react.vercel.app   (change when the club domain is live)
 //
 // Test locally:
 //   supabase functions serve send-email
@@ -30,7 +30,7 @@ const FROM_EMAIL =
   Deno.env.get('FROM_EMAIL') ??
   'Babcock Investors Club <onboarding@resend.dev>';
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? '';
-const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://babcockinvestorsclub.org';
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://bic-react.vercel.app';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -139,7 +139,7 @@ function applicationEmail(record: Record<string, unknown>): {
      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e3e8ef;border-radius:8px;margin:16px 0;">
        <tr><td style="padding:14px 18px;font-size:13px;color:#475569;">
          <strong style="color:#011B33;">Payment reference:</strong> ${ref}<br/>
-         <strong style="color:#011B33;">Status:</strong> Received — the executive team will onboard you at the next session.
+         <strong style="color:#011B33;">Status:</strong> Received. The executive team will onboard you at the next session.
        </td></tr>
      </table>
      <p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">
@@ -152,7 +152,7 @@ function applicationEmail(record: Record<string, unknown>): {
     `Hi ${name},\n\n` +
     `Thank you for applying to join the Babcock Investors Club! Your membership application and payment have been received.\n\n` +
     `Payment reference: ${ref}\n` +
-    `Status: Received — the executive team will onboard you at the next session.\n\n` +
+    `Status: Received. The executive team will onboard you at the next session.\n\n` +
     `Keep an eye on your email and our socials for session schedules and next steps.\n\n` +
     `Welcome aboard!\nBabcock Investors Club\n${SITE_URL}`;
   return { subject: 'Your BIC Membership Application Was Received', html, text };
@@ -182,7 +182,7 @@ function rsvpEmail(record: Record<string, unknown>): {
     `You're on the list for ${event}.\n\n` +
     `Registration details, the venue/joining link, and reminders will be shared on our socials and on the website as the date approaches.\n\n` +
     `See you there!\nBabcock Investors Club\n${SITE_URL}`;
-  return { subject: `You're In — ${event}`, html, text };
+  return { subject: `You're in: ${event}`, html, text };
 }
 
 // ---------------------------------------------------------------------------
