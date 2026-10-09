@@ -38,8 +38,14 @@ export async function submitRecord(table, payload) {
     } catch (err) {
       console.warn(`[store] Supabase error for ${table} — queuing locally:`, err.message);
     }
+    // Keep a local copy so nothing is lost, but never report it as sent:
+    // a copy in the visitor's browser does not reach the club.
+    queueLocally(table, payload);
+    return { ok: false, source: 'error' };
   }
-  return queueLocally(table, payload);
+  // Not connected: nothing would reach the club, so say so. Forms render
+  // <OfflineNotice> instead of submitting when Supabase is not configured.
+  return { ok: false, source: 'offline' };
 }
 
 /** Read locally queued submissions (useful for a future admin/export view). */

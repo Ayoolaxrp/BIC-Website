@@ -1,16 +1,19 @@
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import Seo from '../components/Seo';
-import useCountdown from '../hooks/useCountdown';
 import { asset } from '../lib/assets';
+import { mailto } from '../lib/contact';
 
-// Next flagship session. Mirrors the Events page so both pages agree.
+// Next major event, as the club asked it to be shown: month and place only.
+// Matches the first entry on the Events page (club calendar, Oct 2026).
 const NEXT_EVENT = {
-  title: 'BIC Welcome Seminar',
-  date: '2026-11-01T10:00:00',
-  when: '1 November 2026, 10:00 AM',
-  note: 'Free for all students',
+  title: 'BIC 2026/2027: Welcome to the Next Chapter',
+  when: 'November 2026',
+  where: 'Babcock University',
 };
+
+// Sponsors of the 2026 Investment Seminar, from the club's "Meet our sponsors" poster.
+const sponsors = ['Fundbox Financial Services', 'Leadway Assurance', 'More Ladda (Meristem)', 'Chapel Hill Denham'];
 
 const sectors = [
   { name: 'Securities', text: 'Equity research, earnings and portfolio building on the Nigerian Exchange.' },
@@ -19,17 +22,17 @@ const sectors = [
   { name: 'Real estate', text: 'Property, REITs and the basics of building wealth through land.' },
 ];
 
-// Only figures the club has confirmed (see AUDIT.md) or that are
-// structural facts of the club itself.
+// Only figures the club has confirmed (150+ members, Oct 2026) or that
+// are structural facts of the club itself.
 const facts = [
-  { value: '50+', label: 'active members' },
+  { value: '150+', label: 'active members' },
   { value: '4', label: 'market sectors' },
   { value: '7', label: 'student committees' },
 ];
 
 const steps = [
   { title: 'Apply', text: 'Fill in the form with your Babcock email. It takes about two minutes.' },
-  { title: 'Pay ₦5,000', text: 'Online through Paystack, or in person with the membership team.' },
+  { title: 'Pay ₦2,500', text: 'The membership fee. The membership team will tell you how to pay.' },
   { title: 'Pick a sector', text: 'Join a market sector, and a committee if you want to help run the club.' },
 ];
 
@@ -40,18 +43,7 @@ const gallery = [
   { src: '/images/bic-2025-10.webp', w: 1600, h: 1181, alt: 'A member receiving a certificate of recognition from the club' },
 ];
 
-function daysUntil(countdown) {
-  if (!countdown) return null;
-  const d = countdown.days;
-  if (d > 1) return `In ${d} days`;
-  if (d === 1) return 'Tomorrow';
-  return 'Today';
-}
-
 export default function Home() {
-  const countdown = useCountdown(NEXT_EVENT.date);
-  const soon = daysUntil(countdown);
-
   return (
     <>
       <Seo />
@@ -83,19 +75,17 @@ export default function Home() {
         </div>
       </header>
 
-      {/* NEXT EVENT: only shown while there is one to count down to */}
-      {soon && (
-        <section className="h-next" aria-label="Next event">
-          <div className="container h-next-inner">
-            <div>
-              <p className="h-next-kicker">{soon}</p>
-              <p className="h-next-title">{NEXT_EVENT.title}</p>
-              <p className="h-next-meta">{NEXT_EVENT.when}. {NEXT_EVENT.note}.</p>
-            </div>
-            <Link to="/events" className="btn btn-outline">Event details</Link>
+      {/* NEXT EVENT: month and place only, as the club asked */}
+      <section className="h-next" aria-label="Next event">
+        <div className="container h-next-inner">
+          <div>
+            <p className="h-next-kicker">Upcoming event</p>
+            <p className="h-next-title">{NEXT_EVENT.title}</p>
+            <p className="h-next-meta">{NEXT_EVENT.when}, {NEXT_EVENT.where}</p>
           </div>
-        </section>
-      )}
+          <Link to="/events" className="btn btn-outline">Event details</Link>
+        </div>
+      </section>
 
       {/* SECTORS: a plain two-column list, no cards */}
       <section className="h-section">
@@ -166,22 +156,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PARTNERS: one quiet tile, not a pricing table */}
+      {/* PARTNERS: who has backed the club, then one quiet tile */}
       <section className="h-section">
         <div className="container">
+          <div className="h-sponsors">
+            <p>Our 2026 Investment Seminar was sponsored by</p>
+            <ul>
+              {sponsors.map((name) => <li key={name}>{name}</li>)}
+            </ul>
+          </div>
           <FadeIn className="h-partner surface-dark">
             <div>
               <h2>Reach students who care about money.</h2>
               <p>
-                Sponsor a seminar, speak at a session or recruit interns. The deck covers our
-                formats and pricing.
+                Sponsor a seminar, speak at a session or recruit interns. Partners are named on
+                this site, on our event posters and across our socials.
               </p>
             </div>
             <div className="h-actions">
-              <a href={asset('/resources/bic-sponsorship-deck.pdf')} className="btn btn-primary" download>
-                Download the deck
-              </a>
-              <Link to="/sponsorship" className="btn btn-outline">Partner with BIC</Link>
+              <Link to="/sponsorship" className="btn btn-primary">Partner with BIC</Link>
+              <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
             </div>
           </FadeIn>
         </div>

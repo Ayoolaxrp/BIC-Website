@@ -2,7 +2,9 @@ import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
 import useSubmission from '../hooks/useSubmission';
-import { asset } from '../lib/assets';
+import OfflineNotice from '../components/OfflineNotice';
+import { supabaseConfigured } from '../lib/config';
+import { RESPONSE_TIME, mailto } from '../lib/contact';
 
 const Check = ({ size = 18 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
@@ -14,7 +16,6 @@ const partners = [
   { name: 'Leadway Assurance', note: 'Annual Investment Seminar 2026' },
   { name: 'More Ladda (Meristem)', note: 'Annual Investment Seminar 2026' },
   { name: 'Chapel Hill Denham', note: 'Annual Investment Seminar 2026' },
-  { name: 'Bamboo', note: 'University Bamboo League' },
 ];
 
 const offers = [
@@ -59,12 +60,10 @@ const tiers = [
 ];
 
 const steps = [
-  { title: 'Send an enquiry', text: 'Tell us what you want to achieve. We reply within two working days.' },
-  { title: 'Agree the plan', text: 'We go through the deck together and agree deliverables and dates.' },
+  { title: 'Send an enquiry', text: `Tell us what you want to achieve. We reply ${RESPONSE_TIME}.` },
+  { title: 'Agree the plan', text: 'We talk through the options and agree what you get, and when.' },
   { title: 'Run it and report', text: 'We deliver the partnership and report back on attendance and reach.' },
 ];
-
-const deckUrl = asset('/resources/bic-sponsorship-deck.pdf');
 
 const scrollToInquiry = (e) => {
   e.preventDefault();
@@ -72,7 +71,7 @@ const scrollToInquiry = (e) => {
 };
 
 export default function Sponsorship() {
-  const { status, result, submit, reset } = useSubmission('sponsorship_inquiries');
+  const { status, submit, reset } = useSubmission('sponsorship_inquiries');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,7 +101,7 @@ export default function Sponsorship() {
       >
         <div className="h-actions" style={{ marginTop: 28 }}>
           <a href="#inquiry-form" className="btn btn-primary" onClick={scrollToInquiry}>Send an enquiry</a>
-          <a href={deckUrl} download className="btn btn-outline">Download the deck</a>
+          <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
         </div>
       </PageHero>
 
@@ -145,7 +144,7 @@ export default function Sponsorship() {
         <div className="container">
           <FadeIn className="sec-head">
             <h2 className="sec-title">Three ways to partner.</h2>
-            <p className="sec-sub">Prices and full details are in the deck. If none of these fit, tell us what you have in mind.</p>
+            <p className="sec-sub">Send an enquiry for prices and details. If none of these fit, tell us what you have in mind.</p>
           </FadeIn>
           <div className="tier-grid">
             {tiers.map((t) => (
@@ -178,6 +177,7 @@ export default function Sponsorship() {
             </ol>
           </div>
 
+          {supabaseConfigured ? (
           <div className="partner-form-box">
             <h3 className="form-title">Partnership enquiry</h3>
             <form onSubmit={handleSubmit}>
@@ -222,16 +222,22 @@ export default function Sponsorship() {
 
               {status === 'success' && (
                 <div className="form-status visible success" role="status">
-                  Enquiry sent. {result?.source === 'local'
-                    ? 'Saved on this device. Connect Supabase to store it in the cloud.'
-                    : 'We reply within two working days.'}
+                  Enquiry sent. We reply {RESPONSE_TIME}.
                 </div>
               )}
               {status === 'error' && (
-                <div className="form-status visible error" role="alert">That didn't send. Please try again.</div>
+                <div className="form-status visible error" role="alert">That didn't send. Please email us instead.</div>
               )}
             </form>
           </div>
+          ) : (
+            <OfflineNotice
+              title="Partnership enquiry"
+              text="The enquiry form is not switched on yet."
+              subject="Partnership with BIC"
+              message="Hello BIC, we would like to talk about partnering with the club. Organisation: "
+            />
+          )}
         </div>
       </section>
     </>

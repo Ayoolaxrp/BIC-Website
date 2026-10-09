@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser, isDemoMode, onAuthChange, signOut } from '../lib/auth';
 import './Navbar.css';
 import { asset } from '../lib/assets';
+import { supabaseConfigured } from '../lib/config';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -119,7 +120,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/member" className="navbar-login-link">Log in</Link>
+                {supabaseConfigured && <Link to="/member" className="navbar-login-link">Log in</Link>}
                 <Link to="/membership" className="btn btn-primary">Join BIC</Link>
               </>
             )}
@@ -157,7 +158,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link to="/member" className="navbar-login-link">Log in</Link>
+            {supabaseConfigured && <Link to="/member" className="navbar-login-link">Log in</Link>}
             <Link to="/membership" className="btn btn-primary">Join BIC</Link>
           </>
         )}

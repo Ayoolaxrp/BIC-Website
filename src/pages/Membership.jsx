@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
+import OfflineNotice from '../components/OfflineNotice';
 import usePaystack from '../hooks/usePaystack';
 import { submitRecord } from '../lib/store';
 import { SECTORS } from '../lib/sectors';
-import { PAYSTACK_PUBLIC_KEY, paystackConfigured } from '../lib/config';
+import { PAYSTACK_PUBLIC_KEY, paystackConfigured, supabaseConfigured } from '../lib/config';
 
-const MEMBERSHIP_FEE = 5000; // NGN
+const MEMBERSHIP_FEE = 2500; // NGN, set by the club Oct 2026
 
 const benefits = [
   {
@@ -64,7 +65,7 @@ const steps = [
     ),
   },
   {
-    title: 'Pay the ₦5,000 Fee',
+    title: 'Pay the ₦2,500 Fee',
     text: 'Pay securely through Paystack, or in person while online payment is being set up.',
     icon: (
       <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h2m-5 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2z" /></svg>
@@ -89,7 +90,7 @@ const faqs = [
     a: 'Any registered Babcock University student, from 100 to 500 level, in any department. Just use your official @babcock.edu.ng email to register.',
   },
   {
-    q: 'What does the ₦5,000 membership fee cover?',
+    q: 'What does the ₦2,500 membership fee cover?',
     a: 'The fee funds club sessions, educational resources, event logistics, and prizes. Members get access to all weekly sessions, sector communities, committees, and discounted or free entry to flagship events.',
   },
   {
@@ -165,7 +166,7 @@ export default function Membership() {
       if (res.ok) {
         setFormMsg({
           type: 'success',
-          text: 'Application received! Online payment is being set up, so the membership team will contact you at your Babcock email to complete your ₦5,000 registration.',
+          text: 'Application received! Online payment is being set up, so the membership team will contact you at your Babcock email to complete your ₦2,500 registration.',
         });
         formRef.current.reset();
         setSelectedInterests([]);
@@ -284,8 +285,16 @@ export default function Membership() {
 
           {/* REGISTRATION FORM */}
           <div>
+            {!supabaseConfigured ? (
+              <OfflineNotice
+                title="Apply to join BIC"
+                text="Online applications are not switched on yet. The membership fee is ₦2,500."
+                subject="Membership application"
+                message={'Hello BIC, I would like to join the club.\nFull name: \nMatric number: \nDepartment: \nLevel: \nSector of interest: '}
+              />
+            ) : (
             <div className="registration-box">
-              <h3>Membership Application</h3>
+              <h3>Membership application</h3>
               <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label>Full Name</label>
@@ -390,13 +399,13 @@ export default function Membership() {
                         ? 'Preparing payment...'
                         : 'Submitting application...'
                       : paystackConfigured
-                        ? 'Proceed to Payment (₦5,000)'
+                        ? 'Proceed to Payment (₦2,500)'
                         : 'Submit Application'}
                   </button>
                   {!paystackConfigured && (
                     <p className="form-note" style={{ marginTop: 10 }}>
                       Online payment is being set up. Submit your application now and the
-                      membership team will contact you to complete your ₦5,000 registration.{' '}
+                      membership team will contact you to complete your ₦2,500 registration.{' '}
                       <Link to="/contact">Questions? Contact us.</Link>
                     </p>
                   )}
@@ -414,6 +423,7 @@ export default function Membership() {
                 </p>
               </form>
             </div>
+            )}
           </div>
         </div>
 

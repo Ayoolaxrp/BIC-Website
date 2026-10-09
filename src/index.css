@@ -29,21 +29,22 @@
 
 :root {
   /* ---- BIC colour system ----------------------------------------
-     From the club brief: navy, white, black, gold accents, deep-green
-     accents. One rule keeps the two accents from competing:
-       gold lives on navy (brand moments, primary action on dark),
-       deep green lives on white (links, labels, success).
-     Legacy --sky-* names are kept as aliases so every page picks up
-     the new palette; dark surfaces re-point them to gold below. */
+     Navy, white and black carry the page. One accent family, green,
+     matching the club logo (the club asked for green over yellow,
+     Oct 2026): a light "mint" green where it sits on navy, a deep
+     green where it sits on white. Legacy --gold* and --sky-* names
+     are aliases so older rules pick up the same green. */
   --navy: #0a1931;
   --navy-mid: #15305b;
   --navy-light: #1f4277;
-  --gold: #c9a54a;          /* 7.2:1 on navy */
-  --gold-light: #dfc277;
-  --gold-ink: #7a5c12;      /* gold text on white, 6.2:1 */
-  --green: #14593f;         /* deep green, 8.4:1 on white */
+  --mint: #4fc58f;          /* green on navy, 7.6:1 */
+  --mint-light: #7fd8ae;
+  --green: #14593f;         /* deep green on white, 8.4:1 */
   --green-light: #1f7a55;
   --green-tint: #e8f1ec;
+  --gold: var(--mint);
+  --gold-light: var(--mint-light);
+  --gold-ink: var(--green);
 
   --sky-blue: var(--green);
   --sky-blue-light: var(--green-light);
@@ -766,7 +767,6 @@ div + .form-group {
   color: var(--white);
 
 }
-.footer-logo .logo-tagline { color: #e2c069; } /* light gold passes on the dark footer */
 .footer-col h2 {
   color: var(--white);
   font-size: 0.9rem;
@@ -1066,7 +1066,6 @@ div + .form-group {
 .sponsor-logo svg { width: 32px; height: 32px; }
 
 .cta-section { background: linear-gradient(135deg, var(--navy) 0%, var(--black) 100%); padding: 100px 0; position: relative; overflow: hidden; text-align: center; }
-.cta-section::before { content: ''; position: absolute; inset: 0; background: url('/images/hero-bg.webp') center/cover; opacity: 0.1; }
 .cta-content { position: relative; z-index: 2; max-width: 600px; margin: 0 auto; }
 .cta-content h2 { color: var(--white); margin-bottom: 20px; }
 .cta-content p { color: rgba(255,255,255,0.7); margin-bottom: 40px; font-size: 1.1rem; }
@@ -1146,7 +1145,6 @@ div + .form-group {
 /* --- CONTACT PAGE EXTRA --- */
 .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 64px; }
 .contact-info { background: var(--navy); color: var(--white); border-radius: var(--radius-lg); padding: 48px; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
-.contact-info::before { content: ''; position: absolute; inset: 0; background: url('/images/hero-bg.webp') center/cover; opacity: 0.1; }
 .contact-info-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
 .contact-info-content h2 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 8px; }
 .contact-info-content > p { color: rgba(255,255,255,0.7); margin-bottom: 48px; font-size: 0.95rem; }

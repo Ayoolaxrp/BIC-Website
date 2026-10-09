@@ -7,13 +7,7 @@ import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api'
 import { asset } from '../lib/assets';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
 
-const MEMBER_RESOURCES = [
-  { name: "Beginner's Guide to Investing", file: asset('/resources/bic-beginners-guide-to-investing.pdf'), size: 'PDF · 4.4 KB' },
-  { name: 'Nigerian Stock Market 101', file: asset('/resources/bic-nigerian-stock-market-101.pdf'), size: 'PDF · 3.9 KB' },
-  { name: 'Mock Trading Tournament Rules', file: asset('/resources/bic-mock-trading-rules.pdf'), size: 'PDF · 3.2 KB' },
-  { name: 'Personal Budgeting Template', file: asset('/resources/bic-budget-template.csv'), size: 'CSV · 538 B' },
-  { name: 'Sponsorship Prospectus', file: asset('/resources/bic-sponsorship-deck.pdf'), size: 'PDF · 3.2 KB' },
-];
+const MEMBER_RESOURCES = [];
 
 function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }) {
   return (
@@ -31,7 +25,7 @@ function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }
   );
 }
 
-export default function Member() {
+function MemberPortal() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [application, setApplication] = useState(null);
@@ -348,7 +342,7 @@ export default function Member() {
           {application ? (
             <span className="badge badge-green">Application Received</span>
           ) : (
-            <Link to="/membership" className="btn btn-primary">Apply Now (₦5,000)</Link>
+            <Link to="/membership" className="btn btn-primary">Apply now (₦2,500)</Link>
           )}
         </div>
 
@@ -490,4 +484,33 @@ export default function Member() {
       </motion.div>
     </section>
   );
+}
+
+/**
+ * Member accounts need Supabase Auth. Until it is connected, show a plain
+ * "coming soon" page instead of a demo login that stores nothing.
+ */
+function MemberComingSoon() {
+  return (
+    <>
+      <Seo title="Member portal" noindex />
+      <header className="page-hero">
+        <div className="container">
+          <h1>Member accounts are coming soon.</h1>
+          <p>
+            Once they are live you will be able to see your membership status, RSVPs and member
+            resources here. Until then, apply on the membership page and the team will contact you.
+          </p>
+          <div className="h-actions" style={{ marginTop: 28 }}>
+            <Link to="/membership" className="btn btn-primary">Join BIC</Link>
+            <Link to="/contact" className="btn btn-outline">Contact the club</Link>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}
+
+export default function Member() {
+  return isDemoMode ? <MemberComingSoon /> : <MemberPortal />;
 }

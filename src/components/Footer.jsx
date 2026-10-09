@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { submitRecord } from '../lib/store';
 import { asset } from '../lib/assets';
+import { supabaseConfigured } from '../lib/config';
+import { BIC_INSTAGRAM, BIC_LINKEDIN, CLUB_EMAIL, CLUB_PHONE, CLUB_PHONE_E164, CLUB_TAGLINE, mailto } from '../lib/contact';
 
-export const BIC_LINKEDIN = 'https://www.linkedin.com/company/babcock-investors-club/';
-
-export const BIC_INSTAGRAM = 'https://www.instagram.com/babcock_investors_club/';
 
 const IG = () => (
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
@@ -45,7 +44,11 @@ export default function Footer() {
               <img src={asset('/images/logo.png')} alt="" width={36} height={36} />
               <span className="logo-name">Babcock Investors Club</span>
             </div>
-            <p>The student investment club at Babcock University, Ilishan-Remo.</p>
+            <p>{CLUB_TAGLINE}</p>
+            <p className="footer-note">
+              <a href={mailto('Hello BIC')}>{CLUB_EMAIL}</a><br />
+              <a href={`tel:+${CLUB_PHONE_E164}`}>{CLUB_PHONE}</a>
+            </p>
             <div className="footer-social">
               {[
                 [BIC_INSTAGRAM, <IG />, 'Instagram'],
@@ -66,13 +69,15 @@ export default function Footer() {
           <div className="footer-col">
             <h2>Members &amp; partners</h2>
             <ul>
-              <li><Link to="/member">Member portal</Link></li>
+              {supabaseConfigured && <li><Link to="/member">Member portal</Link></li>}
               <li><Link to="/sponsorship">Partner with BIC</Link></li>
-              <li><a href={asset('/resources/bic-sponsorship-deck.pdf')} download>Sponsorship deck (PDF)</a></li>
+              <li><Link to="/contact">Contact the club</Link></li>
             </ul>
           </div>
           <div className="footer-col">
             <h2>Newsletter</h2>
+            {supabaseConfigured ? (
+            <>
             <p className="footer-note">Event dates and market notes from the club.</p>
             <form className="footer-newsletter" onSubmit={handleNewsletter}>
               <label htmlFor="footer-email" className="visually-hidden">Email address</label>
@@ -86,6 +91,13 @@ export default function Footer() {
             )}
             {newsStatus === 'error' && (
               <p className="news-status err" role="alert">That didn't go through. Please try again.</p>
+            )}
+            </>
+            ) : (
+              <p className="footer-note">
+                Email sign-up is coming soon. For event dates, follow us on{' '}
+                <a href={BIC_INSTAGRAM} target="_blank" rel="noreferrer">Instagram</a>.
+              </p>
             )}
           </div>
         </div>

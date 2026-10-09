@@ -9,7 +9,7 @@
    never overshoot, system type with size-specific tracking, material
    for chrome, and every element earns its place.
 
-   Colour rule: gold lives on navy, deep green lives on white.
+   Colour rule: one accent, green. Mint green on navy, deep green on white.
    Shape rule: controls are pills, surfaces 18px, inputs 12px.
    ================================================================== */
 
@@ -33,7 +33,7 @@ h3 { font-size: var(--text-headline); line-height: 1.3; letter-spacing: -0.012em
 h4 { font-size: 1.0625rem; line-height: 1.35; letter-spacing: -0.008em; font-weight: 600; }
 p { color: var(--gray-700); line-height: 1.6; text-wrap: pretty; }
 small, .caption { font-size: var(--text-caption); letter-spacing: 0.006em; }
-::selection { background: rgba(201, 165, 74, 0.32); color: var(--navy); }
+::selection { background: rgba(79, 197, 143, 0.3); color: var(--navy); }
 
 .visually-hidden {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -101,22 +101,22 @@ small, .caption { font-size: var(--text-caption); letter-spacing: 0.006em; }
 .btn-white { background: var(--white); color: var(--navy); }
 
 /* ---- Dark surfaces ----
-   Every navy surface re-points the accent to gold and inverts the
+   Every navy surface re-points the accent to mint green and inverts the
    controls, so a button is always readable on what it sits on. */
 .surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient, .countdown-split, .navbar, .mobile-nav {
-  --sky-blue: var(--gold);
-  --sky-blue-light: var(--gold-light);
-  --sky-blue-dark: var(--gold-light);
-  --focus: var(--gold-light);
+  --sky-blue: var(--mint);
+  --sky-blue-light: var(--mint-light);
+  --sky-blue-dark: var(--mint-light);
+  --focus: var(--mint-light);
 }
 .surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient { color: var(--white); }
 :is(.surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient) :is(h1, h2, h3, h4) { color: var(--white); }
 :is(.surface-dark, .page-hero, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient) p { color: rgba(255, 255, 255, 0.78); }
 :is(.surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient, .navbar, .mobile-nav) .btn-primary {
-  background: var(--gold); border-color: var(--gold); color: var(--navy);
+  background: var(--mint); border-color: var(--mint); color: var(--navy);
 }
 :is(.surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient, .navbar, .mobile-nav) .btn-primary:hover {
-  background: var(--gold-light); border-color: var(--gold-light); color: var(--navy);
+  background: var(--mint-light); border-color: var(--mint-light); color: var(--navy);
 }
 :is(.surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient) :is(.btn-outline, .btn-navy, .btn-white) {
   background: transparent; color: var(--white); border-color: rgba(255, 255, 255, 0.36);
@@ -124,7 +124,7 @@ small, .caption { font-size: var(--text-caption); letter-spacing: 0.006em; }
 :is(.surface-dark, .page-hero, .footer, .cta-section, .bg-navy, .bg-navy-mid, .bg-black, .bg-gradient) :is(.btn-outline, .btn-navy, .btn-white):hover {
   background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.6); color: var(--white);
 }
-:is(.surface-dark, .page-hero, .cta-section) .section-label { color: var(--gold-light); }
+:is(.surface-dark, .page-hero, .cta-section) .section-label { color: var(--mint-light); }
 
 /* ---- Surfaces: hairline, 18px, flat at rest and on hover ---- */
 .card, .event-card, .blog-card, .value-card, .team-card, .vm-card, .achievement-card,
@@ -145,7 +145,7 @@ small, .caption { font-size: var(--text-caption); letter-spacing: 0.006em; }
   font-family: var(--font-text); font-size: 0.8125rem; font-weight: 600;
   letter-spacing: 0; text-transform: none; padding: 4px 10px; border-radius: var(--radius-control);
 }
-.badge-gold { background: #f6efdc; color: var(--gold-ink); }
+.badge-gold { background: var(--green-tint); color: var(--green); }
 .badge-green { background: var(--green-tint); color: var(--green); }
 .badge-navy { background: var(--navy); color: var(--white); }
 
@@ -206,7 +206,7 @@ input, select, textarea { font-family: var(--font-text); font-size: 1rem; }
   background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.16); color: var(--white);
 }
 .footer-newsletter input::placeholder { color: rgba(255, 255, 255, 0.45); }
-.footer-newsletter input:focus { border-color: var(--gold); }
+.footer-newsletter input:focus { border-color: var(--mint); }
 .footer-newsletter .btn-full { margin-top: 10px; }
 .news-status { font-size: 0.875rem; font-weight: 500; margin-top: 10px; }
 .news-status.ok { color: #8fd3b0; }
@@ -388,3 +388,58 @@ ol, ul { list-style: none; padding: 0; }
 /* ---- Forms: labels line up across grid columns ---- */
 .grid-2 { align-items: start; }
 .form-group label { display: block; margin: 0 0 6px; min-height: 0; }
+
+/* ---- "Not switched on yet" panel (forms without a database) ---- */
+.offline-notice {
+  background: var(--white); border: 1px solid var(--hairline); border-radius: var(--radius);
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+}
+.offline-notice h3 { color: var(--navy); margin-bottom: 8px; }
+.offline-notice p { color: var(--gray-500); margin-bottom: 20px; max-width: 34rem; }
+.offline-notice .btn-outline { white-space: normal; text-align: center; }
+
+/* ---- Events: a month-by-month timeline, no images, no countdown ---- */
+.tabs { justify-content: flex-start; gap: 8px; margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.tab-btn { border-radius: var(--radius-control); font-size: 0.9375rem; padding: 8px 18px; background: transparent; border: 1px solid var(--hairline-strong); }
+.tab-btn:hover { border-color: var(--navy); }
+.tab-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.event-timeline li {
+  display: grid; grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); gap: 8px 32px;
+  padding: 28px 0; border-top: 1px solid var(--hairline);
+}
+.et-when { font-size: 0.9375rem; font-weight: 600; color: var(--green); padding-top: 4px; }
+.et-body h2 { font-size: clamp(1.25rem, 2.2vw, 1.5rem); line-height: 1.25; letter-spacing: -0.016em; color: var(--navy); margin: 0 0 8px; }
+.et-body p { color: var(--gray-700); max-width: 40rem; }
+.et-body .badge { margin-bottom: 10px; display: inline-block; }
+.et-meta { margin-top: 8px; font-size: 0.9375rem; color: var(--gray-500) !important; }
+.event-timeline .flagship h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+@media (max-width: 640px) { .event-timeline li { grid-template-columns: 1fr; } }
+
+.past-list { display: grid; gap: clamp(2rem, 5vw, 3rem); }
+.past-event { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3rem); padding-top: 28px; border-top: 1px solid var(--hairline); }
+.past-poster { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--hairline); }
+.past-event h2 { font-size: clamp(1.375rem, 2.6vw, 1.75rem); color: var(--navy); margin: 4px 0 10px; letter-spacing: -0.018em; }
+.past-event p { color: var(--gray-700); max-width: 40rem; }
+.past-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
+.past-gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; }
+@media (max-width: 680px) { .past-event { grid-template-columns: 1fr; } .past-poster { max-width: 16rem; } }
+
+.rsvp-layout, .contact-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+@media (max-width: 860px) { .rsvp-layout, .contact-layout { grid-template-columns: 1fr; } }
+.contact-form-box { background: var(--white); padding: clamp(1.5rem, 4vw, 2.5rem); }
+
+/* ---- Contact channels ---- */
+.channel-list li { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 12px; padding: 16px 0; border-top: 1px solid var(--hairline); align-items: baseline; }
+.channel-list span { font-size: 0.9375rem; color: var(--gray-500); }
+.channel-list a, .channel-list p { font-size: 1.0625rem; font-weight: 500; color: var(--navy); overflow-wrap: anywhere; }
+.channel-list a:hover { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Footer contact lines ---- */
+.footer-note a { color: rgba(255, 255, 255, 0.85); }
+.footer-note a:hover { color: var(--white); text-decoration: underline; }
+
+/* ---- Home: partner visibility row ---- */
+.h-sponsors { margin-bottom: clamp(2rem, 5vw, 3rem); }
+.h-sponsors p { font-size: 0.9375rem; color: var(--gray-500); margin-bottom: 14px; }
+.h-sponsors ul { display: flex; flex-wrap: wrap; gap: 12px 40px; }
+.h-sponsors li { font-family: var(--font-display); font-size: clamp(1.125rem, 2vw, 1.375rem); font-weight: 600; letter-spacing: -0.015em; color: var(--navy); }
