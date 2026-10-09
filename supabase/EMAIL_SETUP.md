@@ -38,9 +38,9 @@ Files in this package:
    - Testing only: you can send from `onboarding@resend.dev` — but Resend only
      delivers those to **your own inbox** (the account owner's email).
    - Production: add your domain at <https://resend.com/domains>
-     (e.g. `babcockinvestorsclub.org`), add the two DNS records it shows you
+     (`babcockinvestorsclub.com`), add the two DNS records it shows you
      (SPF/DKIM), and wait for verification. Then send from
-     `Babcock Investors Club <hello@babcockinvestorsclub.org>`.
+     `Babcock Investors Club <hello@babcockinvestorsclub.com>`.
 
 ---
 
@@ -61,7 +61,7 @@ supabase secrets set \
   RESEND_API_KEY=re_xxxxxxxx \
   FROM_EMAIL="Babcock Investors Club <onboarding@resend.dev>" \
   WEBHOOK_SECRET=$(openssl rand -hex 32) \
-  SITE_URL=https://babcockinvestorsclub.org
+  SITE_URL=https://www.babcockinvestorsclub.com
 ```
 
 > `--no-verify-jwt` makes the function publicly callable **by URL only**; the

@@ -121,7 +121,7 @@ Membership fee is `₦5,000` (constant `MEMBERSHIP_FEE` in `src/pages/Membership
 2. Add the three environment variables from above under **Settings → Environment Variables**.
 3. Deploy. `vercel.json` in the repo already routes all paths to `index.html` (SPA).
    Netlify users: `netlify.toml` is included too.
-4. Set a custom domain (e.g. `babcockinvestorsclub.org`) in Vercel → Domains.
+4. The club domain `babcockinvestorsclub.com` (apex redirects to `www`) is set in Vercel → Domains.
 5. After the first deploy, do step 1.6 (create the admin user) from a browser.
 
 ## Sectors, member profiles & community groups

@@ -27,7 +27,7 @@ A premier student-led community focused on investment awareness, networking, lea
 - Nigerian university context: ₦ pricing, Nigerian Exchange references, WhatsApp as the community-channel norm (sector group invite links are placeholders pending real links from the club — see Capabilities).
 - Membership year/fee: ₦5,000 (what it covers is stated in the membership FAQ).
 - Event programming is seasonal and named (e.g. "BIC Welcome Seminar: The Next Chapter", "Stock Pitch Competition 2.0", "University Bamboo League") — the photo wall and event history are real club memory.
-- Live at https://bic-react.vercel.app (Vercel, auto-deploy from `main`; repo `Ayoolaxrp/BIC-Website`). The router also supports GitHub-Pages-style sub-path hosting.
+- Live at https://www.babcockinvestorsclub.com (also bic-react.vercel.app; Vercel, auto-deploy from `main`; repo `Ayoolaxrp/BIC-Website`). The router also supports GitHub-Pages-style sub-path hosting.
 
 ## Capabilities and Constraints
 

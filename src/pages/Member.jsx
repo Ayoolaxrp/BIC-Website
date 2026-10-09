@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCurrentUser, getMyApplication, getMyRsvps, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut, signUp, updateProfile } from '../lib/auth';
+import { googleAuthEnabled } from '../lib/config';
 import Seo from '../components/Seo';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
 import { asset } from '../lib/assets';
@@ -197,7 +198,7 @@ function MemberPortal() {
               <input type="password" required minLength={6} value={pass} onChange={(e) => setPass(e.target.value)} placeholder="At least 6 characters" />
             </div>
           </AuthCard>
-          {!isDemoMode && (
+          {!isDemoMode && googleAuthEnabled && (
             <>
               <div className="auth-divider" style={{ maxWidth: 460, margin: '14px auto 0' }}><span>or</span></div>
               <div className="text-center">

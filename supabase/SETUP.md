@@ -48,9 +48,10 @@ Authentication → Providers → **Email**: on, with **Confirm email** and
 **Secure email change** both on (they are by default; leave them on).
 Authentication → URL Configuration:
 
-- Site URL: `https://bic-react.vercel.app` (change when the club domain is live)
-- Redirect URLs: add `https://bic-react.vercel.app/**` and
-  `http://localhost:3000/**`
+- Site URL: `https://www.babcockinvestorsclub.com`
+- Redirect URLs: add `https://www.babcockinvestorsclub.com/**`, `https://babcockinvestorsclub.com/**`,
+  `https://bic-react.vercel.app/**`, `https://*-ayoolamikuns-projects.vercel.app/**`
+  (preview deploys) and `http://localhost:3000/**`
 
 ## 4. Connect the site
 
@@ -64,7 +65,7 @@ Preview):
 | `VITE_SUPABASE_URL` | Project URL |
 | `VITE_SUPABASE_ANON_KEY` | anon public key |
 | `VITE_PAYSTACK_PUBLIC_KEY` | Paystack public key (`pk_live_…`), when ready |
-| `VITE_SITE_URL` | only once the club domain is live |
+| `VITE_SITE_URL` | `https://www.babcockinvestorsclub.com` |
 
 Redeploy. The forms, newsletter and member login switch on by themselves.
 Never put the **service_role** key in Vercel or in the site.
@@ -91,7 +92,7 @@ see every form submission there.
    ```bash
    npx supabase functions deploy send-email --no-verify-jwt
    npx supabase secrets set RESEND_API_KEY=... FROM_EMAIL="BIC <hello@your-domain>" \
-     WEBHOOK_SECRET=<long random string> SITE_URL=https://bic-react.vercel.app
+     WEBHOOK_SECRET=<long random string> SITE_URL=https://www.babcockinvestorsclub.com
    ```
 3. Tell the database where to send, in the SQL editor:
    ```sql

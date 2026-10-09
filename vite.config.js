@@ -5,9 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { reticle } from '@reticlehq/vite-plugin';
 
 // One switch for every absolute URL (canonical, social cards, robots,
-// sitemap). Set VITE_SITE_URL in the host's env once the club's own
-// domain resolves; until then it points at the live Vercel deploy.
-const SITE_URL = (process.env.VITE_SITE_URL || 'https://bic-react.vercel.app').replace(/\/+$/, '');
+// sitemap).
+// The club's domain is babcockinvestorsclub.com; the apex redirects to www,
+// so www is the canonical host. Override with VITE_SITE_URL if that changes.
+const SITE_URL = (process.env.VITE_SITE_URL || 'https://www.babcockinvestorsclub.com').replace(/\/+$/, '');
 const PUBLIC_ROUTES = ['/', '/about', '/membership', '/events', '/blog', '/sponsorship', '/contact', '/legal'];
 
 function siteUrl() {

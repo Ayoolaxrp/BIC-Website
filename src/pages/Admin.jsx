@@ -23,6 +23,7 @@ import { getLocalQueue } from '../lib/store';
 import { uploadFile, formatBytes } from '../lib/upload';
 import { SECTORS, sectorLabel } from '../lib/sectors';
 import { getCurrentUser, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut } from '../lib/auth';
+import { googleAuthEnabled } from '../lib/config';
 
 const TABS = ['overview', 'events', 'articles', 'resources', 'newsletter', 'submissions'];
 
@@ -287,7 +288,7 @@ export default function Admin() {
               {loginBusy ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          {!isDemoMode && (
+          {!isDemoMode && googleAuthEnabled && (
             <>
               <div className="auth-divider"><span>or</span></div>
               <button

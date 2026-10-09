@@ -173,8 +173,8 @@ order by 2, 1;
    Google button — add your redirect URL in the Google Cloud console if you
    enable it).
 2. **Authentication → URL Configuration**: set **Site URL** to
-   `https://bic-react.vercel.app` and add
-   `https://bic-react.vercel.app/**` to **Redirect URLs**.
+   `https://www.babcockinvestorsclub.com` and add
+   `https://www.babcockinvestorsclub.com/**` (see supabase/SETUP.md for the full list) to **Redirect URLs**.
 3. Each executive signs up at `/member` (or is created under
    **Authentication → Users**), then gets promoted:
    - Open `supabase/migrations (see supabase/SETUP.md)`, replace the placeholder emails with

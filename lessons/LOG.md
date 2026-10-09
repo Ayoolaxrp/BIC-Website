@@ -15,9 +15,10 @@
   confirmed figures; 13,000 "reach" was the university's population.
 - **Club-authored copy is not ours to rewrite.** Vision and Mission on About are the
   club's words; only punctuation was touched.
-- **Dead domain in canonical.** babcockinvestorsclub.org does not resolve. All
-  absolute URLs come from `VITE_SITE_URL` (vite.config.js); set it on the host when
-  the domain is live. robots.txt and sitemap.xml are generated at build time.
+- **Check the real domain before assuming one.** The site pointed at
+  babcockinvestorsclub.org, which does not exist; the club owns
+  babcockinvestorsclub.com (apex redirects to www; check Vercel → Domains). All
+  absolute URLs come from `VITE_SITE_URL` (vite.config.js). robots.txt and sitemap.xml are generated at build time.
 - **Photos.** Most 2026 event photos are 543px wide; only use them small. Ask the
   club for originals.
 

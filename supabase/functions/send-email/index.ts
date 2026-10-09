@@ -15,7 +15,7 @@
 //   supabase secrets set RESEND_API_KEY=re_... \
 //     FROM_EMAIL="Babcock Investors Club <onboarding@resend.dev>" \
 //     WEBHOOK_SECRET=<long random string> \
-//     SITE_URL=https://bic-react.vercel.app   (change when the club domain is live)
+//     SITE_URL=https://www.babcockinvestorsclub.com
 //
 // Test locally:
 //   supabase functions serve send-email
@@ -30,7 +30,7 @@ const FROM_EMAIL =
   Deno.env.get('FROM_EMAIL') ??
   'Babcock Investors Club <onboarding@resend.dev>';
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? '';
-const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://bic-react.vercel.app';
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://www.babcockinvestorsclub.com';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
