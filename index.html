@@ -2,32 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="%BASE_URL%images/logo.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Babcock Investors Club (BIC) — a student-led investment and financial literacy community at Babcock University. Join 50+ active members building wealth and financial freedom." />
+    <link rel="icon" type="image/png" href="%BASE_URL%images/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Babcock Investors Club is the student investment club at Babcock University. Weekly sessions on stocks, forex, crypto and real estate, run by students." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#0a1931" />
-    <link rel="canonical" href="https://babcockinvestorsclub.org/" />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="%SITE_URL%/" />
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Babcock Investors Club" />
-    <meta property="og:title" content="Babcock Investors Club | Empowering Student Investors" />
-    <meta property="og:description" content="A student-led investment and financial literacy community at Babcock University. Join 50+ active members building wealth and financial freedom." />
-    <meta property="og:image" content="https://babcockinvestorsclub.org/images/logo.jpg" />
-    <meta property="og:url" content="https://babcockinvestorsclub.org/" />
+    <meta property="og:title" content="Babcock Investors Club" />
+    <meta property="og:description" content="The student investment club at Babcock University. Learn markets with people who are learning them too." />
+    <meta property="og:image" content="%SITE_URL%/images/bic-2025-1.webp" />
+    <meta property="og:url" content="%SITE_URL%/" />
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Babcock Investors Club | Empowering Student Investors" />
-    <meta name="twitter:description" content="A student-led investment and financial literacy community at Babcock University." />
-    <meta name="twitter:image" content="https://babcockinvestorsclub.org/images/logo.jpg" />
-    <title>Babcock Investors Club | Empowering Student Investors</title>
-    <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <!-- Faster third-party origins: DNS+TLS warm-up before the font requests fire -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Babcock Investors Club" />
+    <meta name="twitter:description" content="The student investment club at Babcock University." />
+    <meta name="twitter:image" content="%SITE_URL%/images/bic-2025-1.webp" />
+    <title>Babcock Investors Club</title>
+    <!-- Type: the platform's system face first (SF Pro on Apple devices);
+         Inter is the self-hosted fallback everywhere else. -->
+    <link rel="preload" href="%BASE_URL%fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="%BASE_URL%images/bic-2025-1.webp" as="image" fetchpriority="high" />
     <link rel="preconnect" href="https://js.paystack.co" />
-    <!-- Fonts are self-hosted variable faces (bundled via @fontsource-variable, imported in main.jsx). -->
-    <!-- Paystack Pop is lazy-loaded by usePaystack() on pages that need it
-         (Membership, Events) — keep the connection warm here only. -->
   </head>
   <body>
     <div id="root"></div>

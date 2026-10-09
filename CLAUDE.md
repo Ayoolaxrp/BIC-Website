@@ -61,3 +61,7 @@ A dev server that is already running does not pick up an edited build config or 
 
 📄 **The rest is in [RETICLE.md](./RETICLE.md): what to do when the tools are missing, when a result carries `version_skew` or `update_available`, when `reticle_look { action: "state" }` comes back empty, and how to write a feedback report that can be acted on. Read it when you hit one of those, not before.**
 <!-- reticle:end -->
+
+## Lessons
+
+Read and append to `lessons/LOG.md` when you hit something non-obvious in this repo. Design rules live in `DESIGN.md` and `src/styles/system.css`.

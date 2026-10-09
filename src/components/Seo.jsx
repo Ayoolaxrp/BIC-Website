@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'Babcock Investors Club';
-const DEFAULT_TITLE = 'Babcock Investors Club | Empowering Student Investors';
+const DEFAULT_TITLE = 'Babcock Investors Club';
 const DEFAULT_DESCRIPTION =
-  "Babcock Investors Club is Babcock University's student-led investment community — financial literacy, events, mentorship, and resources for student investors.";
+  'Babcock Investors Club is the student investment club at Babcock University. Weekly sessions on stocks, forex, crypto and real estate, run by students.';
 
 /** Upsert a <meta> tag by name or property (avoids duplicate tags in the head). */
 function upsertMeta(attr, key, content) {

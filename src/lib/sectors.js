@@ -12,7 +12,7 @@ export const SECTORS = [
   { value: 'Forex', label: 'Forex & Trading', desc: 'Currency markets, technical analysis, and trading.' },
   { value: 'Securities', label: 'Securities & Equities', desc: 'Stocks, bonds, ETFs, and the Nigerian Exchange.' },
   { value: 'Real Estate', label: 'Real Estate', desc: 'Property markets, REITs, and land investment.' },
-  { value: 'General', label: 'General / All Areas', desc: 'Exposure across every track — the best place to start.' },
+  { value: 'General', label: 'General / All Areas', desc: 'A bit of every track. The best place to start.' },
 ];
 
 export const SECTOR_VALUES = SECTORS.map((s) => s.value);

@@ -163,7 +163,7 @@ export default function Member() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
           {isDemoMode && (
             <div className="form-status visible demo" style={{ marginBottom: 16, maxWidth: 460, marginLeft: 'auto', marginRight: 'auto' }}>
-              <strong>Demo mode:</strong> no accounts are stored — connect Supabase to sign in for real.
+              <strong>Demo mode:</strong> no accounts are stored. Connect Supabase to sign in for real.
             </div>
           )}
           <AuthCard
@@ -181,7 +181,7 @@ export default function Member() {
             {mode === 'signup' && (
               <div className="form-group">
                 <label>Full Name</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" />
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             )}
             <div className="form-group">
@@ -327,7 +327,7 @@ export default function Member() {
                 {profile?.bio && <p><strong>Bio:</strong> {profile.bio}</p>}
                 {!profile?.sector && !profile?.phone && !profile?.bio && (
                   <p style={{ color: '#55617e', fontSize: '0.9rem' }}>
-                    Add your sector, phone, and a short bio — your sector tells the club which community to onboard you into.
+                    Add your sector, phone, and a short bio. Your sector tells the club which community to onboard you into.
                   </p>
                 )}
               </div>
@@ -341,8 +341,8 @@ export default function Member() {
             <h2 className="admin-panel-title" style={{ marginTop: 0 }}>Membership Status</h2>
             <p className="admin-subtitle">
               {application
-                ? `Application submitted on ${new Date(application.created_at).toLocaleDateString()} — Reference: ${application.paystack_ref || 'pending'}. The exec team will onboard you at the next session.`
-                : 'No membership application found for this email yet. Submit one to unlock full member benefits.'}
+                ? `Application submitted on ${new Date(application.created_at).toLocaleDateString()}. Reference: ${application.paystack_ref || 'pending'}. The exec team will onboard you at the next session.`
+                : 'No membership application found for this email yet. Apply to become a member.'}
             </p>
           </div>
           {application ? (
@@ -357,7 +357,7 @@ export default function Member() {
           <h2 className="admin-panel-title">Member Resources</h2>
           <p className="admin-subtitle">
             Free downloads for registered members
-            {profile?.sector ? ` — showing your ${sectorLabel(profile.sector)} picks first.` : '.'}
+            {profile?.sector ? `. Showing your ${sectorLabel(profile.sector)} picks first.` : '.'}
           </p>
           {sectorResources.length > 0 && (
             <div style={{ marginBottom: 24 }}>
@@ -431,7 +431,7 @@ export default function Member() {
         <div className="admin-panel" style={{ marginTop: 32 }}>
           <h2 className="admin-panel-title">Recent Club Updates</h2>
           {recentPosts.length === 0 && recentArticles.length === 0 ? (
-            <p className="admin-empty">Nothing new yet — check back soon.</p>
+            <p className="admin-empty">Nothing new yet. Check back soon.</p>
           ) : (
             <ul className="admin-list">
               {recentPosts.map((p) => (

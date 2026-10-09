@@ -4,7 +4,7 @@ import Seo from '../components/Seo';
 const quickLinks = [
   { to: '/', label: 'Home', desc: 'Back to the homepage' },
   { to: '/events', label: 'Events', desc: 'Summits, workshops & competitions' },
-  { to: '/membership', label: 'Membership', desc: 'Join 150+ student investors' },
+  { to: '/membership', label: 'Membership', desc: 'Join 50+ student investors' },
   { to: '/blog', label: 'Blog', desc: 'Curated market insights' },
 ];
 

@@ -1,14 +1,9 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-
-
-
-import CookieConsent from './components/CookieConsent';
-import ScrollTop from './components/ScrollTop';
 import useLabelAssociation from './hooks/useLabelAssociation';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
@@ -38,13 +33,13 @@ function AnimatedRoutes() {
   useLabelAssociation([location.pathname]);
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.main
+    // The new page cross-fades in immediately. No exit animation and no
+    // mode="wait": navigation never waits on the previous page to leave.
+    <motion.main
         key={location.pathname}
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -14 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
       >
         <Suspense fallback={<div style={{ minHeight: '55vh' }} />}>
           <Routes location={location}>
@@ -63,7 +58,6 @@ function AnimatedRoutes() {
           </Routes>
         </Suspense>
       </motion.main>
-    </AnimatePresence>
   );
 }
 
@@ -86,8 +80,6 @@ export default function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
-        <ScrollTop />
-        <CookieConsent />
       </MotionConfig>
     </BrowserRouter>
   );

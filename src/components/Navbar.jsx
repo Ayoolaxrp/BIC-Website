@@ -24,18 +24,11 @@ function initials(name, email) {
 }
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
 
   useEffect(() => {
     getCurrentUser().then(setUser);
@@ -76,18 +69,15 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+      <nav className="navbar" aria-label="Main">
         <div className="container navbar-inner">
           <Link to="/" className="navbar-logo">
-            <img src={asset('/images/logo.jpg')} alt="BIC Logo" width={44} height={44} />
-            <div className="logo-text">
-              <span className="logo-name">BIC</span>
-              <span className="logo-tagline">Babcock Investors</span>
-            </div>
+            <img src={asset('/images/logo.png')} alt="" width={36} height={36} />
+            <span className="logo-name">Babcock Investors Club</span>
           </Link>
           <div className="navbar-links">
             {links.map(l => (
-              <Link key={l.to} to={l.to} className={pathname === l.to ? 'active' : ''}>
+              <Link key={l.to} to={l.to} className={pathname === l.to ? 'active' : ''} aria-current={pathname === l.to ? 'page' : undefined}>
                 {l.label}
               </Link>
             ))}
@@ -129,22 +119,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/member" className="navbar-login-link" aria-label="Member login">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  <span>Login</span>
-                </Link>
-                <Link to="/membership" className="btn btn-primary">Join the Club</Link>
+                <Link to="/member" className="navbar-login-link">Log in</Link>
+                <Link to="/membership" className="btn btn-primary">Join BIC</Link>
               </>
             )}
           </div>
-          <button className={`hamburger${open ? ' open' : ''}`} onClick={toggleMenu} aria-label="Toggle menu">
+          <button className={`hamburger${open ? ' open' : ''}`} onClick={toggleMenu} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="mobile-nav">
             <span /><span /><span />
           </button>
         </div>
       </nav>
 
-      <div className={`mobile-nav${open ? ' open' : ''}`}>
-        <button className="mobile-close" onClick={toggleMenu} aria-label="Close menu">✕</button>
+      <div id="mobile-nav" className={`mobile-nav${open ? ' open' : ''}`} aria-hidden={!open} inert={!open}>
         {links.map(l => (
           <Link key={l.to} to={l.to} className={pathname === l.to ? 'active' : ''}>
             {l.label}
@@ -171,12 +157,8 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link to="/member" className="navbar-login-link" style={{ marginTop: 8, justifyContent: 'center' }}>
-              <span>Member Login</span>
-            </Link>
-            <Link to="/membership" className="btn btn-primary" style={{ marginTop: 20 }}>
-              Join the Club
-            </Link>
+            <Link to="/member" className="navbar-login-link">Log in</Link>
+            <Link to="/membership" className="btn btn-primary">Join BIC</Link>
           </>
         )}
         {isDemoMode && user && (

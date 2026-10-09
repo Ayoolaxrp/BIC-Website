@@ -1,8 +1,6 @@
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
-import TiltCard from '../components/TiltCard';
-import SpotlightCard from '../components/SpotlightCard';
 import useSubmission from '../hooks/useSubmission';
 
 const infoItems = [
@@ -29,7 +27,7 @@ const infoItems = [
   },
   {
     label: 'Office Hours',
-    value: 'Mon – Fri: 9:00 AM – 5:00 PM\nWeekends: By appointment',
+    value: 'Monday to Friday, 9:00 AM to 5:00 PM\nWeekends by appointment',
     icon: (
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     ),
@@ -74,7 +72,7 @@ export default function Contact() {
     <>
       <Seo
         title="Contact Us"
-        description="Have questions about membership, events, or partnerships? Reach the Babcock Investors Club executive team — we respond within 72 hours."
+        description="Have questions about membership, events, or partnerships? Reach the Babcock Investors Club executive team. We reply within 72 hours."
       />
       <PageHero
         crumb="Contact Us"
@@ -92,13 +90,13 @@ export default function Contact() {
 
               <div className="info-items">
                 {infoItems.map((item) => (
-                  <TiltCard className="info-item" key={item.label} max={6}>
+                  <div className="info-item" key={item.label}>
                     <div className="info-icon">{item.icon}</div>
                     <div className="info-text">
                       <h3>{item.label}</h3>
                       <p style={{ whiteSpace: 'pre-line' }}>{item.value}</p>
                     </div>
-                  </TiltCard>
+                  </div>
                 ))}
               </div>
 
@@ -121,7 +119,7 @@ export default function Contact() {
           </div>
 
           {/* FORM */}
-          <SpotlightCard className="contact-form-box" radius={360}>
+          <div className="contact-form-box">
             <h3>Send a Message</h3>
             <form onSubmit={handleSubmit}>
               <div className="grid-2" style={{ gap: 16 }}>
@@ -165,7 +163,7 @@ export default function Contact() {
               {status === 'success' && (
                 <div className="form-status visible success">
                   ✓ Message sent! {result?.source === 'local'
-                    ? 'Saved on this device — connect Supabase to store it in the cloud.'
+                    ? 'Saved on this device. Connect Supabase to store it in the cloud.'
                     : "We'll get back to you within 72 hours."}
                 </div>
               )}
@@ -173,7 +171,7 @@ export default function Contact() {
                 <div className="form-status visible error">Something went wrong. Please try again.</div>
               )}
             </form>
-          </SpotlightCard>
+          </div>
         </div>
       </FadeIn>
     </>

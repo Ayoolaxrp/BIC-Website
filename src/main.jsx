@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 // public/fonts — do NOT import them via JS (that delays the swap and causes
 // heading layout shift).
 import './index.css'
+import './styles/system.css'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(

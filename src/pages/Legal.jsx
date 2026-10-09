@@ -11,7 +11,7 @@ const sections = [
     body: [
       'Babcock Investors Club ("BIC", "we", "us") operates this website to connect students with financial education, events, and community resources. This policy explains what information we collect and how we use it.',
       'Information we collect: when you submit a membership application, RSVP, contact form, sponsorship inquiry, or newsletter signup, we receive the details you provide (name, email, phone, department, interests, etc.). We use this information solely to process your request, manage membership, and send club communications you have opted into.',
-      'Payments: membership fees are processed by Paystack. We do not see or store your card details — Paystack handles all payment data under its own privacy policy.',
+      'Payments: membership fees are processed by Paystack. We do not see or store your card details. Paystack handles all payment data under its own privacy policy.',
       'Storage: form submissions are stored in our Supabase database. Before Supabase is configured, submissions are stored locally in your browser only. We do not sell or share personal data with third parties except the processors needed to operate the site (hosting, payments, email).',
       'Your rights: you may request access to, correction of, or deletion of your personal data at any time by contacting babcockinvestorsclub@gmail.com.',
       'Cookies: we use local storage for session preferences (e.g. signed-in session). No advertising or cross-site tracking cookies are used.',

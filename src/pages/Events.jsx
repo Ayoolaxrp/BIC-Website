@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
-import TiltCard from '../components/TiltCard';
-import MagneticButton from '../components/MagneticButton';
 import useCountdown from '../hooks/useCountdown';
 import AddToCalendar from '../components/AddToCalendar';
 import usePaystack from '../hooks/usePaystack';
@@ -21,7 +19,7 @@ const upcomingEvents = [
     img: asset('/images/bic-exec-group-2026.webp'),
     alt: 'BIC executives and members gathered for a seminar',
     title: 'BIC Welcome Seminar: The Next Chapter',
-    desc: "We launch the 2026/2027 session — introducing the club's new direction, this semester's programs, committees, investment opportunities, and our CFA Society Nigeria relationship. Come see what BIC has planned and how to join.",
+    desc: "We open the 2026/2027 session by introducing the club's new direction, this semester's programs, committees, investment opportunities, and our CFA Society Nigeria relationship. Come see what BIC has planned and how to join.",
     tags: [
       { label: 'Seminar', cls: 'badge-gold' },
       { label: 'Recruitment', cls: 'badge-navy' },
@@ -39,7 +37,7 @@ const upcomingEvents = [
     img: asset('/images/bic-photo-1482.webp'),
     alt: 'A BIC educational seminar in session',
     title: 'First BIC Educational Seminar',
-    desc: 'The first deep-dive seminar of the semester, led by our sector chairpersons — practical finance education across Securities, Real Estate, Crypto, Forex, and Personal Finance.',
+    desc: 'The first deep-dive seminar of the semester, led by our sector chairpersons: practical finance education across Securities, Real Estate, Crypto, Forex, and Personal Finance.',
     tags: [
       { label: 'Seminar', cls: 'badge-gold' },
       { label: 'Education', cls: 'badge-green' },
@@ -49,23 +47,23 @@ const upcomingEvents = [
       { label: 'Location', lines: ['Babcock University'] },
       { label: 'Entry', lines: ['Free for members', 'Non-members welcome'] },
     ],
-    speakerSlots: ['Sector chairpersons — topics announced on our socials'],
+    speakerSlots: ['Sector chairpersons (topics announced on our socials)'],
     ticketAmount: 0,
   },
   {
     id: 'stock-pitch-2',
     img: asset('/images/bic-stockpitch-2026-poster.webp'),
-    alt: 'Stock Pitch Competition poster — ₦370,000 in prizes',
+    alt: 'Stock Pitch Competition poster showing ₦370,000 in prizes',
     title: 'Stock Pitch Competition 2.0',
-    desc: 'Think you can identify the next winning stock? Build an investment thesis, analyze the market, and pitch before a panel of judges. ₦150,000 first prize, ₦120,000 second, ₦100,000 third — ₦370,000 total, courtesy of our sponsors.',
+    desc: 'Think you can identify the next winning stock? Build an investment thesis, analyze the market, and pitch before a panel of judges. ₦150,000 first prize, ₦120,000 second, ₦100,000 third, ₦370,000 total, courtesy of our sponsors.',
     tags: [
       { label: 'Competition', cls: 'badge-gold' },
       { label: '₦370k Prizes', cls: 'badge-green' },
     ],
     details: [
-      { label: 'Launch', lines: ['Dec 4–6, 2026'] },
+      { label: 'Launch', lines: ['4 to 6 December 2026'] },
       { label: 'Pitch Day', lines: ['Announced at launch', 'Watch our socials'] },
-      { label: 'Entry', lines: ['Members: Free', 'Teams of 2–4'] },
+      { label: 'Entry', lines: ['Members: Free', 'Teams of 2 to 4'] },
     ],
     speakerSlots: ['Judging panel: industry professionals from our partner firms'],
     ticketAmount: 0,
@@ -75,7 +73,7 @@ const upcomingEvents = [
     img: asset('/images/bic-2025-8.webp'),
     alt: 'BIC members networking at a social event',
     title: 'End-of-Year Finance Picnic',
-    desc: 'Close the semester the BIC way — food, games, and conversations about markets, money, and the year ahead. Open to all members and friends of the club.',
+    desc: 'Close the semester the BIC way: food, games, and conversations about markets, money, and the year ahead. Open to all members and friends of the club.',
     tags: [
       { label: 'Networking', cls: 'badge-navy' },
     ],
@@ -95,7 +93,7 @@ const pastEvents = [
     img: asset('/images/bic-seminar-2026-poster.webp'),
     title: 'Annual Investment Seminar 2026',
     date: 'Mar 22, 2026 · 11:00 AM',
-    desc: '“Building Wealth with Purpose — Turning Vision into Value.” Students joined financial experts at the 600 Seaters, BUTH for real investment insights, giveaways, and the Stock Pitch 2.0 finale with ₦370,000 in prizes — sponsored by Fundbox Financial Services, Leadway Assurance, More Ladda, and Chapel Hill Denham.',
+    desc: '“Building Wealth with Purpose: Turning Vision into Value.” Students joined financial experts at the 600 Seaters, BUTH for real investment insights, giveaways, and the Stock Pitch 2.0 finale with ₦370,000 in prizes, sponsored by Fundbox Financial Services, Leadway Assurance, More Ladda, and Chapel Hill Denham.',
     gallery: [
       asset('/images/bic-exec-group-2026.webp'),
       asset('/images/bic-photo-1482.webp'),
@@ -129,7 +127,7 @@ const pastEvents = [
     img: asset('/images/masterclass-poster.webp'),
     title: 'Exclusive Investment Masterclass',
     date: 'Mar 1, 2026 · 2:00 PM',
-    desc: 'Members mastered the fundamentals of crypto, the stock market, real estate, and forex — learning to analyze opportunities, manage risk, and build a strong investment foundation. Held at the BIC Boardroom, Babcock Superstore.',
+    desc: 'Members mastered the fundamentals of crypto, the stock market, real estate and forex, learning to analyze opportunities, manage risk, and build a strong investment foundation. Held at the BIC Boardroom, Babcock Superstore.',
     gallery: [asset('/images/bic-2025-4.webp'), asset('/images/bic-2025-10.webp')],
   },
   {
@@ -205,7 +203,7 @@ export default function Events() {
 
   const buyTicket = (event) => {
     if (!window.PaystackPop) {
-      setTicketMsg({ type: 'error', text: 'Payment gateway is still loading — please wait a moment and try again.', eventId: event.id });
+      setTicketMsg({ type: 'error', text: 'Payment is still loading. Wait a moment and try again.', eventId: event.id });
       return;
     }
     // Prefer the RSVP email if the attendee already provided one
@@ -224,9 +222,9 @@ export default function Events() {
         event_name: event.title,
       },
       onSuccess: (response) => setTicketMsg({ type: 'success', text: `Payment complete! Reference: ${response.reference}. Your ticket confirmation is on its way to ${email}.`, eventId: event.id }),
-      onClose: () => setTicketMsg({ type: 'error', text: 'Transaction window closed — you can retry whenever you are ready.', eventId: event.id }),
+      onClose: () => setTicketMsg({ type: 'error', text: 'Payment window closed. You can try again whenever you are ready.', eventId: event.id }),
     });
-    if (!opened) setTicketMsg({ type: 'error', text: 'Payment gateway is still loading — please wait a moment and try again.', eventId: event.id });
+    if (!opened) setTicketMsg({ type: 'error', text: 'Payment is still loading. Wait a moment and try again.', eventId: event.id });
   };
 
   const handleRsvp = async (e) => {
@@ -245,7 +243,7 @@ export default function Events() {
     <>
       <Seo
         title="Events & Summits"
-        description="Don't miss our upcoming flagship event. Register early to secure your seat — summits, workshops, and competitions for student investors."
+        description="Don't miss our upcoming flagship event. Register early to keep your seat at summits, workshops, and competitions for student investors."
       />
       <PageHero
         crumb="Events"
@@ -302,7 +300,7 @@ export default function Events() {
         <div className={`tab-panel${tab === 'upcoming' ? ' active' : ''}`}>
           <div className="events-list">
             {upcoming.map((event) => (
-              <TiltCard className="event-row" key={event.id} max={4} glare={false}>
+              <div className="event-row" key={event.id}>
                 <div className="event-row-img">
                   <img src={event.img} alt={event.alt} />
                 </div>
@@ -349,17 +347,17 @@ export default function Events() {
 
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                     {event.ticketAmount > 0 && paystackConfigured ? (
-                      <MagneticButton><button type="button" className="btn btn-primary" onClick={() => buyTicket(event)}>
+                      <button type="button" className="btn btn-primary" onClick={() => buyTicket(event)}>
                         Buy Ticket / RSVP (₦{event.ticketAmount.toLocaleString()})
-                      </button></MagneticButton>
+                      </button>
                     ) : event.ticketAmount > 0 ? (
-                      <MagneticButton><button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
+                      <button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
                         Reserve a Free Spot
-                      </button></MagneticButton>
+                      </button>
                     ) : (
-                      <MagneticButton><button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
+                      <button type="button" className="btn btn-navy" style={{ alignSelf: 'flex-start' }} onClick={() => document.getElementById('rsvp-box')?.scrollIntoView({ behavior: 'smooth' })}>
                         Reserve a Free Spot
-                      </button></MagneticButton>
+                      </button>
                     )}
                     {ticketMsg?.eventId === event.id && (
                       <div className={`form-status visible ${ticketMsg.type}`} style={{ width: '100%' }} role="status">
@@ -371,7 +369,7 @@ export default function Events() {
                     </button>
                   </div>
                 </div>
-              </TiltCard>
+              </div>
             ))}
           </div>
         </div>
@@ -396,9 +394,9 @@ export default function Events() {
                   {event.gallery?.length > 0 && (
                     <div className="gallery-grid">
                       {event.gallery.map((src, i) => (
-                        <TiltCard className="gallery-item" key={src} max={10} glare={false}>
-                          <img src={src} alt={`${event.title} — photo ${i + 1}`} loading="lazy" />
-                        </TiltCard>
+                        <div className="gallery-item" key={src}>
+                          <img src={src} alt={`${event.title}, photo ${i + 1}`} loading="lazy" />
+                        </div>
                       ))}
                     </div>
                   )}
@@ -415,15 +413,14 @@ export default function Events() {
           <div className="rsvp-box">
             <div className="sec-head" style={{ display: 'block', marginBottom: 32 }}>
               <div>
-                <span className="section-label">Event Registration</span>
-                <h2 className="sec-title" style={{ marginBottom: 12 }}>Reserve your <span>spot.</span></h2>
+                <h2 className="sec-title" style={{ marginBottom: 12 }}>Reserve your spot.</h2>
               </div>
             </div>
 
             {rsvpDone ? (
               <div className="form-status visible success" style={{ maxWidth: 420, margin: '0 auto', textAlign: 'center' }}>
                 🎉 You're on the list! We'll send your registration details to {rsvp.email}.
-                {rsvpStored?.source === 'local' && ' (Saved on this device — connect Supabase to store it in the cloud.)'}
+                {rsvpStored?.source === 'local' && ' (Saved on this device. Connect Supabase to store it in the cloud.)'}
               </div>
             ) : (
               <form onSubmit={handleRsvp} style={{ maxWidth: 420, margin: '0 auto' }}>
@@ -434,7 +431,7 @@ export default function Events() {
                     required
                     value={rsvp.name}
                     onChange={(e) => setRsvp({ ...rsvp, name: e.target.value })}
-                    placeholder="Jane Doe"
+                   
                   />
                 </div>
                 <div className="form-group">
@@ -444,7 +441,7 @@ export default function Events() {
                     required
                     value={rsvp.email}
                     onChange={(e) => setRsvp({ ...rsvp, email: e.target.value })}
-                    placeholder="jane.doe@babcock.edu.ng"
+                    placeholder="you@babcock.edu.ng"
                   />
                 </div>
                 <div className="form-group">
