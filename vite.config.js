@@ -9,7 +9,7 @@ import { reticle } from '@reticlehq/vite-plugin';
 // The club's domain is babcockinvestorsclub.com; the apex redirects to www,
 // so www is the canonical host. Override with VITE_SITE_URL if that changes.
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://www.babcockinvestorsclub.com').replace(/\/+$/, '');
-const PUBLIC_ROUTES = ['/', '/about', '/membership', '/events', '/blog', '/sponsorship', '/contact', '/legal'];
+const PUBLIC_ROUTES = ['/', '/about', '/membership', '/events', '/blog', '/sponsorship', '/contact', '/privacy', '/terms'];
 
 function siteUrl() {
   return {

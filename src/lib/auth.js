@@ -17,6 +17,28 @@ export const DEMO_USERS = [];
 
 export const isDemoMode = !isSupabaseConfigured;
 
+/**
+ * Most visitors never sign in. Loading the Supabase SDK (~200 KB) just to
+ * learn "nobody is signed in" slowed every page, so only load it when this
+ * browser holds a stored session or has just returned from an auth link.
+ */
+function hasStoredSession() {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) return true;
+    }
+  } catch {
+    /* storage unavailable */
+  }
+  return false;
+}
+function hasAuthParams() {
+  const u = window.location.hash + window.location.search;
+  return /access_token=|refresh_token=|[?&]code=|type=(signup|recovery|magiclink|email_change)/.test(u);
+}
+const mayHaveSession = () => hasStoredSession() || hasAuthParams();
+
 function getDemoSession() {
   try {
     return JSON.parse(localStorage.getItem(DEMO_SESSION_KEY) || 'null');
@@ -54,6 +76,7 @@ export async function getSession() {
     const demo = getDemoSession();
     return demo ? { user: toUser(demo) } : null;
   }
+  if (!mayHaveSession()) return null;
   const supabase = await getSupabase();
   const { data } = await supabase.auth.getSession();
   return data.session;
@@ -73,14 +96,22 @@ const authListeners = new Set();
 
 export function onAuthChange(callback) {
   if (!isDemoMode) {
+    // Local listeners hear sign-in/out from this tab at once; the SDK
+    // subscription (token refresh, other tabs) only runs if a session may exist.
+    authListeners.add(callback);
     let unsubscribe = () => {};
-    getSupabase().then((supabase) => {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) =>
-        callback(session?.user ?? null),
-      );
-      unsubscribe = () => data.subscription.unsubscribe();
-    });
-    return () => unsubscribe();
+    if (mayHaveSession()) {
+      getSupabase().then((supabase) => {
+        const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+          callback(session?.user ?? null),
+        );
+        unsubscribe = () => data.subscription.unsubscribe();
+      });
+    }
+    return () => {
+      authListeners.delete(callback);
+      unsubscribe();
+    };
   }
   authListeners.add(callback);
   const demo = getDemoSession();
@@ -118,7 +149,10 @@ export async function signIn(email, password) {
     email: cleanEmail,
     password,
   });
-  if (!error) setDemoSession(null); // drop any stale demo session
+  if (!error) {
+    setDemoSession(null); // drop any stale demo session
+    emitAuthChange(data.user);
+  }
   return error ? { ok: false, error: error.message } : { ok: true, user: data.user };
 }
 
