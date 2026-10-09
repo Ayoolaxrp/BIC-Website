@@ -18,7 +18,7 @@
 | Supabase migrations + runbook | Done and tested, committed `854f612` |
 | Cloudflare security audit | Done (quick profile): 0 confirmed, 4 leads, all 4 fixed in source |
 | Merge to `main` / go live | **Not done. Owner must approve first.** |
-| Supabase project creation | **Owner will do it**, then share details |
+| Supabase project | Created by owner (ref in `.env`, region eu-west-1). All 6 migrations applied and verified 2026-10-09; Vercel env vars set (Production/Preview/Development) |
 
 ## Required Skills (IN ORDER)
 1. `apple-design` (installed at `~/.claude/skills/apple-design`, from github.com/emilkowalski/skills). The design authority for every UI change.

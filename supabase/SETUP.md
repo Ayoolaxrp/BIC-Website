@@ -37,8 +37,10 @@ npx supabase link --project-ref <project-ref>
 npx supabase db push
 ```
 
-**C. Hand it to Claude.** Share the project ref and database password and
-`scripts/run-sql.cjs` applies the files for you.
+**C. `npm run db:apply`.** Put `SUPABASE_DB_URL` in `.env` (Connect → **Session pooler** URI,
+with your password filled in) and run `npm run db:apply`. Use the pooler, not the direct
+`db.<ref>.supabase.co` address: the direct one is IPv6-only and fails on most home
+networks. This project's pooler is `aws-0-eu-west-1.pooler.supabase.com`.
 
 ## 3. Auth settings
 
