@@ -18,6 +18,7 @@ import {
   fetchResources,
   fetchSubmissionCounts,
   fetchSubmissions,
+  setMembershipPayment,
 } from '../lib/api';
 import { getLocalQueue } from '../lib/store';
 import { uploadFile, formatBytes } from '../lib/upload';
@@ -140,6 +141,44 @@ function ItemList({ rows, onDelete, empty }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * Membership fee taken by hand. Online payment is not live, so the team
+ * records cash or transfer here and the member's portal shows them as paid.
+ */
+function PaymentControl({ app, onChange }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const paid = app.payment_status === 'paid';
+  const record = async (status, method) => {
+    setBusy(true);
+    setMsg(null);
+    const res = await setMembershipPayment(app.id, status, method);
+    setBusy(false);
+    if (res.ok) await onChange();
+    else setMsg(res.error);
+  };
+  return (
+    <div className="pay-control">
+      <p className="pay-state">
+        {paid
+          ? `Paid${app.payment_method === 'cash' ? ' in cash' : app.payment_method === 'transfer' ? ' by bank transfer' : app.payment_method === 'paystack' ? ' online' : ''}${app.payment_verified_at ? ` on ${new Date(app.payment_verified_at).toLocaleDateString()}` : ''}`
+          : 'Fee not recorded yet'}
+      </p>
+      <div className="pay-actions">
+        {paid ? (
+          <button type="button" className="btn btn-outline btn-sm" disabled={busy} onClick={() => record('pending', null)}>Undo payment</button>
+        ) : (
+          <>
+            <button type="button" className="btn btn-primary btn-sm" disabled={busy} onClick={() => record('paid', 'cash')}>Paid in cash</button>
+            <button type="button" className="btn btn-outline btn-sm" disabled={busy} onClick={() => record('paid', 'transfer')}>Paid by transfer</button>
+          </>
+        )}
+      </div>
+      {msg && <p className="pay-error" role="alert">{msg}</p>}
+    </div>
   );
 }
 
@@ -661,6 +700,9 @@ export default function Admin() {
                       <span className="badge badge-blue" style={{ marginTop: 8 }}>
                         Sector: {sectorLabel(s.sector)}
                       </span>
+                    )}
+                    {activeSubmission === 'member_applications' && !isDemoMode && (
+                      <PaymentControl app={s} onChange={() => fetchSubmissions(activeSubmission, 30).then(setSubmissions)} />
                     )}
                     <pre>{JSON.stringify(s, null, 2)}</pre>
                   </div>

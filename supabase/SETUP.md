@@ -52,6 +52,13 @@ Authentication → URL Configuration:
 - Redirect URLs: add `https://www.babcockinvestorsclub.com/**`, `https://babcockinvestorsclub.com/**`,
   `https://bic-react.vercel.app/**`, `https://*-ayoolamikuns-projects.vercel.app/**`
   (preview deploys) and `http://localhost:3000/**`
+- Minimum password length: **8** (set 2026-10-11; the portal asks for 8).
+
+**Custom SMTP (needed before students sign up).** Supabase's built-in mailer
+sends only about 2 auth emails per hour for the whole project, so most sign-up
+confirmations and password-reset links would never arrive. Authentication →
+Emails → SMTP Settings: add a real sender (for example Resend, Brevo or a Google
+Workspace account) and raise the email rate limit under Rate Limits.
 
 ## 4. Connect the site
 
@@ -81,6 +88,12 @@ where lower(email) in ('first.exec@babcock.edu.ng', 'second.exec@babcock.edu.ng'
 
 Admins manage events, articles, resources and newsletter posts at `/admin` and
 see every form submission there.
+
+**Recording membership fees paid in person.** Online payment is not live, so in
+`/admin` → Submissions → Member Applications each application has **Paid in
+cash** and **Paid by transfer** buttons (and **Undo payment**). The member's
+portal then shows them as an active member. Only admins can do this; it runs
+through `admin_set_membership_payment()` (migration 0700) and records who did it.
 
 ## 6. Optional: confirmation emails and Paystack
 

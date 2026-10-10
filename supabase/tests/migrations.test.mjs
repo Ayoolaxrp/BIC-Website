@@ -153,6 +153,28 @@ ok('email call made after config', (await db.query('select count(*)::int n from 
 await as('anon', null, null, `insert into public.rsvps (name, email, event_name) values ('X', 'x@b.co', 'Again')`);
 ok('second email to the same address within an hour is skipped', (await db.query('select count(*)::int n from public._http_log')).rows[0].n === 1);
 
+// Offline payments (0700): only admins record them; members then see "paid"
+const appId = (await db.query(`select id from public.member_applications where email = 'member@babcock.edu.ng' limit 1`)).rows[0].id;
+const setPay = (st, m, note = '') => `select payment_status from public.admin_set_membership_payment(${appId}, '${st}', ${m ? `'${m}'` : 'null'}, '${note}')`;
+r = await as('anon', null, null, setPay('paid', 'cash'));
+ok('anon cannot record a payment', !!r.error);
+r = await as('authenticated', U1, 'member@babcock.edu.ng', setPay('paid', 'cash'));
+ok('member cannot mark themselves paid', !!r.error && /admins/.test(r.error), r.error);
+r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('paid', 'bitcoin'));
+ok('unknown payment method rejected', !!r.error);
+r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('paid', null));
+ok('paid needs a method', !!r.error);
+r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('paid', 'cash', 'Paid at the welcome desk'));
+ok('admin records a cash payment', !r.error && r.rows[0].payment_status === 'paid', r.error);
+r = await as('authenticated', U1, 'member@babcock.edu.ng', `select payment_status, payment_method, payment_recorded_by from public.member_applications`);
+ok('member sees their payment', r.rows?.[0]?.payment_status === 'paid' && r.rows[0].payment_method === 'cash' && r.rows[0].payment_recorded_by === U2, JSON.stringify(r));
+r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('pending', 'cash'));
+ok('admin can undo a payment', !r.error && r.rows[0].payment_status === 'pending', r.error);
+ok('undo clears method and time', (await db.query(`select payment_method, payment_verified_at from public.member_applications where id = ${appId}`)).rows[0].payment_method === null);
+r = await as('authenticated', U2, 'admin@babcock.edu.ng', `select * from public.admin_set_membership_payment(999999, 'paid', 'cash', '')`);
+ok('missing application reported', !!r.error && /not found/.test(r.error), r.error);
+ok('payment RPC not callable by anon', !(await priv('public.admin_set_membership_payment(bigint, text, text, text)', 'anon')));
+
 const b = (await db.query(`select id, file_size_limit from storage.buckets order by id`)).rows;
 ok('buckets with limits', b.length === 2 && b[0].file_size_limit === 5242880n || b[0].file_size_limit == 5242880, JSON.stringify(b, (k, v) => typeof v === 'bigint' ? Number(v) : v));
 

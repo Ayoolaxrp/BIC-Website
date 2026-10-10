@@ -48,3 +48,22 @@
 - **Sibling margins misalign grids.** `.form-group + .form-group { margin-top }` pushed
   the second column of every two-field row down. Use one margin direction.
 - **Brand colour comes from the club's own posters** (bright blue), not a palette guess.
+
+## 2026-10-11: audit fixes, portal, offline payments
+
+- **Legacy colour tokens still pointed at green.** `--sky-blue*` and `--gold*` in
+  `index.css` resolved to green, so links, FAQ chevrons and borders that used them
+  were green. They are remapped to BIC blue at the end of `system.css`.
+- **Pass hero props to `PageHero`, not `Seo`.** A commit put `image`/`imagePosition`
+  on `<Seo>` on Partners, so the hero silently had no photo. Nothing errors.
+- **Removing a grid's first column breaks the rows.** Dropping the `01–04` sector
+  numbers left a 3-column grid with 2 children; text overlapped on mobile.
+- **No Paystack means no "paid" members** unless admins can record cash/transfer.
+  Migration 0700 adds an admin-only RPC; members cannot call it (tested live).
+- **Supabase's built-in mailer is ~2 emails/hour.** Without custom SMTP most sign-up
+  confirmations and reset links are dropped. Owner action, not code.
+- **Portal e2e without leaving data behind:** the access token fetches the
+  service key into memory, creates confirmed throwaway users, and the test deletes
+  them and their rows in `finally` (script in the job tmp: `portal-e2e.cjs`).
+- **Admin pages have two email inputs** (login + footer newsletter). Scope test
+  selectors to `main`.

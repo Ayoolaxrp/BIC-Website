@@ -68,10 +68,10 @@ export default function Footer() {
             </ul>
           </div>
           <div className="footer-col">
-            <h2>Stay informed</h2>
+            <h2>Club updates</h2>
             {supabaseConfigured ? (
             <>
-            <p className="footer-note">A concise note when a new event or market session is announced.</p>
+            <p className="footer-note">Event dates and market notes, by email.</p>
             <form className="footer-newsletter" onSubmit={handleNewsletter}>
               <label htmlFor="footer-email" className="visually-hidden">Email address</label>
               <input id="footer-email" type="email" name="email" placeholder="name@babcock.edu.ng…" autoComplete="email" spellCheck={false} required />

@@ -1,489 +1,557 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { getCurrentUser, getMyApplication, getMyRsvps, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut, signUp, updateProfile } from '../lib/auth';
+import {
+  cameFromRecoveryLink,
+  getCurrentUser,
+  getMyApplication,
+  getMyRsvps,
+  getProfile,
+  isDemoMode,
+  onAuthChange,
+  requestPasswordReset,
+  signIn,
+  signInWithGoogle,
+  signOut,
+  signUp,
+  updatePassword,
+  updateProfile,
+} from '../lib/auth';
 import { googleAuthEnabled } from '../lib/config';
 import Seo from '../components/Seo';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
-import { asset } from '../lib/assets';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
+import { CLUB_PHONE, whatsapp } from '../lib/contact';
 
-const MEMBER_RESOURCES = [];
+const BABCOCK_EMAIL = /^[^\s@]+@babcock\.edu\.ng$/i;
+const MIN_PASSWORD = 8;
 
-function AuthCard({ title, subtitle, onSubmit, buttonText, busy, msg, children }) {
+const fmtDate = (d) =>
+  new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+function Status({ msg }) {
+  if (!msg) return null;
   return (
-    <div className="admin-login-card" style={{ maxWidth: 460 }}>
-      <h1 className="admin-title" style={{ textAlign: 'center' }}>{title}</h1>
-      <p className="admin-subtitle" style={{ textAlign: 'center' }}>{subtitle}</p>
-      {msg && <div className={`form-status visible ${msg.type}`}>{msg.text}</div>}
-      <form onSubmit={onSubmit}>
-        {children}
-        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
-          {busy ? 'Please wait...' : buttonText}
-        </button>
-      </form>
+    <div className={`form-status visible ${msg.type}`} role={msg.type === 'error' ? 'alert' : 'status'}>
+      {msg.text}
     </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+ * Signed out: sign in, create an account, or ask for a reset link.
+ * ------------------------------------------------------------------------ */
+function AuthScreen({ onSignedIn }) {
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup' | 'forgot'
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const go = (m) => {
+    setMode(m);
+    setMsg(null);
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setMsg(null);
+    const cleanEmail = email.trim();
+
+    if (mode === 'signup' && !BABCOCK_EMAIL.test(cleanEmail)) {
+      setMsg({ type: 'error', text: 'Use your Babcock email (name.lastname@babcock.edu.ng) to create an account.' });
+      return;
+    }
+    setBusy(true);
+    if (mode === 'forgot') {
+      const res = await requestPasswordReset(cleanEmail);
+      setBusy(false);
+      setMsg(res.ok
+        ? { type: 'success', text: 'If that email has an account, a reset link is on its way. Check your inbox and spam folder.' }
+        : { type: 'error', text: res.error });
+      return;
+    }
+    const res = mode === 'signup' ? await signUp(cleanEmail, pass, name.trim()) : await signIn(cleanEmail, pass);
+    setBusy(false);
+    if (!res.ok) {
+      setMsg({ type: 'error', text: res.error });
+    } else if (mode === 'signup') {
+      setMsg({ type: 'success', text: 'Account created. Open the confirmation link we sent to your Babcock email, then sign in.' });
+      setMode('signin');
+      setPass('');
+    } else {
+      onSignedIn(res.user);
+    }
+  };
+
+  const title = { signin: 'Sign in to BIC.', signup: 'Create your account.', forgot: 'Reset your password.' }[mode];
+  const sub = {
+    signin: 'See your membership, your sector and the events you have signed up for.',
+    signup: 'Use the same Babcock email as your membership application, so we can link the two.',
+    forgot: 'Enter your account email and we will send you a link to choose a new password.',
+  }[mode];
+  const cta = { signin: 'Sign in', signup: 'Create account', forgot: 'Send reset link' }[mode];
+
+  return (
+    <section className="mp-auth">
+      <div className="mp-auth-card">
+        <h1>{title}</h1>
+        <p className="mp-auth-sub">{sub}</p>
+        <Status msg={msg} />
+        <form onSubmit={submit} noValidate={false}>
+          {mode === 'signup' && (
+            <div className="form-group">
+              <label htmlFor="mp-name">Full name</label>
+              <input id="mp-name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+          )}
+          <div className="form-group">
+            <label htmlFor="mp-email">{mode === 'signup' ? 'Babcock email' : 'Email'}</label>
+            <input
+              id="mp-email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name.lastname@babcock.edu.ng"
+            />
+          </div>
+          {mode !== 'forgot' && (
+            <div className="form-group">
+              <div className="mp-label-row">
+                <label htmlFor="mp-pass">Password</label>
+                {mode === 'signin' && (
+                  <button type="button" className="link-btn" onClick={() => go('forgot')}>Forgot password?</button>
+                )}
+              </div>
+              <input
+                id="mp-pass"
+                type="password"
+                required
+                minLength={mode === 'signup' ? MIN_PASSWORD : undefined}
+                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+                placeholder={mode === 'signup' ? `At least ${MIN_PASSWORD} characters` : ''}
+              />
+            </div>
+          )}
+          <button type="submit" className="btn btn-primary btn-full" disabled={busy}>
+            {busy ? 'One moment…' : cta}
+          </button>
+        </form>
+
+        {mode === 'signin' && !isDemoMode && googleAuthEnabled && (
+          <button type="button" className="btn btn-outline btn-full mp-google" onClick={() => signInWithGoogle()}>
+            Continue with Google
+          </button>
+        )}
+
+        <p className="mp-switch">
+          {mode === 'signin' && (
+            <>New to the portal? <button type="button" className="link-btn" onClick={() => go('signup')}>Create an account</button></>
+          )}
+          {mode === 'signup' && (
+            <>Already have an account? <button type="button" className="link-btn" onClick={() => go('signin')}>Sign in</button></>
+          )}
+          {mode === 'forgot' && (
+            <>Remembered it? <button type="button" className="link-btn" onClick={() => go('signin')}>Back to sign in</button></>
+          )}
+        </p>
+      </div>
+      <p className="mp-auth-foot">
+        Not a member yet? <Link to="/membership">Apply to join BIC</Link>. The portal is for students who have applied.
+      </p>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------------------------
+ * After a reset link: choose a new password before anything else.
+ * ------------------------------------------------------------------------ */
+function NewPassword({ onDone, title = 'Choose a new password.', compact = false }) {
+  const [pass, setPass] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (pass.length < MIN_PASSWORD) return setMsg({ type: 'error', text: `Use at least ${MIN_PASSWORD} characters.` });
+    if (pass !== confirm) return setMsg({ type: 'error', text: 'The two passwords do not match.' });
+    setBusy(true);
+    const res = await updatePassword(pass);
+    setBusy(false);
+    if (!res.ok) return setMsg({ type: 'error', text: res.error });
+    setPass('');
+    setConfirm('');
+    setMsg({ type: 'success', text: 'Password updated.' });
+    onDone?.();
+  };
+
+  const form = (
+    <form onSubmit={submit} className="mp-pass-form">
+      <Status msg={msg} />
+      <div className="form-group">
+        <label htmlFor="np-pass">New password</label>
+        <input id="np-pass" type="password" required minLength={MIN_PASSWORD} autoComplete="new-password" value={pass} onChange={(e) => setPass(e.target.value)} />
+      </div>
+      <div className="form-group">
+        <label htmlFor="np-confirm">Type it again</label>
+        <input id="np-confirm" type="password" required autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+      </div>
+      <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'Saving…' : 'Save password'}</button>
+    </form>
+  );
+
+  if (compact) return form;
+  return (
+    <section className="mp-auth">
+      <div className="mp-auth-card">
+        <h1>{title}</h1>
+        <p className="mp-auth-sub">You followed a reset link. Pick a password you have not used here before.</p>
+        {form}
+      </div>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------------------------
+ * Membership: three honest steps, each one either done or the next action.
+ * ------------------------------------------------------------------------ */
+function MembershipSteps({ application }) {
+  const paid = application?.payment_status === 'paid';
+  const method = application?.payment_method;
+  const steps = [
+    { title: 'Portal account', done: true, text: 'Created and confirmed.' },
+    {
+      title: 'Membership application',
+      done: !!application,
+      text: application
+        ? `Received ${fmtDate(application.created_at)}.`
+        : 'We could not find an application for this email.',
+      action: !application && <Link to="/membership" className="btn btn-primary btn-sm">Apply now</Link>,
+    },
+    {
+      title: '₦2,500 membership fee',
+      done: paid,
+      text: paid
+        ? `Paid${method === 'cash' ? ' in cash' : method === 'transfer' ? ' by bank transfer' : method === 'paystack' || application?.paystack_ref ? ' online' : ''}${application?.payment_verified_at ? `, recorded ${fmtDate(application.payment_verified_at)}` : ''}.`
+        : application
+          ? 'Not recorded yet. Pay the membership team at a session, or message them to arrange a transfer. It shows here once they record it.'
+          : 'Due after you apply.',
+      action: application && !paid && (
+        <a className="btn btn-outline btn-sm" href={whatsapp(`Hello BIC, I applied with ${application.email} and want to pay my ₦2,500 membership fee.`)} target="_blank" rel="noreferrer">
+          Message the team
+        </a>
+      ),
+    },
+  ];
+  const complete = steps.every((s) => s.done);
+
+  return (
+    <section className="mp-block" aria-labelledby="mp-membership">
+      <div className="mp-block-head">
+        <h2 id="mp-membership">Membership</h2>
+        <p className={`mp-state${complete ? ' is-done' : ''}`}>{complete ? 'Active member' : 'In progress'}</p>
+      </div>
+      <ol className="mp-steps">
+        {steps.map((s) => (
+          <li key={s.title} className={s.done ? 'is-done' : ''}>
+            <span className="mp-dot" aria-hidden="true" />
+            <div>
+              <h3>{s.title}<span className="sr-only">{s.done ? ' (done)' : ' (to do)'}</span></h3>
+              <p>{s.text}</p>
+              {s.action && <div className="mp-step-action">{s.action}</div>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------------------------
+ * Signed in.
+ * ------------------------------------------------------------------------ */
+function Dashboard({ user, onSignOut }) {
+  const [profile, setProfile] = useState(null);
+  const [application, setApplication] = useState(undefined); // undefined = loading
+  const [rsvps, setRsvps] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [updates, setUpdates] = useState([]);
+
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ full_name: '', sector: '', phone: '', bio: '' });
+  const [editMsg, setEditMsg] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [changingPass, setChangingPass] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    getProfile(user.id).then((p) => {
+      if (!live) return;
+      setProfile(p);
+      setForm({
+        full_name: p?.full_name || user.user_metadata?.full_name || '',
+        sector: p?.sector || '',
+        phone: p?.phone || '',
+        bio: p?.bio || '',
+      });
+    });
+    getMyApplication(user.email).then((a) => live && setApplication(a));
+    getMyRsvps(user.email).then((r) => live && setRsvps(r));
+    fetchResources().then((r) => live && setResources(r));
+    Promise.all([fetchNewsletterPosts(), fetchArticles()]).then(([posts, articles]) => {
+      if (!live) return;
+      setUpdates([
+        ...posts.slice(0, 3).map((p) => ({ id: `n-${p.id}`, title: p.subject, meta: `Newsletter, ${fmtDate(p.created_at)}`, to: '/blog' })),
+        ...articles.slice(0, 3).map((a) => ({ id: `a-${a.id}`, title: a.title, meta: a.category || 'Article', to: a.body ? `/blog/${a.id}` : null, href: a.body ? null : a.source_url })),
+      ]);
+    });
+    return () => {
+      live = false;
+    };
+  }, [user]);
+
+  const save = async (e) => {
+    e.preventDefault();
+    if (!form.full_name.trim()) return setEditMsg({ type: 'error', text: 'Please enter your name.' });
+    setSaving(true);
+    const updates = {
+      full_name: form.full_name.trim(),
+      sector: form.sector || null,
+      phone: form.phone.trim() || null,
+      bio: form.bio.trim() || null,
+    };
+    const res = await updateProfile(user.id, updates);
+    setSaving(false);
+    if (!res.ok) return setEditMsg({ type: 'error', text: res.error });
+    setProfile((p) => ({ ...p, ...updates }));
+    setEditMsg({ type: 'success', text: 'Profile saved.' });
+    setEditing(false);
+  };
+
+  const sector = profile?.sector || application?.sector || null;
+  const groupLink = sector && GROUP_LINKS[sector];
+  const groupReady = groupLink && !groupLink.includes('REPLACE_');
+  const sectorResources = resources.filter((r) => !r.sector || !sector || r.sector === sector);
+  const firstName = (profile?.full_name || user.user_metadata?.full_name || '').split(' ')[0];
+  const isAdmin = profile?.role === 'admin';
+
+  return (
+    <>
+      <header className="mp-head surface-dark">
+        <div className="container mp-head-inner">
+          <div>
+            <h1>{firstName ? `Hello, ${firstName}.` : 'Your BIC portal.'}</h1>
+            <p>{user.email}</p>
+          </div>
+          <div className="mp-head-actions">
+            {isAdmin && <Link to="/admin" className="btn btn-glass">Admin console</Link>}
+            <button type="button" className="btn btn-glass" onClick={onSignOut}>Sign out</button>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mp-grid">
+        <div className="mp-main">
+          {application === undefined ? (
+            <section className="mp-block" aria-busy="true"><p className="mp-muted">Loading your membership…</p></section>
+          ) : (
+            <MembershipSteps application={application} />
+          )}
+
+          <section className="mp-block" aria-labelledby="mp-sector">
+            <div className="mp-block-head">
+              <h2 id="mp-sector">Your sector</h2>
+              {sector && <button type="button" className="link-btn" onClick={() => setEditing(true)}>Change</button>}
+            </div>
+            {sector ? (
+              <>
+                <p className="mp-sector-name">{sectorLabel(sector)}</p>
+                <p className="mp-muted">{SECTORS.find((s) => s.value === sector)?.desc}</p>
+                <div className="mp-row">
+                  {groupReady ? (
+                    <a href={groupLink} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">Join the sector chat</a>
+                  ) : (
+                    <p className="mp-muted">The sector chair will add you to the group chat. The invite link will also appear here.</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="mp-muted">Pick the market you want to learn. It tells the club which sector to place you in.</p>
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => setEditing(true)}>Choose a sector</button>
+              </>
+            )}
+
+            <h3 className="mp-sub">Resources</h3>
+            {sectorResources.length === 0 ? (
+              <p className="mp-muted">Nothing here yet. Session slides and reading lists appear here when the club uploads them.</p>
+            ) : (
+              <ul className="mp-list">
+                {sectorResources.map((r) => (
+                  <li key={r.id}>
+                    <div>
+                      <strong>{r.title}</strong>
+                      <span>{[r.sector && sectorLabel(r.sector), r.size_label, r.description].filter(Boolean).join(' · ')}</span>
+                    </div>
+                    <a href={r.file_url} className="btn btn-outline btn-sm" download target="_blank" rel="noreferrer">Download</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="mp-block" aria-labelledby="mp-events">
+            <div className="mp-block-head">
+              <h2 id="mp-events">Your events</h2>
+              <Link to="/events" className="link-btn">See all events</Link>
+            </div>
+            {rsvps.length === 0 ? (
+              <p className="mp-muted">You have not signed up for an event yet.</p>
+            ) : (
+              <ul className="mp-list">
+                {rsvps.map((r) => (
+                  <li key={r.id}>
+                    <div>
+                      <strong>{r.event_name || 'Club event'}</strong>
+                      <span>Signed up {fmtDate(r.created_at)}. We email the details once the date is set.</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {updates.length > 0 && (
+            <section className="mp-block" aria-labelledby="mp-updates">
+              <h2 id="mp-updates">From the club</h2>
+              <ul className="mp-list">
+                {updates.map((u) => (
+                  <li key={u.id}>
+                    <div>
+                      <strong>{u.title}</strong>
+                      <span>{u.meta}</span>
+                    </div>
+                    {u.to ? (
+                      <Link to={u.to} className="btn btn-outline btn-sm">Read</Link>
+                    ) : u.href ? (
+                      <a href={u.href} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Read</a>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
+
+        <aside className="mp-side">
+          <section className="mp-block" aria-labelledby="mp-profile">
+            <div className="mp-block-head">
+              <h2 id="mp-profile">Profile</h2>
+              {!editing && <button type="button" className="link-btn" onClick={() => { setEditing(true); setEditMsg(null); }}>Edit</button>}
+            </div>
+            {!editing && <Status msg={editMsg} />}
+            {editing ? (
+              <form onSubmit={save}>
+                <Status msg={editMsg} />
+                <div className="form-group">
+                  <label htmlFor="pf-name">Full name</label>
+                  <input id="pf-name" type="text" autoComplete="name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="pf-sector">Sector</label>
+                  <select id="pf-sector" value={form.sector} onChange={(e) => setForm({ ...form, sector: e.target.value })}>
+                    <option value="">Not chosen yet</option>
+                    {SECTORS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="pf-phone">Phone (optional)</label>
+                  <input id="pf-phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+234" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="pf-bio">About you (optional)</label>
+                  <textarea id="pf-bio" rows={3} maxLength={300} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Your level, course and what you want to learn" />
+                </div>
+                <div className="mp-row">
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => { setEditing(false); setEditMsg(null); }}>Cancel</button>
+                </div>
+              </form>
+            ) : (
+              <dl className="mp-facts">
+                <div><dt>Name</dt><dd>{profile?.full_name || 'Not set'}</dd></div>
+                <div><dt>Sector</dt><dd>{sector ? sectorLabel(sector) : 'Not chosen yet'}</dd></div>
+                <div><dt>Phone</dt><dd>{profile?.phone || 'Not added'}</dd></div>
+                {profile?.bio && <div><dt>About</dt><dd>{profile.bio}</dd></div>}
+              </dl>
+            )}
+          </section>
+
+          <section className="mp-block" aria-labelledby="mp-security">
+            <div className="mp-block-head">
+              <h2 id="mp-security">Password</h2>
+              {!changingPass && <button type="button" className="link-btn" onClick={() => setChangingPass(true)}>Change</button>}
+            </div>
+            {changingPass ? (
+              <NewPassword compact onDone={() => setTimeout(() => setChangingPass(false), 1500)} />
+            ) : (
+              <p className="mp-muted">Use at least {MIN_PASSWORD} characters.</p>
+            )}
+          </section>
+
+          <section className="mp-block mp-help">
+            <h2>Need help?</h2>
+            <p className="mp-muted">Message the membership team on WhatsApp at {CLUB_PHONE}.</p>
+            <a className="btn btn-outline btn-sm" href={whatsapp('Hello BIC, I need help with the member portal.')} target="_blank" rel="noreferrer">Open WhatsApp</a>
+          </section>
+        </aside>
+      </div>
+    </>
   );
 }
 
 function MemberPortal() {
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [application, setApplication] = useState(null);
-  const [rsvps, setRsvps] = useState([]);
-
-  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [pass, setPass] = useState('');
-  const [authMsg, setAuthMsg] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [googleBusy, setGoogleBusy] = useState(false);
-
-  // Profile editing
-  const [editName, setEditName] = useState('');
-  const [editSector, setEditSector] = useState('');
-  const [editPhone, setEditPhone] = useState('');
-  const [editBio, setEditBio] = useState('');
-  const [editMsg, setEditMsg] = useState(null);
-  const [editing, setEditing] = useState(false);
-
-  // Recent club updates
-  const [recentPosts, setRecentPosts] = useState([]);
-  const [recentArticles, setRecentArticles] = useState([]);
-
-  // Sector-tagged resources uploaded by admins
-  const [sectorResources, setSectorResources] = useState([]);
+  const [ready, setReady] = useState(false);
+  const [recovering, setRecovering] = useState(cameFromRecoveryLink());
 
   useEffect(() => {
-    getCurrentUser().then(setUser);
-    const unsub = onAuthChange((u) => setUser(u));
-    return unsub;
+    getCurrentUser().then((u) => {
+      setUser(u);
+      setReady(true);
+    });
+    return onAuthChange((u) => setUser(u));
   }, []);
 
-  useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      setApplication(null);
-      setRsvps([]);
-      setRecentPosts([]);
-      setRecentArticles([]);
-      return;
-    }
-    getProfile(user.id).then((p) => {
-      setProfile(p);
-      setEditName(p?.full_name || user.user_metadata?.full_name || '');
-      setEditSector(p?.sector || user.user_metadata?.sector || '');
-      setEditPhone(p?.phone || user.user_metadata?.phone || '');
-      setEditBio(p?.bio || user.user_metadata?.bio || '');
-    });
-    getMyApplication(user.email).then(setApplication);
-    getMyRsvps(user.email).then(setRsvps);
-    fetchNewsletterPosts().then((rows) => setRecentPosts(rows.slice(0, 3)));
-    fetchArticles().then((rows) => setRecentArticles(rows.slice(0, 4)));
-    fetchResources().then((rows) => setSectorResources(rows));
-  }, [user]);
-
-  const handleAuth = async (e) => {
-    e.preventDefault();
-    setBusy(true);
-    setAuthMsg(null);
-
-    // Membership is tied to a valid Babcock student email
-    if (mode === 'signup' && !/^[^\s@]+@babcock\.edu\.ng$/i.test(email.trim())) {
-      setBusy(false);
-      setAuthMsg({
-        type: 'error',
-        text: 'Please use your official Babcock email (name.lastname@babcock.edu.ng) to create an account.',
-      });
-      return;
-    }
-
-    const res =
-      mode === 'signup'
-        ? await signUp(email, pass, name)
-        : await signIn(email, pass);
-    setBusy(false);
-    if (!res.ok) {
-      setAuthMsg({ type: 'error', text: res.error });
-    } else if (mode === 'signup') {
-      setAuthMsg({
-        type: 'success',
-        text: 'Account created! Check your Babcock email to confirm, then sign in below.',
-      });
-    } else {
-      setUser(res.user); // demo mode has no auth event — update directly
-    }
+  const doSignOut = async () => {
+    await signOut();
+    setUser(null);
   };
-
-  const handleGoogle = async () => {
-    setGoogleBusy(true);
-    setAuthMsg(null);
-    const res = await signInWithGoogle();
-    setGoogleBusy(false);
-    if (!res.ok) setAuthMsg({ type: 'error', text: res.error });
-  };
-
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    setEditMsg(null);
-    if (!editName.trim()) {
-      setEditMsg({ type: 'error', text: 'Please enter your name.' });
-      return;
-    }
-    const res = await updateProfile(user.id, {
-      full_name: editName.trim(),
-      sector: editSector || null,
-      phone: editPhone.trim() || null,
-      bio: editBio.trim() || null,
-    });
-    setEditMsg(res.ok ? { type: 'success', text: 'Profile updated.' } : { type: 'error', text: res.error });
-    if (res.ok) {
-      setProfile((p) => ({
-        ...p,
-        full_name: editName.trim(),
-        sector: editSector || null,
-        phone: editPhone.trim() || null,
-        bio: editBio.trim() || null,
-      }));
-      setEditing(false);
-    }
-  };
-
-  // Not signed in → auth screen
-  if (!user) {
-    return (
-      <section className="section container admin-login-wrap">
-        <Seo title="Member Portal" noindex />
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-          {isDemoMode && (
-            <div className="form-status visible demo" style={{ marginBottom: 16, maxWidth: 460, marginLeft: 'auto', marginRight: 'auto' }}>
-              <strong>Demo mode:</strong> no accounts are stored. Connect Supabase to sign in for real.
-            </div>
-          )}
-          <AuthCard
-            title={mode === 'signin' ? 'Member Login' : 'Create Member Account'}
-            subtitle={
-              mode === 'signin'
-                ? 'Sign in to see your membership status, RSVPs, and member resources.'
-                : 'Register with the same email you used on your membership application.'
-            }
-            onSubmit={handleAuth}
-            buttonText={mode === 'signin' ? 'Sign In' : 'Create Account'}
-            busy={busy}
-            msg={authMsg}
-          >
-            {mode === 'signup' && (
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-            )}
-            <div className="form-group">
-              <label>Email Address</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name.lastname@babcock.edu.ng"
-                aria-describedby="member-email-hint"
-              />
-              <span id="member-email-hint" className="field-error" style={{ color: "#55617e", fontWeight: 500, fontSize: '0.78rem', marginTop: 6 }}>
-                Member accounts are linked to your official @babcock.edu.ng email.
-              </span>
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input type="password" required minLength={6} value={pass} onChange={(e) => setPass(e.target.value)} placeholder="At least 6 characters" />
-            </div>
-          </AuthCard>
-          {!isDemoMode && googleAuthEnabled && (
-            <>
-              <div className="auth-divider" style={{ maxWidth: 460, margin: '14px auto 0' }}><span>or</span></div>
-              <div className="text-center">
-                <button
-                  type="button"
-                  className="btn btn-google"
-                  style={{ marginTop: 12 }}
-                  onClick={handleGoogle}
-                  disabled={googleBusy}
-                >
-                  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.5l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
-                  {googleBusy ? 'Redirecting...' : 'Continue with Google'}
-                </button>
-              </div>
-            </>
-          )}
-
-          <p className="text-center" style={{ marginTop: 16, color: '#55617e', fontSize: '0.9rem' }}>
-            {mode === 'signin' ? (
-              <>
-                New here? <button type="button" className="link-btn" onClick={() => { setMode('signup'); setAuthMsg(null); }}>Create an account</button>
-              </>
-            ) : (
-              <>
-                Already registered? <button type="button" className="link-btn" onClick={() => { setMode('signin'); setAuthMsg(null); }}>Sign in</button>
-              </>
-            )}{' '}
-            · <Link to="/membership" className="link-btn">Apply for membership</Link>
-          </p>
-        </motion.div>
-      </section>
-    );
-  }
-
-  const isAdmin = profile?.role === 'admin';
 
   return (
-    <section className="section container">
-      <Seo title="Member Portal" noindex />
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="admin-topbar">
-          <div>
-            <h1 className="admin-title">Member Portal</h1>
-            <p className="admin-subtitle">
-              Welcome, <strong>{profile?.full_name || user.email}</strong>
-              {isAdmin && ' · Admin account'}
-              {isDemoMode && <span className="demo-badge" style={{ marginLeft: 8 }}>Demo session</span>}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={() => {
-              signOut();
-              setUser(null);
-              setProfile(null);
-              setApplication(null);
-              setRsvps([]);
-            }}
-          >
-            Sign Out
-          </button>
-        </div>
-
-        {/* PROFILE CARD */}
-        <div className="admin-panel" style={{ marginBottom: 32 }}>
-          <div className="admin-topbar" style={{ padding: 0 }}>
-            <div>
-              <h2 className="admin-panel-title" style={{ marginTop: 0 }}>My Profile</h2>
-              <p className="admin-subtitle">
-                {profile?.email || user.email}
-                {profile?.role ? ` · Role: ${profile.role}` : ''}
-              </p>
-            </div>
-            {!editing && (
-              <button type="button" className="btn btn-outline btn-sm" onClick={() => setEditing(true)}>Edit Name</button>
-            )}
-          </div>
-          {editing ? (
-            <form onSubmit={handleSaveProfile} style={{ maxWidth: 440 }}>
-              {editMsg && <div className={`form-status visible ${editMsg.type}`}>{editMsg.text}</div>}
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Your full name" />
-              </div>
-              <div className="form-group">
-                <label>Primary Sector (what you want to go into)</label>
-                <select value={editSector} onChange={(e) => setEditSector(e.target.value)}>
-                  <option value="">Select your track</option>
-                  {SECTORS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-                <span className="field-error" style={{ color: '#55617e', fontSize: '0.78rem', marginTop: 6 }}>
-                  Your sector shows on your profile and in the member directory.
-                </span>
-              </div>
-              <div className="form-group">
-                <label>Phone Number (optional)</label>
-                <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+234 800 000 0000" />
-              </div>
-              <div className="form-group">
-                <label>Short Bio (optional)</label>
-                <textarea rows={2} value={editBio} onChange={(e) => setEditBio(e.target.value)} placeholder="e.g. 300-level Accounting student interested in equities" />
-              </div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button type="submit" className="btn btn-primary btn-sm">Save</button>
-                <button type="button" className="btn btn-outline btn-sm" onClick={() => { setEditing(false); setEditMsg(null); }}>Cancel</button>
-              </div>
-            </form>
-          ) : (
-            <>
-              <div className="profile-avatar">
-                {(profile?.full_name || 'BIC').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
-              </div>
-              <div className="profile-details" style={{ marginTop: 16 }}>
-                {profile?.sector && (
-                  <p><strong>Sector:</strong> {sectorLabel(profile.sector)}</p>
-                )}
-                {profile?.phone && <p><strong>Phone:</strong> {profile.phone}</p>}
-                {profile?.bio && <p><strong>Bio:</strong> {profile.bio}</p>}
-                {!profile?.sector && !profile?.phone && !profile?.bio && (
-                  <p style={{ color: '#55617e', fontSize: '0.9rem' }}>
-                    Add your sector, phone, and a short bio. Your sector tells the club which community to onboard you into.
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* MEMBERSHIP STATUS */}
-        <div className="member-status-card">
-          <div>
-            <h2 className="admin-panel-title" style={{ marginTop: 0 }}>Membership Status</h2>
-            <p className="admin-subtitle">
-              {application
-                ? `Application submitted on ${new Date(application.created_at).toLocaleDateString()}. Reference: ${application.paystack_ref || 'pending'}. The exec team will onboard you at the next session.`
-                : 'No membership application found for this email yet. Apply to become a member.'}
-            </p>
-          </div>
-          {application ? (
-            <span className="badge badge-green">Application Received</span>
-          ) : (
-            <Link to="/membership" className="btn btn-primary">Apply now (₦2,500)</Link>
-          )}
-        </div>
-
-        {/* RESOURCES */}
-        <div className="admin-panel" style={{ marginTop: 32 }}>
-          <h2 className="admin-panel-title">Member Resources</h2>
-          <p className="admin-subtitle">
-            Free downloads for registered members
-            {profile?.sector ? `. Showing your ${sectorLabel(profile.sector)} picks first.` : '.'}
-          </p>
-          {sectorResources.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              <h3 className="admin-panel-title" style={{ fontSize: '1rem', marginTop: 0 }}>
-                {profile?.sector ? `${sectorLabel(profile.sector)} resources` : 'Sector resources'}
-              </h3>
-              <div className="resource-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                {sectorResources
-                  .filter((r) => !profile?.sector || !r.sector || r.sector === profile.sector)
-                  .map((r) => (
-                    <a key={r.id} href={r.file_url} download className="resource-card" aria-label={`Download ${r.title}`}>
-                      <div className="resource-icon">
-                        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                      </div>
-                      <div className="resource-text">
-                        <h3>{r.title}</h3>
-                        <p>{r.size_label || 'Download'} · {r.description}</p>
-                      </div>
-                      <span className="resource-download" aria-hidden="true">↓</span>
-                    </a>
-                  ))}
-              </div>
-            </div>
-          )}
-          <div className="resource-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-            {MEMBER_RESOURCES.map((r) => (
-              <a key={r.name} href={r.file} download className="resource-card" aria-label={`Download ${r.name}`}>
-                <div className="resource-icon">
-                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                </div>
-                <div className="resource-text">
-                  <h3>{r.name}</h3>
-                  <p>{r.size}</p>
-                </div>
-                <span className="resource-download" aria-hidden="true">↓</span>
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* COMMUNITY GROUPS */}
-        <div className="admin-panel" style={{ marginTop: 32 }}>
-          <h2 className="admin-panel-title">Community Groups</h2>
-          <p className="admin-subtitle">
-            Join your sector's group chat to meet other members and get sector-specific updates.
-          </p>
-          <div className="group-chat-grid">
-            {SECTORS.map((s) => {
-              const link = GROUP_LINKS[s.value];
-              const isSet = link && !link.includes('REPLACE_');
-              return (
-                <div className={`group-chat-card${sectorLabel(profile?.sector) === s.label ? ' mine' : ''}`} key={s.value}>
-                  <div>
-                    <strong>{s.label}</strong>
-                    <p>{s.desc}</p>
-                  </div>
-                  {isSet ? (
-                    <a href={link} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                      Join Chat →
-                    </a>
-                  ) : (
-                    <span className="group-chat-pending">Link coming soon</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* RECENT CLUB UPDATES */}
-        <div className="admin-panel" style={{ marginTop: 32 }}>
-          <h2 className="admin-panel-title">Recent Club Updates</h2>
-          {recentPosts.length === 0 && recentArticles.length === 0 ? (
-            <p className="admin-empty">Nothing new yet. Check back soon.</p>
-          ) : (
-            <ul className="admin-list">
-              {recentPosts.map((p) => (
-                <li key={p.id}>
-                  <div className="admin-list-main">
-                    <strong>{p.subject}</strong>
-                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>Newsletter · {new Date(p.created_at).toLocaleDateString()}</span>
-                  </div>
-                  <Link to="/blog" className="btn btn-outline btn-sm">Read →</Link>
-                </li>
-              ))}
-              {recentArticles.map((a) => (
-                <li key={a.id}>
-                  <div className="admin-list-main">
-                    <strong>{a.title}</strong>
-                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>{a.category || 'Article'}</span>
-                  </div>
-                  {a.body ? (
-                    <Link to={`/blog/${a.id}`} className="btn btn-outline btn-sm">Read →</Link>
-                  ) : (
-                    <a href={a.source_url} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Read →</a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* RSVP HISTORY */}
-        <div className="admin-panel" style={{ marginTop: 32 }}>
-          <h2 className="admin-panel-title">My Event RSVPs</h2>
-          {rsvps.length === 0 ? (
-            <p className="admin-empty">You haven't RSVP'd to any events yet. Browse <Link to="/events">upcoming events</Link>.</p>
-          ) : (
-            <ul className="admin-list">
-              {rsvps.map((r) => (
-                <li key={r.id}>
-                  <div className="admin-list-main">
-                    <strong>{r.event_name}</strong>
-                    <span style={{ color: '#55617e', fontSize: '0.85rem' }}>{new Date(r.created_at).toLocaleString()}</span>
-                  </div>
-                  <span className="badge badge-green">RSVP Confirmed</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {isAdmin && (
-          <div className="admin-panel" style={{ marginTop: 32 }}>
-            <h2 className="admin-panel-title">Admin Access</h2>
-            <p className="admin-subtitle">Your account has admin privileges.</p>
-            <Link to="/admin" className="btn btn-navy">Open Admin Console</Link>
-          </div>
-        )}
-      </motion.div>
-    </section>
+    <>
+      <Seo title="Member portal" noindex />
+      {!ready ? (
+        <section className="mp-auth" aria-busy="true" />
+      ) : !user ? (
+        <AuthScreen onSignedIn={setUser} />
+      ) : recovering ? (
+        <NewPassword
+          onDone={() => {
+            window.history.replaceState(null, '', '/member');
+            setTimeout(() => setRecovering(false), 1200);
+          }}
+        />
+      ) : (
+        <Dashboard user={user} onSignOut={doSignOut} />
+      )}
+    </>
   );
 }
 

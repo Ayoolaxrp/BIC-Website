@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
 import { CLUB_EMAIL, CLUB_PHONE, CLUB_LOCATION, mailto } from '../lib/contact';
 
@@ -160,31 +159,47 @@ export default function Legal({ doc = 'privacy' }) {
   return (
     <>
       <Seo title={d.title} description={d.seo} />
-      <PageHero crumb={d.title} title={d.title} description={d.intro}>
-        <p className="legal-meta">Last updated {UPDATED}</p>
-        <div className="legal-switch">
-          <Link to="/privacy" className={`btn btn-sm ${doc === 'privacy' ? 'btn-primary' : 'btn-outline'}`} aria-current={doc === 'privacy' ? 'page' : undefined}>Privacy Policy</Link>
-          <Link to="/terms" className={`btn btn-sm ${doc === 'terms' ? 'btn-primary' : 'btn-outline'}`} aria-current={doc === 'terms' ? 'page' : undefined}>Terms of Use</Link>
-        </div>
-      </PageHero>
-      <section className="section">
+      <div className="legal-page" id="legal-top">
+        <header className="legal-header">
+          <div className="container legal-header-inner">
+            <h1>{d.title}</h1>
+            <p className="legal-intro">{d.intro}</p>
+            <p className="legal-meta">Last updated: {UPDATED}</p>
+            <nav className="legal-switch" aria-label="Legal documents">
+              <Link to="/privacy" aria-current={doc === 'privacy' ? 'page' : undefined}>Privacy Policy</Link>
+              <Link to="/terms" aria-current={doc === 'terms' ? 'page' : undefined}>Terms of Use</Link>
+            </nav>
+          </div>
+        </header>
         <div className="container legal">
-          <nav className="legal-toc" aria-label="On this page">
-            <p>On this page</p>
-            {d.sections.map((s) => (
-              <a key={s.id} href={`#${s.id}`}>{s.title}</a>
-            ))}
-          </nav>
-          <div className="legal-body">
+          <aside className="legal-toc" aria-label="Document sections">
+            <p>Contents</p>
+            <ol>
+              {d.sections.map((s, i) => (
+                <li key={s.id}>
+                  <a href={`#${s.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{s.title}</a>
+                </li>
+              ))}
+            </ol>
+            <Link className="legal-other" to={doc === 'privacy' ? '/terms' : '/privacy'}>
+              ← Read our {doc === 'privacy' ? 'Terms of Use' : 'Privacy Policy'}
+            </Link>
+          </aside>
+          <article className="legal-body">
             {d.sections.map((s, i) => (
-              <section key={s.id} id={s.id}>
-                <h2><span>{String(i + 1).padStart(2, '0')}</span>{s.title}</h2>
+              <section key={s.id} id={s.id} aria-labelledby={`${s.id}-title`}>
+                <p className="legal-section-number">{String(i + 1).padStart(2, '0')}</p>
+                <h2 id={`${s.id}-title`}>{s.title}</h2>
                 {s.body}
               </section>
             ))}
-          </div>
+            <footer className="legal-end">
+              <a href="#legal-top">↑ Back to top</a>
+              <p>Questions? <a href={mailto('Privacy or terms question')}>{CLUB_EMAIL}</a></p>
+            </footer>
+          </article>
         </div>
-      </section>
+      </div>
     </>
   );
 }

@@ -391,7 +391,7 @@ export default function Membership() {
         </div>
 
         {/* FAQ */}
-        <div className="faq-section mb-faq">
+        <div className="faq-section mb-faq" id="faq">
           <div>
             <h2 className="sec-title">Questions, answered.</h2>
             <p className="sec-sub">Anything else? <Link to="/contact">Ask us directly.</Link></p>

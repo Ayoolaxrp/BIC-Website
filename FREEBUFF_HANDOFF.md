@@ -19,6 +19,7 @@
 | Cloudflare security audit | Done (quick profile): 0 confirmed, 4 leads, all 4 fixed in source |
 | Speed, forms, brand, legal | Done 2026-10-09 (PR #2): content renders instantly, SDK/animation libs off public pages, aligned forms + interest chips, blue brand hero, `/privacy` and `/terms` |
 | Merge to `main` / go live | Done 2026-10-09 (PR #1). Live site tested: all pages 200, security headers sent, live Contact form saves to Supabase |
+| Audit fixes, student portal, offline payments | Done 2026-10-11 (branch `polish-portal-backend`): see `HANDOFF.md`. Migration 0700 applied live; `npm run test:db` 43 checks |
 | Supabase project | Created by owner (ref in `.env`, region eu-west-1). All 6 migrations applied and verified 2026-10-09; Vercel env vars set (Production/Preview/Development) |
 
 ## Required Skills (IN ORDER)
@@ -94,7 +95,7 @@ Then set Vercel env vars `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (Produ
 
 ## Acceptance Criteria
 - [ ] `npm run build` passes
-- [ ] `npm run test:db` passes (33 checks)
+- [ ] `npm run test:db` passes (43 checks)
 - [ ] No visible em/en-dashes, "₦5,000", bare "50+", Bamboo, AVA, "Demo mode", `babcockinvestorsclub.org`, placeholder names, or gold colour on any public page
 - [ ] No horizontal scroll at 390px and 1440px on Home, About, Membership, Events, Blog, Partners, Contact
 - [ ] Every button readable on its background (no navy-on-navy)
