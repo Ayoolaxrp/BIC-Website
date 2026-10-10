@@ -15,8 +15,8 @@ if (import.meta.env.DEV) {
   // No state library detected. If you add one, register it here — see node_modules/@reticlehq/server/docs/usage.md.
 
   registerCapabilities({
-    testids: [], // none found; add data-testid to your key elements
-    signals: [], // names you pass to reticle.signal()
+    testids: ['home-hero', 'next-event-link', 'mobile-menu-toggle', 'mobile-navigation'],
+    signals: ['navigation:menu-changed', 'navigation:route-ready'],
     stores: [], // the keys you registered above
   });
 }

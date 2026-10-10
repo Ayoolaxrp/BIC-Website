@@ -4,6 +4,14 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import useLabelAssociation from './hooks/useLabelAssociation';
+import Home from './pages/Home';
+import About from './pages/About';
+import Membership from './pages/Membership';
+import Events from './pages/Events';
+import Blog from './pages/Blog';
+import Contact from './pages/Contact';
+import Sponsorship from './pages/Sponsorship';
+import Legal from './pages/Legal';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
 // (GitHub Pages: /BIC-Website/). Base the router on Vite's BASE_URL so deep
@@ -11,38 +19,21 @@ import useLabelAssociation from './hooks/useLabelAssociation';
 const routerBase =
   import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL.replace(/\/+$/, '');
 
-// Code-split every route so the first page stays small; the rest are
-// fetched in the background once the first page has painted (see below).
+// Public navigation is bundled with the shell so moving between the pages a
+// visitor is most likely to use never replaces the site with a blank fallback.
+// Large, secondary tools remain split below.
 const loaders = {
-  home: () => import('./pages/Home'),
-  about: () => import('./pages/About'),
-  membership: () => import('./pages/Membership'),
-  events: () => import('./pages/Events'),
-  blog: () => import('./pages/Blog'),
   article: () => import('./pages/ArticlePage'),
-  contact: () => import('./pages/Contact'),
-  sponsorship: () => import('./pages/Sponsorship'),
   member: () => import('./pages/Member'),
   admin: () => import('./pages/Admin'),
-  legal: () => import('./pages/Legal'),
   notFound: () => import('./pages/NotFound'),
 };
-const Home = lazy(loaders.home);
-const About = lazy(loaders.about);
-const Membership = lazy(loaders.membership);
-const Events = lazy(loaders.events);
-const Blog = lazy(loaders.blog);
 const ArticlePage = lazy(loaders.article);
-const Contact = lazy(loaders.contact);
-const Sponsorship = lazy(loaders.sponsorship);
 const Member = lazy(loaders.member);
 const Admin = lazy(loaders.admin);
-const Legal = lazy(loaders.legal);
 const NotFound = lazy(loaders.notFound);
 
-// Public pages a visitor is likely to open next. Prefetching them while the
-// browser is idle makes every in-site navigation instant (no blank wait).
-const PREFETCH = ['home', 'about', 'membership', 'events', 'blog', 'contact', 'sponsorship', 'legal'];
+const PREFETCH = ['article', 'member'];
 
 function usePrefetchRoutes() {
   useEffect(() => {
@@ -63,7 +54,7 @@ function AppRoutes() {
   return (
     // Keyed so each page gets a short CSS cross-fade in. Nothing waits on the
     // previous page, and reduced-motion turns it off (system.css).
-    <main key={location.pathname} className="page-enter">
+    <main id="main-content" tabIndex={-1}>
       <Suspense fallback={<div className="page-pending" aria-busy="true" />}>
         <Routes location={location}>
           <Route path="/" element={<Home />} />
@@ -95,6 +86,7 @@ function LegalRedirect() {
 export default function App() {
   return (
     <BrowserRouter basename={routerBase}>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
       <AppRoutes />

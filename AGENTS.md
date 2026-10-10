@@ -1,3 +1,5 @@
+> **Picking this up mid-task? Read `HANDOFF.md` first.**
+
 <!-- reticle:begin (managed by `reticle init` — edit outside these markers) -->
 ## Verifying with Reticle
 

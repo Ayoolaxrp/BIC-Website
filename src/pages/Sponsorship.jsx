@@ -12,10 +12,10 @@ const Check = ({ size = 18 }) => (
 
 // Verified partners from the club's official "Meet Our Sponsors" poster (2026 seminar & Stock Pitch 2.0).
 const partners = [
-  { name: 'Fundbox Financial Services', note: 'Annual Investment Seminar 2026' },
-  { name: 'Leadway Assurance', note: 'Annual Investment Seminar 2026' },
-  { name: 'More Ladda (Meristem)', note: 'Annual Investment Seminar 2026' },
-  { name: 'Chapel Hill Denham', note: 'Annual Investment Seminar 2026' },
+  { name: 'Fundbox Financial Services', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
+  { name: 'Leadway Assurance', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
+  { name: 'More Ladda (Meristem)', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
+  { name: 'Chapel Hill Denham', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
 ];
 
 const offers = [
@@ -91,7 +91,9 @@ export default function Sponsorship() {
   return (
     <>
       <Seo
-        title="Partner with BIC"
+        title="Partner with BIC."
+        image="/images/bic-seminar-panel.webp"
+        imagePosition="50% 35%"
         description="Sponsor a seminar, speak to members or recruit interns at Babcock University's student investment club."
       />
       <PageHero

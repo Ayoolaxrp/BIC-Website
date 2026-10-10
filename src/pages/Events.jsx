@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
@@ -76,7 +77,7 @@ const pastEvents = [
     desc: '"Building Wealth with Purpose: Turning Vision into Value." Students and finance professionals at the 600 Seaters, BUTH, with the Stock Pitch 2.0 finale and ₦370,000 in prizes.',
     sponsors: 'Sponsored by Fundbox Financial Services, Leadway Assurance, More Ladda (Meristem) and Chapel Hill Denham.',
     gallery: [
-      ['/images/bic-panel-wide-2026.webp', 'Speaker panel on stage'],
+      ['/images/bic-2025-10.webp', 'Speaker panel on stage'],
       ['/images/bic-speaker-stage-wide-2026.webp', 'A speaker addressing the hall'],
       ['/images/bic-audience-2026.webp', 'Students in the audience'],
       ['/images/bic-moreladda-panel.webp', 'Panel session'],
@@ -96,8 +97,21 @@ const pastEvents = [
 ];
 
 export default function Events() {
-  const [tab, setTab] = useState('upcoming');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get('view') === 'past' ? 'past' : 'upcoming';
   const [dbEvents, setDbEvents] = useState([]);
+
+  const selectTab = (next) => {
+    setSearchParams(next === 'past' ? { view: 'past' } : {}, { replace: true });
+  };
+
+  const onTabKeyDown = (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === 'ArrowLeft' || event.key === 'Home' ? 'upcoming' : 'past';
+    selectTab(next);
+    document.getElementById(`events-tab-${next}`)?.focus();
+  };
 
   // Events added in the admin console replace the calendar list once the
   // database is connected.
@@ -144,17 +158,19 @@ export default function Events() {
         crumb="Events"
         title="What's coming up."
         description="The 2026/2027 session at Babcock University. Dates are confirmed on our socials as they are decided."
+        image="/images/bic-2025-10.webp"
+        imagePosition="50% 40%"
       />
 
       <section className="section">
         <div className="container">
           <div className="tabs" role="tablist" aria-label="Events">
-            <button type="button" role="tab" aria-selected={tab === 'upcoming'} className={`tab-btn${tab === 'upcoming' ? ' active' : ''}`} onClick={() => setTab('upcoming')}>Upcoming</button>
-            <button type="button" role="tab" aria-selected={tab === 'past'} className={`tab-btn${tab === 'past' ? ' active' : ''}`} onClick={() => setTab('past')}>Past</button>
+            <button id="events-tab-upcoming" type="button" role="tab" aria-controls="events-panel-upcoming" aria-selected={tab === 'upcoming'} tabIndex={tab === 'upcoming' ? 0 : -1} className={`tab-btn${tab === 'upcoming' ? ' active' : ''}`} onClick={() => selectTab('upcoming')} onKeyDown={onTabKeyDown}>Upcoming</button>
+            <button id="events-tab-past" type="button" role="tab" aria-controls="events-panel-past" aria-selected={tab === 'past'} tabIndex={tab === 'past' ? 0 : -1} className={`tab-btn${tab === 'past' ? ' active' : ''}`} onClick={() => selectTab('past')} onKeyDown={onTabKeyDown}>Past</button>
           </div>
 
           {tab === 'upcoming' ? (
-            <ol className="event-timeline">
+            <ol id="events-panel-upcoming" role="tabpanel" aria-labelledby="events-tab-upcoming" className="event-timeline">
               {upcoming.map((ev) => (
                 <li key={ev.id} className={ev.flagship ? 'flagship' : ''}>
                   <p className="et-when">{ev.when}</p>
@@ -169,10 +185,10 @@ export default function Events() {
               ))}
             </ol>
           ) : (
-            <div className="past-list">
+            <div id="events-panel-past" role="tabpanel" aria-labelledby="events-tab-past" className="past-list">
               {pastEvents.map((ev) => (
                 <article key={ev.id} className="past-event">
-                  <img className="past-poster" src={asset(ev.poster)} alt={ev.posterAlt} loading="lazy" decoding="async" />
+                  <img className="past-poster" src={asset(ev.poster)} alt={ev.posterAlt} width={1200} height={1600} loading="lazy" decoding="async" />
                   <div>
                     <p className="et-when">{ev.when}</p>
                     <h2>{ev.title}</h2>
@@ -181,7 +197,7 @@ export default function Events() {
                     {ev.gallery.length > 0 && (
                       <div className="past-gallery">
                         {ev.gallery.map(([src, alt]) => (
-                          <img key={src} src={asset(src)} alt={alt} loading="lazy" decoding="async" />
+                          <img key={src} src={asset(src)} alt={alt} width={1600} height={1067} loading="lazy" decoding="async" />
                         ))}
                       </div>
                     )}

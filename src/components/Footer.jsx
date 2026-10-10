@@ -59,29 +59,22 @@ export default function Footer() {
             </div>
           </div>
           <div className="footer-col">
-            <h2>Club</h2>
+            <h2>Explore</h2>
             <ul>
-              {[['/about', 'About'], ['/membership', 'Membership'], ['/events', 'Events'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
+              {[['/about', 'About'], ['/membership', 'Membership'], ['/events', 'Events'], ['/blog', 'Blog'], ['/sponsorship', 'Partners'], ['/contact', 'Contact']].map(([to, label]) => (
                 <li key={to}><Link to={to}>{label}</Link></li>
               ))}
-            </ul>
-          </div>
-          <div className="footer-col">
-            <h2>Members &amp; partners</h2>
-            <ul>
               {supabaseConfigured && <li><Link to="/member">Member portal</Link></li>}
-              <li><Link to="/sponsorship">Partner with BIC</Link></li>
-              <li><Link to="/contact">Contact the club</Link></li>
             </ul>
           </div>
           <div className="footer-col">
-            <h2>Newsletter</h2>
+            <h2>Stay informed</h2>
             {supabaseConfigured ? (
             <>
-            <p className="footer-note">Event dates and market notes from the club.</p>
+            <p className="footer-note">A concise note when a new event or market session is announced.</p>
             <form className="footer-newsletter" onSubmit={handleNewsletter}>
               <label htmlFor="footer-email" className="visually-hidden">Email address</label>
-              <input id="footer-email" type="email" name="email" placeholder="you@babcock.edu.ng" autoComplete="email" required />
+              <input id="footer-email" type="email" name="email" placeholder="name@babcock.edu.ng…" autoComplete="email" spellCheck={false} required />
               <button type="submit" className="btn btn-primary btn-full" disabled={newsStatus === 'sending'}>
                 {newsStatus === 'sending' ? 'Subscribing…' : 'Subscribe'}
               </button>
@@ -92,6 +85,7 @@ export default function Footer() {
             {newsStatus === 'error' && (
               <p className="news-status err" role="alert">That didn't go through. Please try again.</p>
             )}
+            <p className="footer-privacy">Only event and club updates. Unsubscribe at any time.</p>
             </>
             ) : (
               <p className="footer-note">

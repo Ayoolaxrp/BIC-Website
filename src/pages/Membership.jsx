@@ -11,28 +11,13 @@ import { PAYSTACK_PUBLIC_KEY, paystackConfigured, supabaseConfigured } from '../
 
 const MEMBERSHIP_FEE = 2500; // NGN, set by the club Oct 2026
 
+// Only what the club actually runs (calendar, posters, club structure).
 const benefits = [
-  {
-    icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-    ),
-    title: 'Educational Resources',
-    text: 'Access exclusive market research, trading tutorials, and premium financial literacy content.',
-  },
-  {
-    icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-    ),
-    title: 'Elite Networking',
-    text: 'Connect with industry professionals, alumni, and top students across multiple disciplines.',
-  },
-  {
-    icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
-    ),
-    title: 'Event Discounts & Priority',
-    text: 'Get priority seating, RSVP access, and heavy discounts on all our premium summits and workshops.',
-  },
+  { title: 'Sector sessions', text: 'Regular sessions in the market you choose, led by a student chairperson.' },
+  { title: 'Competitions', text: 'The stock pitch challenge and trading challenges. Stock Pitch 2.0 carried ₦370,000 in prizes.' },
+  { title: 'Speakers and sponsors', text: 'Seminars with finance professionals and the club’s corporate sponsors.' },
+  { title: 'Leadership', text: 'Join a committee and help run events, finance, media or research.' },
+  { title: 'Recognition', text: 'Certificates of recognition for executives and active members.' },
 ];
 
 const interests = [
@@ -58,25 +43,16 @@ const committees = [
 
 const steps = [
   {
-    title: 'Complete the Form',
+    title: 'Complete the form',
     text: 'Tell us about yourself. It takes about two minutes.',
-    icon: (
-      <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-    ),
   },
   {
-    title: 'Pay the ₦2,500 Fee',
+    title: 'Pay the ₦2,500 fee',
     text: 'Pay securely through Paystack, or in person while online payment is being set up.',
-    icon: (
-      <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h2m-5 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2z" /></svg>
-    ),
   },
   {
-    title: 'Get Onboarded',
+    title: 'Get onboarded',
     text: 'Join our sessions, pick a committee, and start learning.',
-    icon: (
-      <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-    ),
   },
 ];
 
@@ -232,52 +208,37 @@ export default function Membership() {
     <>
       <Seo
         title="Membership"
-        description="Unlock exclusive educational resources, professional networks, and career opportunities by becoming a registered member of the Babcock Investors Club."
+        description="Join the Babcock Investors Club: open to every Babcock student. Apply in two minutes; the membership fee is ₦2,500."
       />
       <PageHero
         crumb="Membership"
-        title="Join the Club"
-        description="Unlock exclusive educational resources, professional networks, and career opportunities by becoming a registered member."
+        title="Join the club."
+        description="Open to every Babcock student, in any department. No finance background needed."
+        image="/images/bic-audience-2026.webp"
+        imagePosition="50% 40%"
       />
 
       <FadeIn className="section container">
         {/* HOW IT WORKS */}
-        <div className="sec-head" style={{ marginBottom: 40 }}>
-          <div>
-            <h2 className="sec-title">Three steps to joining.</h2>
-          </div>
-        </div>
-        <div className="steps-grid">
-          {steps.map((s, i) => (
-            <div className="step-card" key={s.title}>
-              <div className="step-num">{i + 1}</div>
-              <div className="step-icon">{s.icon}</div>
+        <h2 className="sec-title">Three steps to joining.</h2>
+        <ol className="h-steps mb-steps">
+          {steps.map((s) => (
+            <li key={s.title}>
               <h3>{s.title}</h3>
               <p>{s.text}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div className="membership-grid">
           {/* BENEFITS */}
           <div>
-            <h2 className="sec-title">
-              Invest in your future.
-            </h2>
-            <p>
-              Membership at the Babcock Investors Club provides you with the ultimate toolkit to
-              master financial markets, build a professional network, and accelerate your career in
-              finance and business.
-            </p>
-
-            <ul className="benefits-list">
+            <h2 className="sec-title">What members get.</h2>
+            <ul className="mb-benefits">
               {benefits.map((b) => (
                 <li key={b.title}>
-                  <div className="benefit-icon">{b.icon}</div>
-                  <div className="benefit-text">
-                    <h3>{b.title}</h3>
-                    <p>{b.text}</p>
-                  </div>
+                  <h3>{b.title}</h3>
+                  <p>{b.text}</p>
                 </li>
               ))}
             </ul>
@@ -415,9 +376,11 @@ export default function Membership() {
                   <div className={`form-status visible ${formMsg.type}`}>{formMsg.text}</div>
                 )}
 
-                <div className="paystack-badge">
-                  Secured by <span style={{ color: '#011B33', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.5px' }}>paystack</span>
-                </div>
+                {paystackConfigured && (
+                  <div className="paystack-badge">
+                    Secured by <span style={{ color: '#011B33', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.5px' }}>paystack</span>
+                  </div>
+                )}
                 <p className="form-note">
                   Fees fund club activities and resources. BIC content is educational only and is not financial advice.
                 </p>
@@ -428,11 +391,10 @@ export default function Membership() {
         </div>
 
         {/* FAQ */}
-        <div className="faq-section">
-          <div className="sec-head" style={{ marginBottom: 40 }}>
-            <div>
-              <h2 className="sec-title">Frequently asked questions.</h2>
-            </div>
+        <div className="faq-section mb-faq">
+          <div>
+            <h2 className="sec-title">Questions, answered.</h2>
+            <p className="sec-sub">Anything else? <Link to="/contact">Ask us directly.</Link></p>
           </div>
           <div className="accordion">
             {faqs.map((f, i) => (

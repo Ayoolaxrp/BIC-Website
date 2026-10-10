@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
 import FadeIn from '../components/FadeIn';
@@ -53,15 +52,11 @@ export default function ArticlePage() {
         crumb={`Blog / ${article.category || 'Article'}`}
         title={article.title}
         description={article.summary}
+        showBreadcrumb
       />
 
       <FadeIn className="section container">
-        <motion.article
-          className="article-page"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
+        <article className="article-page">
           <div className="blog-meta" style={{ marginBottom: 20, justifyContent: 'center' }}>
             <span>{article.published_date || 'Latest'}</span>
             <span>by {article.author || 'Babcock Investors Club'}</span>
@@ -69,7 +64,7 @@ export default function ArticlePage() {
 
           {article.cover_url && (
             <div className="article-cover">
-              <img src={article.cover_url} alt={article.title} />
+              <img src={article.cover_url} alt={article.title} width={1200} height={675} loading="lazy" decoding="async" />
             </div>
           )}
 
@@ -86,7 +81,7 @@ export default function ArticlePage() {
             </p>
             <Link to="/blog" className="btn btn-primary">← Back to Blog</Link>
           </div>
-        </motion.article>
+        </article>
       </FadeIn>
     </>
   );

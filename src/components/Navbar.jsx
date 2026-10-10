@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser, isDemoMode, onAuthChange, signOut } from '../lib/auth';
 import './Navbar.css';
@@ -12,8 +12,12 @@ const links = [
   { to: '/events', label: 'Events' },
   { to: '/blog', label: 'Blog' },
   { to: '/sponsorship', label: 'Partners' },
-  { to: '/contact', label: 'Contact' },
 ];
+
+const signalReticle = (name, data = {}) => {
+  if (!import.meta.env.DEV) return;
+  import('@reticlehq/react').then(({ reticle }) => reticle.signal(name, data)).catch(() => {});
+};
 
 function initials(name, email) {
   const source = (name || email || 'BIC').trim();
@@ -26,10 +30,20 @@ function initials(name, email) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+  const mobileNavRef = useRef(null);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const updateMaterial = () => setScrolled(window.scrollY > 24);
+    updateMaterial();
+    window.addEventListener('scroll', updateMaterial, { passive: true });
+    return () => window.removeEventListener('scroll', updateMaterial);
+  }, []);
 
   useEffect(() => {
     getCurrentUser().then(setUser);
@@ -41,6 +55,7 @@ export default function Navbar() {
     setOpen(false);
     setMenuOpen(false);
     document.body.style.overflow = '';
+    signalReticle('navigation:route-ready', { pathname });
   }, [pathname]);
 
   // Close the user dropdown when clicking anywhere outside it.
@@ -53,10 +68,36 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    mobileNavRef.current?.querySelector('a, button')?.focus();
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        document.body.style.overflow = '';
+        menuButtonRef.current?.focus();
+      }
+      if (event.key !== 'Tab') return;
+      const controls = [...mobileNavRef.current.querySelectorAll('a, button:not([disabled])')];
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
   const toggleMenu = () => {
     const next = !open;
     setOpen(next);
     document.body.style.overflow = next ? 'hidden' : '';
+    signalReticle('navigation:menu-changed', { open: next });
   };
 
   const handleSignOut = async () => {
@@ -70,7 +111,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="navbar" aria-label="Main">
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`} aria-label="Main">
         <div className="container navbar-inner">
           <Link to="/" className="navbar-logo">
             <img src={asset('/images/logo.png')} alt="" width={36} height={36} />
@@ -125,18 +166,23 @@ export default function Navbar() {
               </>
             )}
           </div>
-          <button className={`hamburger${open ? ' open' : ''}`} onClick={toggleMenu} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="mobile-nav">
+          <button ref={menuButtonRef} data-testid="mobile-menu-toggle" className={`hamburger${open ? ' open' : ''}`} onClick={toggleMenu} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="mobile-nav">
             <span /><span /><span />
           </button>
         </div>
       </nav>
 
-      <div id="mobile-nav" className={`mobile-nav${open ? ' open' : ''}`} aria-hidden={!open} inert={!open}>
-        {links.map(l => (
-          <Link key={l.to} to={l.to} className={pathname === l.to ? 'active' : ''}>
-            {l.label}
-          </Link>
-        ))}
+      <div ref={mobileNavRef} id="mobile-nav" data-testid="mobile-navigation" className={`mobile-nav${open ? ' open' : ''}`} aria-hidden={!open} inert={!open}>
+        <span className="mobile-nav-label">Explore</span>
+        <div className="mobile-nav-links">
+          {links.map(l => (
+            <Link key={l.to} to={l.to} className={pathname === l.to ? 'active' : ''} aria-current={pathname === l.to ? 'page' : undefined}>
+              <span>{l.label}</span>
+              <span className="mobile-nav-arrow" aria-hidden="true">→</span>
+            </Link>
+          ))}
+        </div>
+        <div className="mobile-nav-actions">
         {user ? (
           <>
             <Link to="/member" className="navbar-login-link" style={{ marginTop: 8, justifyContent: 'center' }}>
@@ -162,6 +208,7 @@ export default function Navbar() {
             <Link to="/membership" className="btn btn-primary">Join BIC</Link>
           </>
         )}
+        </div>
         {isDemoMode && user && (
           <span className="demo-badge" style={{ position: 'static' }}>Demo session</span>
         )}

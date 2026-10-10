@@ -3,6 +3,10 @@
    Global & Page-Specific Styles
    ============================ */
 
+/* Legacy component coverage lives in an explicit lower-priority layer.
+   styles/system.css owns the current visual system without specificity wars. */
+@layer legacy {
+
 /* Self-hosted variable fonts (files in public/fonts, preloaded in index.html).
    Same-origin + render-blocking-CSS declarations keep the swap window tiny. */
 @font-face {
@@ -626,7 +630,7 @@ p { color: var(--gray-700); line-height: 1.6; }
   padding: 6px 12px;
   border-radius: 999px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 .sector-chip:hover {
   border-color: rgba(14, 165, 233, 0.55);
@@ -1511,6 +1515,7 @@ p { color: var(--gray-700); line-height: 1.6; }
 .blog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
 .blog-search { display: flex; align-items: center; background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 4px 16px; width: 300px; min-height: 48px; box-shadow: var(--shadow-sm); }
 .blog-search input { border: none; outline: none; background: transparent; width: 100%; min-height: 44px; font-family: inherit; font-size: 0.9rem; padding: 8px; color: var(--navy); }
+.blog-search:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.18); }
 .blog-search svg { color: var(--gray-500); width: 18px; height: 18px; }
 
 .blog-categories { display: flex; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
@@ -1619,11 +1624,6 @@ input.input-error:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,
   box-shadow: 0 18px 44px rgba(2, 6, 23, 0.16);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--off-white); }
-::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--navy-mid), var(--navy)); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: var(--sky-blue-dark); }
 ::selection { background: var(--sky-blue); color: var(--navy); }
 
 /* Lazy-route loader */
@@ -2252,4 +2252,5 @@ html, body { overflow-x: hidden; overflow-x: clip; }
 /* -- Photo wall floor for small phones (320–399px) -- */
 @media (max-width: 480px) {
   .photowall-grid { grid-auto-rows: 116px; gap: 5px; }
+}
 }

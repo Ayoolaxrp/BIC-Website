@@ -15,13 +15,18 @@ const NEXT_EVENT = {
 // 150+ members (club, Oct 2026); ₦370,000 prizes and the four sponsors
 // (Investment Seminar 2026 posters); four sectors (club structure).
 const proof = [
-  { value: '150+', label: 'active members' },
-  { value: '₦370k', label: 'in Stock Pitch 2.0 prizes, 2026' },
+  { value: '150+', label: 'members in the 2025/2026 session' },
+  { value: '₦370k', label: 'awarded at Stock Pitch 2.0, 2025/2026' },
   { value: '4', label: 'market sectors' },
-  { value: '4', label: 'corporate sponsors in 2026' },
+  { value: '4', label: 'seminar sponsors in 2025/2026' },
 ];
 
-const sponsors = ['Fundbox Financial Services', 'Leadway Assurance', 'More Ladda (Meristem)', 'Chapel Hill Denham'];
+const sponsors = [
+  { mark: 'F', name: 'Fundbox', detail: 'Financial Services' },
+  { mark: 'L', name: 'Leadway', detail: 'Assurance' },
+  { mark: 'ML', name: 'More Ladda', detail: 'by Meristem' },
+  { mark: 'CHD', name: 'Chapel Hill Denham', detail: 'Investment Management' },
+];
 
 const sectors = [
   { name: 'Securities', text: 'Equity research, earnings and portfolio building on the Nigerian Exchange.' },
@@ -50,7 +55,7 @@ export default function Home() {
 
       {/* HERO: a full-bleed club photograph, one message, one action.
           The next event floats on a translucent material strip. */}
-      <header className="hx surface-dark">
+      <header className="hx surface-dark" data-testid="home-hero">
         <img
           className="hx-photo"
           src={asset('/images/bic-2025-1.webp')}
@@ -72,7 +77,7 @@ export default function Home() {
             <Link to="/events" className="btn btn-glass btn-lg">See events</Link>
           </div>
         </div>
-        <Link to="/events" className="hx-next">
+        <Link to="/events" className="hx-next" data-testid="next-event-link">
           <span className="hx-next-kicker">Next</span>
           <span className="hx-next-title">{NEXT_EVENT.title}</span>
           <span className="hx-next-meta">{NEXT_EVENT.when}, {NEXT_EVENT.where}</span>
@@ -98,15 +103,16 @@ export default function Home() {
       <section className="h-section">
         <div className="container">
           <div className="h-head">
-            <h2>Four markets. Pick one and go deep.</h2>
+            <h2>Choose a market to study.</h2>
             <p>
-              Every member joins a sector led by a student chairperson. You learn a market by
-              researching it, pitching it and trading it on paper.
+              Each member joins a student-led sector and learns through research, discussion,
+              pitches and paper trading.
             </p>
           </div>
           <ul className="hs-grid">
-            {sectors.map((s) => (
+            {sectors.map((s, i) => (
               <li key={s.name}>
+                <span className="hs-index" aria-hidden="true">0{i + 1}</span>
                 <h3>{s.name}</h3>
                 <p>{s.text}</p>
               </li>
@@ -119,17 +125,24 @@ export default function Home() {
       <section className="h-section h-section-flush">
         <div className="container">
           <div className="h-head">
-            <h2>What a BIC session looks like.</h2>
+            <h2>Inside a BIC session.</h2>
           </div>
           <div className="h-gallery">
             {gallery.map((g) => (
               <figure key={g.src} className={g.cls || ''}>
-                <img src={asset(g.src)} alt={g.alt} width={g.w} height={g.h} loading="lazy" decoding="async" />
+                <img
+                  src={asset(g.src)}
+                  alt={g.alt}
+                  width={g.w}
+                  height={g.h}
+                  loading={g.cls === 'g-wide' ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
               </figure>
             ))}
           </div>
           <p className="h-caption">
-            Club seminars, 2025 and 2026. <Link to="/events" className="text-link">See events</Link>
+            Sessions from the 2025/2026 club year. <Link to="/events" className="text-link">See events</Link>
           </p>
         </div>
       </section>
@@ -139,16 +152,24 @@ export default function Home() {
         <div className="container hb">
           <div>
             <p className="hb-kicker">Backed by</p>
-            <ul className="hb-list">
-              {sponsors.map((name) => <li key={name}>{name}</li>)}
+            <ul className="hb-list" aria-label="2025/2026 seminar sponsors">
+              {sponsors.map((sponsor) => (
+                <li key={sponsor.name}>
+                  <span className="hb-mark" aria-hidden="true">{sponsor.mark}</span>
+                  <span className="hb-wordmark">
+                    <strong>{sponsor.name}</strong>
+                    <small>{sponsor.detail}</small>
+                  </span>
+                </li>
+              ))}
             </ul>
-            <p className="hb-note">Sponsors of the BIC Annual Investment Seminar 2026.</p>
+            <p className="hb-note">These organisations sponsored the BIC Annual Investment Seminar during the completed 2025/2026 session.</p>
           </div>
           <div className="hb-cta">
-            <h2>Reach students who care about money.</h2>
+            <h2>Work with BIC.</h2>
             <p>
-              Sponsor a seminar, speak at a session or recruit interns. Partners are named on this
-              site, on our event posters and across our socials.
+              Sponsor a seminar, speak at a session or recruit interns from a growing community of
+              financially curious students.
             </p>
             <div className="h-actions">
               <Link to="/sponsorship" className="btn btn-primary">Partner with BIC</Link>

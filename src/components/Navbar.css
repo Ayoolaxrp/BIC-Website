@@ -1,8 +1,6 @@
-/* Navigation as a material, not a slab: translucent navy with blur and
-   a saturation lift, so content scrolls visibly underneath. It is the
-   same at every scroll position (no scroll listener, no state swap).
-   No hard bottom border; a soft edge shadow separates it only where
-   it floats over content. */
+/* Navigation begins as a dark material over each hero, then becomes a
+   lighter floating material over page content. The spatial position stays
+   fixed while the material weight adapts to what is underneath it. */
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -15,6 +13,11 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px -16px rgba(0, 0, 0, 0.5);
   padding-top: env(safe-area-inset-top);
+  transition: background-color 220ms ease, box-shadow 220ms ease;
+}
+.navbar.scrolled {
+  background: rgba(250, 252, 255, 0.86);
+  box-shadow: 0 10px 32px -24px rgba(6, 12, 24, 0.55);
 }
 .navbar-inner {
   width: 100%;
@@ -30,10 +33,10 @@
   min-height: 44px;
   flex-shrink: 0;
 }
-.navbar-logo img { width: 36px; height: 36px; border-radius: 9px; }
+.navbar-logo img { width: 38px; height: 38px; border-radius: 10px; }
 .logo-name {
   color: #fff;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -42,24 +45,30 @@
 .navbar-links { display: flex; align-items: center; gap: 2px; }
 .navbar-links a {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: 0;
-  padding: 8px 12px;
-  border-radius: 999px;
+  padding: 8px 10px;
+  border-radius: 8px;
   transition: color 150ms ease, background-color 150ms ease;
 }
 .navbar-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
-.navbar-links a.active { color: #fff; background: rgba(255, 255, 255, 0.12); }
+.navbar-links a.active { color: #fff; background: transparent; box-shadow: inset 0 -2px 0 var(--brand-light); }
+.navbar.scrolled .logo-name,
+.navbar.scrolled .navbar-links a,
+.navbar.scrolled .navbar-login-link { color: var(--navy); }
+.navbar.scrolled .navbar-links a:hover { color: var(--navy); background: rgba(10, 25, 49, 0.05); }
+.navbar.scrolled .navbar-links a.active { color: var(--navy); background: transparent; box-shadow: inset 0 -2px 0 var(--brand); }
+.navbar.scrolled .hamburger span { background: var(--navy); }
 
 .navbar-cta { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-.navbar-cta .btn { min-height: 36px; padding: 8px 18px; font-size: 0.875rem; }
+.navbar-cta .btn { min-height: 40px; padding: 9px 20px; font-size: 0.9375rem; }
 .navbar-login-link {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
 }
 .navbar-login-link:hover { color: #fff; }
@@ -101,32 +110,53 @@
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   overflow-y: auto;
+  overscroll-behavior: contain;
   opacity: 0;
   transform: translateY(-8px);
   visibility: hidden;
   transform-origin: top center;
-  transition: opacity 200ms ease, transform 250ms var(--ease-out), visibility 0s linear 250ms;
+  transition: opacity 180ms ease, transform 300ms var(--ease-out), backdrop-filter 300ms var(--ease-out), visibility 0s linear 300ms;
 }
 .mobile-nav.open {
   opacity: 1;
   transform: none;
   visibility: visible;
-  transition: opacity 200ms ease, transform 250ms var(--ease-out), visibility 0s;
+  transition: opacity 180ms ease, transform 300ms var(--ease-out), backdrop-filter 300ms var(--ease-out), visibility 0s;
 }
-.mobile-nav a:not(.btn) {
+.mobile-nav-label {
+  display: block;
+  margin: 4px 0 8px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mobile-nav-links { display: grid; }
+.mobile-nav-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   color: #fff;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.015em;
-  padding: 12px 0;
+  min-height: 56px;
+  padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.mobile-nav a.active { color: var(--brand-light); }
+.mobile-nav-links a:active { opacity: 0.72; }
+.mobile-nav-links a.active { color: var(--brand-light); }
+.mobile-nav-arrow { color: rgba(255, 255, 255, 0.42); font-weight: 400; transition: transform 180ms var(--ease-out), color 150ms ease; }
+.mobile-nav-links a:hover .mobile-nav-arrow { color: var(--brand-light); transform: translateX(3px); }
+.mobile-nav-links a.active .mobile-nav-arrow { color: var(--brand-light); }
+.mobile-nav-actions { display: grid; gap: 8px; margin-top: auto; padding-top: 24px; }
 .mobile-nav .navbar-login-link { font-size: 1.0625rem; font-weight: 500; border-bottom: 0; margin-top: 16px; }
 .mobile-nav .btn { margin-top: 8px; justify-content: center; }
 
 @media (max-width: 1100px) {
-  .navbar-links a { padding: 8px 9px; font-size: 0.84rem; }
+  .navbar-links a { padding: 8px 9px; font-size: 0.875rem; }
   .logo-name { display: none; }
 }
 @media (max-width: 900px) {
@@ -140,11 +170,12 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .navbar, .mobile-nav { background: var(--navy); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .navbar.scrolled { background: var(--white); }
 }
 @media (prefers-contrast: more) {
   .navbar { background: var(--navy); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
 }
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav, .mobile-nav.open { transform: none; transition: opacity 150ms ease, visibility 0s; }
-  .hamburger span { transition: none; }
+  .hamburger span, .mobile-nav-arrow { transition: none; }
 }
