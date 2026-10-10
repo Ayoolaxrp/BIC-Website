@@ -12,20 +12,19 @@ const NEXT_EVENT = {
 };
 
 // Every figure here is club-confirmed or printed on the club's own posters:
-// 150+ members (club, Oct 2026); ₦370,000 prizes and the four sponsors
-// (Investment Seminar 2026 posters); four sectors (club structure).
+// 150+ members (club, Oct 2026); ₦370,000 prizes (Stock Pitch 2.0 poster);
+// ₦2,500 membership fee (club). No counts of things listed elsewhere on the page.
 const proof = [
   { value: '150+', label: 'members in the 2025/2026 session' },
-  { value: '₦370k', label: 'awarded at Stock Pitch 2.0, 2025/2026' },
-  { value: '4', label: 'market sectors' },
-  { value: '4', label: 'seminar sponsors in 2025/2026' },
+  { value: '₦370k', label: 'awarded at Stock Pitch 2.0' },
+  { value: '₦2,500', label: 'to join, for any Babcock student' },
 ];
 
 const sponsors = [
-  { mark: 'F', name: 'Fundbox', detail: 'Financial Services' },
-  { mark: 'L', name: 'Leadway', detail: 'Assurance' },
-  { mark: 'ML', name: 'More Ladda', detail: 'by Meristem' },
-  { mark: 'CHD', name: 'Chapel Hill Denham', detail: 'Investment Management' },
+  { name: 'Fundbox', detail: 'Financial Services' },
+  { name: 'Leadway', detail: 'Assurance' },
+  { name: 'More Ladda', detail: 'by Meristem' },
+  { name: 'Chapel Hill Denham', detail: 'Investment Management' },
 ];
 
 const sectors = [
@@ -33,12 +32,6 @@ const sectors = [
   { name: 'Forex', text: 'Currency markets, position sizing and practice on simulated accounts.' },
   { name: 'Crypto & digital assets', text: 'How blockchains and digital assets work, and how to manage the risk.' },
   { name: 'Real estate', text: 'Property, REITs and the basics of building wealth through land.' },
-];
-
-const steps = [
-  { title: 'Apply', text: 'Fill in the form with your Babcock email. It takes about two minutes.' },
-  { title: 'Pay ₦2,500', text: 'The membership fee. The membership team will tell you how to pay.' },
-  { title: 'Pick a sector', text: 'Join a market sector, and a committee if you want to help run the club.' },
 ];
 
 const gallery = [
@@ -88,7 +81,7 @@ export default function Home() {
       {/* PROOF: only numbers the club can stand behind */}
       <section className="hp" aria-label="BIC in numbers">
         <div className="container">
-          <dl className="hp-grid">
+          <dl className="hp-grid hp-grid-3">
             {proof.map((f) => (
               <div key={f.label}>
                 <dd>{f.value}</dd>
@@ -110,9 +103,8 @@ export default function Home() {
             </p>
           </div>
           <ul className="hs-grid">
-            {sectors.map((s, i) => (
+            {sectors.map((s) => (
               <li key={s.name}>
-                <span className="hs-index" aria-hidden="true">0{i + 1}</span>
                 <h3>{s.name}</h3>
                 <p>{s.text}</p>
               </li>
@@ -151,11 +143,10 @@ export default function Home() {
       <section className="h-section bg-off-white">
         <div className="container hb">
           <div>
-            <p className="hb-kicker">Backed by</p>
+            <h2 className="hb-title">Backed by people who work in the markets.</h2>
             <ul className="hb-list" aria-label="2025/2026 seminar sponsors">
               {sponsors.map((sponsor) => (
                 <li key={sponsor.name}>
-                  <span className="hb-mark" aria-hidden="true">{sponsor.mark}</span>
                   <span className="hb-wordmark">
                     <strong>{sponsor.name}</strong>
                     <small>{sponsor.detail}</small>
@@ -166,10 +157,10 @@ export default function Home() {
             <p className="hb-note">These organisations sponsored the BIC Annual Investment Seminar during the completed 2025/2026 session.</p>
           </div>
           <div className="hb-cta">
-            <h2>Work with BIC.</h2>
+            <h3 className="hb-cta-title">Your organisation could be next.</h3>
             <p>
-              Sponsor a seminar, speak at a session or recruit interns from a growing community of
-              financially curious students.
+              Sponsor a seminar, speak at a session or meet students who already research
+              companies and pitch them.
             </p>
             <div className="h-actions">
               <Link to="/sponsorship" className="btn btn-primary">Partner with BIC</Link>
@@ -182,18 +173,15 @@ export default function Home() {
       {/* JOIN: the closing statement */}
       <section className="hj surface-dark">
         <div className="container">
-          <h2>Joining takes a few minutes.</h2>
-          <p className="hj-sub">Open to every Babcock student, in any department. No finance background needed.</p>
-          <ol className="hj-steps">
-            {steps.map((s, i) => (
-              <li key={s.title}>
-                <span className="hj-num">{i + 1}</span>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </li>
-            ))}
-          </ol>
-          <Link to="/membership" className="btn btn-primary btn-lg">Join BIC</Link>
+          <h2>Join for ₦2,500.</h2>
+          <p className="hj-sub">
+            Open to every Babcock student, in any department. Apply with your Babcock email in
+            about two minutes, then pick the market you want to learn.
+          </p>
+          <div className="h-actions hj-actions">
+            <Link to="/membership" className="btn btn-primary btn-lg">Join BIC</Link>
+            <Link to="/membership#faq" className="btn btn-glass btn-lg">Read the FAQ</Link>
+          </div>
         </div>
       </section>
     </>

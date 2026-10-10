@@ -159,7 +159,7 @@ export default function Events() {
         title="What's coming up."
         description="The 2026/2027 session at Babcock University. Dates are confirmed on our socials as they are decided."
         image="/images/bic-2025-10.webp"
-        imagePosition="50% 40%"
+        imagePosition="50% 12%"
       />
 
       <section className="section">
@@ -175,7 +175,7 @@ export default function Events() {
                 <li key={ev.id} className={ev.flagship ? 'flagship' : ''}>
                   <p className="et-when">{ev.when}</p>
                   <div className="et-body">
-                    {ev.flagship && <span className="badge badge-green">Next major event</span>}
+                    {ev.flagship && <span className="ev-next">Next major event</span>}
                     <h2>{ev.title}</h2>
                     {ev.desc && <p>{ev.desc}</p>}
                     <p className="et-meta">{ev.meta}</p>

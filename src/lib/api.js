@@ -65,6 +65,22 @@ export const deleteResource = (id) => adminDelete('resources', id);
 export const createNewsletterPost = (p) => adminWrite('newsletter_posts', { ...p, status: 'published' });
 export const deleteNewsletterPost = (id) => adminDelete('newsletter_posts', id);
 
+/**
+ * Record (or undo) a membership fee taken in person or by bank transfer.
+ * Admin-only: the database function refuses everyone else.
+ */
+export async function setMembershipPayment(applicationId, status, method = null, note = '') {
+  if (!isSupabaseConfigured) return { ok: false, error: 'The database is not connected.' };
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('admin_set_membership_payment', {
+    p_application_id: applicationId,
+    p_status: status,
+    p_method: method,
+    p_note: note,
+  });
+  return error ? { ok: false, error: error.message } : { ok: true, row: data };
+}
+
 const SUBMISSION_TABLES = [
   'member_applications',
   'contact_messages',

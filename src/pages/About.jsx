@@ -5,15 +5,15 @@ import { asset } from '../lib/assets';
 const values = [
   {
     title: 'Education',
-    text: 'We believe financial literacy is a fundamental right. We make investing understandable for every student.',
+    text: 'Investing should make sense to every student, whatever they study.',
   },
   {
     title: 'Professionalism',
-    text: 'We uphold corporate standards in all our activities, preparing members for careers in finance and business.',
+    text: 'We run the club the way a firm would: prepared, on time and accountable.',
   },
   {
     title: 'Community',
-    text: 'Growth happens together. We foster a collaborative environment where networking and peer mentorship thrive.',
+    text: 'Members learn from each other. Seniors mentor juniors and sectors share their research.',
   },
 ];
 
@@ -74,14 +74,6 @@ const objectives = [
 ];
 
 
-// Facts the club can stand behind (club-confirmed or on its own posters).
-const proof = [
-  { value: '150+', label: 'members in the 2025/2026 session' },
-  { value: '₦370k', label: 'awarded at Stock Pitch 2.0, 2025/2026' },
-  { value: '4', label: 'seminar sponsors in 2025/2026' },
-  { value: '7', label: 'student-run committees' },
-];
-
 export default function About() {
   return (
     <>
@@ -94,14 +86,14 @@ export default function About() {
         title="Built by students who wanted to understand money."
         description="Who we are, what we believe and the people running the club this session."
         image="/images/bic-exec-group-2026.webp"
-        imagePosition="50% 35%"
+        imagePosition="50% 30%"
       />
 
       {/* STORY */}
       <section className="section">
         <div className="container ab-story">
           <figure className="ab-photo">
-            <img src={asset('/images/bic-2025-3.webp')} alt="Two BIC members presenting at a club seminar" width={1600} height={1067} loading="lazy" decoding="async" />
+            <img src={asset('/images/bic-2025-6.webp')} alt="A BIC member speaking at a club seminar" width={1063} height={1600} loading="lazy" decoding="async" />
           </figure>
           <div>
             <h2 className="sec-title">A club for students who want to understand money.</h2>
@@ -112,8 +104,8 @@ export default function About() {
             </p>
             <p>
               Members join a sector, research real companies and assets, pitch them to each other
-              and compete in trading challenges. Committees run the events, the money and the
-              media, so leading the club is part of the learning too.
+              and compete in trading challenges. Seven student committees run the events, the money
+              and the media, so leading the club is part of the learning too.
             </p>
           </div>
         </div>
@@ -124,7 +116,7 @@ export default function About() {
         <div className="container">
           <div className="ab-vm">
             <div>
-              <p className="ab-kicker">Our vision</p>
+              <h2 className="ab-vm-title">Our vision</h2>
               <p className="ab-statement">
                 To be Nigeria's premier student-led investment community, producing financially
                 intelligent graduates who build wealth, lead markets, and shape the future of the
@@ -132,7 +124,7 @@ export default function About() {
               </p>
             </div>
             <div>
-              <p className="ab-kicker">Our mission</p>
+              <h2 className="ab-vm-title">Our mission</h2>
               <p className="ab-statement">
                 To empower every student with practical financial literacy, real-world investment
                 skills, and professional networks through structured learning, mentorship, and
@@ -162,20 +154,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* IN NUMBERS: same navy strip as the homepage */}
-      <section className="hp" aria-label="BIC in numbers">
-        <div className="container">
-          <h2 className="ab-proof-title">The club so far.</h2>
-          <dl className="hp-grid">
-            {proof.map((f) => (
-              <div key={f.label}>
-                <dd>{f.value}</dd>
-                <dt>{f.label}</dt>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
 
       {/* TEAM */}
       <section className="section">

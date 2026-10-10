@@ -213,6 +213,32 @@ export async function signUp(email, password, fullName) {
   return { ok: true, user: data.user };
 }
 
+// Read once at load: the SDK strips the auth hash after it signs the user in.
+const RECOVERY_AT_LOAD =
+  typeof window !== 'undefined' &&
+  (/type=recovery/.test(window.location.hash) || /[?&]reset=1\b/.test(window.location.search));
+
+/** True when this page load came from a "reset your password" email link. */
+export const cameFromRecoveryLink = () => RECOVERY_AT_LOAD;
+
+/** Email a password reset link that returns to the member portal. */
+export async function requestPasswordReset(email) {
+  if (isDemoMode) return { ok: false, error: 'Member accounts are not switched on yet.' };
+  const supabase = await getSupabase();
+  const { error } = await supabase.auth.resetPasswordForEmail(String(email || '').trim().toLowerCase(), {
+    redirectTo: `${window.location.origin}/member?reset=1`,
+  });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+/** Set a new password for the signed-in user (after a reset link, or from the portal). */
+export async function updatePassword(password) {
+  if (isDemoMode) return { ok: false, error: 'Member accounts are not switched on yet.' };
+  const supabase = await getSupabase();
+  const { error } = await supabase.auth.updateUser({ password });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 export async function signOut() {
   setDemoSession(null); // clear demo session in both modes
   emitAuthChange(null);

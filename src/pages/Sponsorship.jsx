@@ -6,10 +6,6 @@ import OfflineNotice from '../components/OfflineNotice';
 import { supabaseConfigured } from '../lib/config';
 import { RESPONSE_TIME, mailto } from '../lib/contact';
 
-const Check = ({ size = 18 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-);
-
 // Verified partners from the club's official "Meet Our Sponsors" poster (2026 seminar & Stock Pitch 2.0).
 const partners = [
   { name: 'Fundbox Financial Services', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
@@ -25,45 +21,6 @@ const offers = [
   { title: 'Fund financial literacy', text: 'Back free sessions that teach students to budget, save and invest.' },
 ];
 
-const tiers = [
-  {
-    name: 'Headline Partner',
-    desc: 'Our exclusive top tier, with the most visibility, direct student engagement and year-round recognition.',
-    features: [
-      'Main logo placement across campus events',
-      'Speaking slot at the flagship seminar',
-      'Recruitment access to members',
-      'A co-branded bootcamp or project',
-      'Recognition in club media all year',
-    ],
-  },
-  {
-    name: 'Gold Partner',
-    desc: 'Strong event presence and digital recognition, with direct time with students.',
-    features: [
-      'Logo on the homepage and event banners',
-      'Speaking slot at one major workshop',
-      'A dedicated newsletter feature',
-      'CV pool of active members',
-    ],
-  },
-  {
-    name: 'Silver Partner',
-    desc: 'Visibility across selected programmes and club channels.',
-    features: [
-      'Logo on the partners section of this site',
-      'Recognition in post-event emails',
-      'One social media feature per term',
-      'Passes to flagship club events',
-    ],
-  },
-];
-
-const steps = [
-  { title: 'Send an enquiry', text: `Tell us what you want to achieve. We reply ${RESPONSE_TIME}.` },
-  { title: 'Agree the plan', text: 'We talk through the options and agree what you get, and when.' },
-  { title: 'Run it and report', text: 'We deliver the partnership and report back on attendance and reach.' },
-];
 
 const scrollToInquiry = (e) => {
   e.preventDefault();
@@ -91,19 +48,19 @@ export default function Sponsorship() {
   return (
     <>
       <Seo
-        title="Partner with BIC."
-        image="/images/bic-seminar-panel.webp"
-        imagePosition="50% 35%"
+        title="Partner with BIC"
         description="Sponsor a seminar, speak to members or recruit interns at Babcock University's student investment club."
       />
       <PageHero
         crumb="Partners"
-        title="Partner with BIC"
-        description="Sponsor a seminar, speak to members or recruit interns. We work with organisations that want to reach Babcock students who take money seriously."
+        title="Meet the students who take money seriously."
+        description="Sponsor a seminar, speak to members or recruit interns at Babcock University's student investment club."
+        image="/images/bic-2025-3.webp"
+        imagePosition="50% 30%"
       >
         <div className="h-actions" style={{ marginTop: 28 }}>
           <a href="#inquiry-form" className="btn btn-primary" onClick={scrollToInquiry}>Send an enquiry</a>
-          <a href={mailto('Partnership with BIC')} className="btn btn-outline">Email the club</a>
+          <a href={mailto('Partnership with BIC')} className="btn btn-glass">Email the club</a>
         </div>
       </PageHero>
 
@@ -113,7 +70,7 @@ export default function Sponsorship() {
           <FadeIn className="sec-head">
             <h2 className="sec-title">Organisations that have backed BIC.</h2>
           </FadeIn>
-          <ul className="partner-list">
+          <ul className="partner-list partner-list-2">
             {partners.map((p) => (
               <li key={p.name}>
                 <strong>{p.name}</strong>
@@ -141,42 +98,20 @@ export default function Sponsorship() {
         </div>
       </section>
 
-      {/* TIERS: equal standing, no "most popular" */}
-      <section className="section" id="benefits">
-        <div className="container">
-          <FadeIn className="sec-head">
-            <h2 className="sec-title">Three ways to partner.</h2>
-            <p className="sec-sub">Send an enquiry for prices and details. If none of these fit, tell us what you have in mind.</p>
-          </FadeIn>
-          <div className="tier-grid">
-            {tiers.map((t) => (
-              <div className="tier-card" key={t.name}>
-                <h3>{t.name}</h3>
-                <p className="tier-desc">{t.desc}</p>
-                <ul className="tier-features">
-                  {t.features.map((f) => (
-                    <li key={f}><Check /> {f}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* HOW IT WORKS + FORM */}
       <section className="section bg-off-white" id="inquiry-form">
         <div className="container partner-form-layout">
           <div>
-            <h2 className="sec-title">How it works.</h2>
-            <ol className="h-steps h-steps-stack">
-              {steps.map((s) => (
-                <li key={s.title}>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </li>
-              ))}
-            </ol>
+            <h2 className="sec-title">Start with a conversation.</h2>
+            <p className="sec-sub">
+              Tell us what you want to achieve. We reply {RESPONSE_TIME}, agree the plan with you,
+              run it, and report back on who came and what they learned.
+            </p>
+            <p className="sec-sub pf-note">
+              There are no fixed packages. Every partnership is shaped around one of the club's
+              events or sectors.
+            </p>
           </div>
 
           {supabaseConfigured ? (
@@ -207,9 +142,9 @@ export default function Sponsorship() {
                 <label htmlFor="p-interest">Interested in</label>
                 <select id="p-interest" name="sponsorship_interest" required defaultValue="">
                   <option value="" disabled>Choose one</option>
-                  <option value="headline">Headline Partner</option>
-                  <option value="gold">Gold Partner</option>
-                  <option value="silver">Silver Partner</option>
+                  <option value="event">Sponsor an event</option>
+                  <option value="speaker">Speak at a session</option>
+                  <option value="recruit">Recruit interns</option>
                   <option value="custom">Something else</option>
                 </select>
               </div>
