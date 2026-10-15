@@ -17,7 +17,8 @@ const values = [
   },
 ];
 
-// Executive roster sourced from the club's official 'EXECUTIVE POST RESULTS' file.
+// Executive roster sourced from the club's official 'EXECUTIVE POST RESULTS' file
+// and the Iperu campus executive update shared by the club president on 15 October 2026.
 const team = [
   {
     group: 'Executive Board',
@@ -60,6 +61,17 @@ const team = [
       { name: 'Adebayo Kehinde Abraham', role: 'Head, Membership' },
       { name: 'Opara Emmanuel Chinemerem', role: 'Head, Educational Research' },
       { name: 'Okere Nelson Chineze', role: 'Head, Training & Partnership' },
+    ],
+  },
+  {
+    group: 'Iperu Campus Executives',
+    members: [
+      { name: 'Karibi-Whyte Monima Edward', role: 'Associate General Secretary' },
+      {
+        name: 'Daniella Georgewill Fabia',
+        role: 'Associate Director of Public Relations & Acting Associate Director of Welfare',
+      },
+      { name: 'Sheyindemi Adetomilola Kehinde', role: 'Vice President, Iperu Campus' },
     ],
   },
 ];
@@ -159,7 +171,7 @@ export default function About() {
       <section className="section">
         <div className="container">
           <h2 className="sec-title">The people leading it.</h2>
-          <p className="sec-sub" style={{ marginBottom: 12 }}>The students running the club in the 2026/2027 session.</p>
+          <p className="sec-sub" style={{ marginBottom: 12 }}>The students running the club across Babcock campuses in the 2026/2027 session.</p>
           {team.map(({ group, members }) => (
             <div key={group}>
               <h3 className="team-group-title">{group}</h3>
