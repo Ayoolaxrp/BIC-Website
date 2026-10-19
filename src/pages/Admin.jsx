@@ -23,7 +23,7 @@ import {
 import { getLocalQueue } from '../lib/store';
 import { uploadFile, formatBytes } from '../lib/upload';
 import { SECTORS, sectorLabel } from '../lib/sectors';
-import { getCurrentUser, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut } from '../lib/auth';
+import { getCurrentUser, getMyExecutiveAccess, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut } from '../lib/auth';
 import { googleAuthEnabled } from '../lib/config';
 
 const TABS = ['overview', 'events', 'articles', 'resources', 'newsletter', 'submissions'];
@@ -44,6 +44,33 @@ function Field({ label, children, hint }) {
       <label>{label}</label>
       {children}
       {hint && <span className="field-error" style={{ color: '#55617e', fontSize: '0.78rem', marginTop: 6 }}>{hint}</span>}
+    </div>
+  );
+}
+
+function AudienceFields({ defaultVisibility = 'public' }) {
+  return (
+    <div className="grid-2">
+      <Field label="Audience">
+        <select name="visibility" defaultValue={defaultVisibility}>
+          <option value="public">Public website</option>
+          <option value="members">All active members</option>
+          <option value="sector">Selected sector only</option>
+        </select>
+      </Field>
+      <Field label="Sector (required for sector-only content)">
+        <select name="sector" defaultValue="">
+          <option value="">All sectors</option>
+          {SECTORS.map((sector) => <option key={sector.value} value={sector.value}>{sector.label}</option>)}
+        </select>
+      </Field>
+      <Field label="Campus (optional)">
+        <select name="campus" defaultValue="">
+          <option value="">All campuses</option>
+          <option value="Ilishan">Ilishan-Remo</option>
+          <option value="Iperu">Iperu-Remo</option>
+        </select>
+      </Field>
     </div>
   );
 }
@@ -184,6 +211,9 @@ function PaymentControl({ app, onChange }) {
 
 export default function Admin() {
   const [user, setUser] = useState(null);
+  const [access, setAccess] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [accessReady, setAccessReady] = useState(false);
   const [tab, setTab] = useState('overview');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPass, setLoginPass] = useState('');
@@ -208,6 +238,34 @@ export default function Admin() {
     const unsub = onAuthChange((u) => setUser(u));
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setAccess(null);
+      setProfile(null);
+      setAccessReady(true);
+      return;
+    }
+    setAccessReady(false);
+    Promise.all([getProfile(user.id), getMyExecutiveAccess(user.id)]).then(([nextProfile, nextAccess]) => {
+      setProfile(nextProfile);
+      setAccess(nextAccess);
+      setAccessReady(true);
+    });
+  }, [user]);
+
+  const isSuperAdmin = profile?.role === 'admin';
+  const permissions = access?.permissions || [];
+  const can = (permission) => isSuperAdmin || permissions.includes(permission);
+  const visibleTabs = TABS.filter((candidate) => {
+    if (candidate === 'overview') return true;
+    if (candidate === 'events') return can('manage_events');
+    if (candidate === 'articles') return can('manage_content');
+    if (candidate === 'resources') return can('manage_resources');
+    if (candidate === 'newsletter') return can('manage_newsletter');
+    if (candidate === 'submissions') return isSuperAdmin || permissions.some((p) => ['manage_members', 'view_members', 'view_rsvps', 'view_contacts'].includes(p));
+    return false;
+  });
 
   const refresh = async () => {
     setRefreshing(true);
@@ -352,6 +410,23 @@ export default function Admin() {
     );
   }
 
+  if (!accessReady) {
+    return <section className="section container" aria-busy="true"><p className="admin-empty">Checking your executive access…</p></section>;
+  }
+
+  if (!isSuperAdmin && !access) {
+    return (
+      <section className="section container">
+        <Seo title="Admin Console" noindex />
+        <div className="admin-login-card">
+          <h1 className="admin-title">No executive access assigned</h1>
+          <p className="admin-subtitle">This account is signed in, but its verified email has not been approved for an executive role.</p>
+          <button type="button" className="btn btn-outline" onClick={handleLogout}>Sign out</button>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="section container">
       <Seo title="Admin Console" noindex />
@@ -364,6 +439,9 @@ export default function Admin() {
               Signed in as <strong>{user.email}</strong>{' '}
               {isDemoMode && <span className="demo-badge" style={{ marginLeft: 8 }}>Demo session</span>}
             </p>
+            {!isSuperAdmin && access && (
+              <p className="admin-subtitle">Scope: {[access.sector && sectorLabel(access.sector), access.campus && `${access.campus} campus`].filter(Boolean).join(' · ') || 'Club-wide communications'}</p>
+            )}
           </div>
           <div className="admin-topbar-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button type="button" className="btn btn-outline btn-sm" onClick={refresh} disabled={refreshing}>
@@ -376,7 +454,7 @@ export default function Admin() {
         {dataMsg && <div className={`form-status visible ${dataMsg.type}`}>{dataMsg.text}</div>}
 
         <div className="admin-tabs">
-          {TABS.map((t) => (
+          {visibleTabs.map((t) => (
             <button
               key={t}
               type="button"
@@ -497,6 +575,9 @@ export default function Admin() {
                 event_type: fd.get('event_type') || 'Event',
                 image_url,
                 is_upcoming: fd.get('is_upcoming') === 'on',
+                visibility: fd.get('visibility'),
+                sector: fd.get('sector') || null,
+                campus: fd.get('campus') || null,
               }).then(flash);
             }} submitText="Add Event">
               <Field label="Event Title"><input type="text" name="title" required placeholder="Annual Student Finance Summit 2027" /></Field>
@@ -511,6 +592,7 @@ export default function Admin() {
               </div>
               <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB. PNG, JPG, WEBP or GIF." />
               <Field label="…or image URL (optional)"><input type="url" name="image_url" placeholder="https://..." /></Field>
+              <AudienceFields />
               <label className="admin-check">
                 <input type="checkbox" name="is_upcoming" defaultChecked /> This is an upcoming event
               </label>
@@ -546,6 +628,9 @@ export default function Admin() {
                   author: 'Babcock Investors Club Editorial Team',
                   published_date: fd.get('published_date') || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
                   is_external: false,
+                   visibility: fd.get('visibility'),
+                   sector: fd.get('sector') || null,
+                   campus: fd.get('campus') || null,
                 }).then(flash);
               }} submitText="Publish Article">
                 <Field label="Article Title"><input type="text" name="title" required placeholder="5 Things Every Student Investor Should Know" /></Field>
@@ -566,6 +651,7 @@ export default function Admin() {
                 <Field label="Summary (1 or 2 sentences, shown on cards)"><textarea name="summary" required></textarea></Field>
                 <Field label="Article Body"><textarea name="body" required rows={10} placeholder="Write the full article here. Paragraphs are kept automatically."></textarea></Field>
                 <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB." />
+                <AudienceFields />
               </AdminForm>
             ) : (
               <AdminForm onSubmit={async (fd) => {
@@ -585,6 +671,9 @@ export default function Admin() {
                   cover_url,
                   published_date: fd.get('published_date') || null,
                   is_external: true,
+                   visibility: fd.get('visibility'),
+                   sector: fd.get('sector') || null,
+                   campus: fd.get('campus') || null,
                 }).then(flash);
               }} submitText="Add Article">
                 <Field label="Article Title"><input type="text" name="title" required placeholder="Exact headline of the real article" /></Field>
@@ -607,6 +696,7 @@ export default function Admin() {
                 <Field label="Summary (1 or 2 sentences)"><textarea name="summary" required></textarea></Field>
                 <FileField name="cover_file" kind="image" label="Cover Image (upload, optional)" hint="Max 5 MB." />
                 <Field label="…or cover image URL (optional)"><input type="url" name="cover_url" placeholder="https://..." /></Field>
+                <AudienceFields />
               </AdminForm>
             )}
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Articles</h2>
@@ -629,21 +719,14 @@ export default function Admin() {
                 description: fd.get('description'),
                 size_label: up.size_label,
                 sector: fd.get('sector') || null,
+                campus: fd.get('campus') || null,
+                visibility: fd.get('visibility'),
               }).then(flash);
             }} submitText="Add Resource">
               <Field label="Resource Title"><input type="text" name="title" required placeholder="Beginner's Guide to Investing" /></Field>
               <FileField name="file" kind="resource" label="File (PDF, Excel, Word, CSV, TXT or ZIP)" hint="Max 3.5 MB." />
-              <div className="grid-2">
-                <Field label="Description"><input type="text" name="description" placeholder="Short description" /></Field>
-                <Field label="Sector (optional)" hint="Which sector community is this for? Leave empty for all members.">
-                  <select name="sector" defaultValue="">
-                    <option value="">All members</option>
-                    {SECTORS.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
+              <Field label="Description"><input type="text" name="description" placeholder="Short description" /></Field>
+              <AudienceFields defaultVisibility="members" />
             </AdminForm>
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Current Resources</h2>
             <ItemList rows={resources} onDelete={(id) => deleteResource(id).then(flash)} empty="No resources yet. Add your first one above." />
@@ -661,9 +744,13 @@ export default function Admin() {
             <AdminForm onSubmit={(fd) => createNewsletterPost({
               subject: fd.get('subject'),
               body: fd.get('body'),
+              visibility: fd.get('visibility'),
+              sector: fd.get('sector') || null,
+              campus: fd.get('campus') || null,
             }).then(flash)} submitText="Publish Post">
               <Field label="Subject"><input type="text" name="subject" required placeholder="October Market Update & Summit Announcement" /></Field>
               <Field label="Body (plain text / markdown)"><textarea name="body" required rows={6} placeholder="Write the newsletter content here..."></textarea></Field>
+              <AudienceFields />
             </AdminForm>
             <h2 className="admin-panel-title" style={{ marginTop: 40 }}>Published Posts</h2>
             <ItemList rows={news} onDelete={(id) => deleteNewsletterPost(id).then(flash)} empty="No newsletter posts yet. Write your first one above." />
@@ -701,7 +788,7 @@ export default function Admin() {
                         Sector: {sectorLabel(s.sector)}
                       </span>
                     )}
-                    {activeSubmission === 'member_applications' && !isDemoMode && (
+                    {activeSubmission === 'member_applications' && !isDemoMode && isSuperAdmin && (
                       <PaymentControl app={s} onChange={() => fetchSubmissions(activeSubmission, 30).then(setSubmissions)} />
                     )}
                     <pre>{JSON.stringify(s, null, 2)}</pre>

@@ -66,12 +66,16 @@ for (const round of [1, 2]) {
 const U1 = '11111111-1111-1111-1111-111111111111';
 const U2 = '22222222-2222-2222-2222-222222222222';
 const U3 = '33333333-3333-3333-3333-333333333333';
+const U4 = '44444444-4444-4444-4444-444444444444';
 await db.exec(`insert into auth.users (id, email, raw_user_meta_data, email_confirmed_at) values
   ('${U1}', 'member@babcock.edu.ng', '{"full_name":"Test Member"}', now()),
   ('${U2}', 'admin@babcock.edu.ng', '{}', now()),
-  ('${U3}', 'victim@babcock.edu.ng', '{}', null)`);
+  ('${U3}', 'victim@babcock.edu.ng', '{}', null),
+  ('${U4}', 'inofep5668@student.babcock.edu.ng', '{"full_name":"Inofe Peace Otsebholu"}', now())`);
 await db.exec(`update public.profiles set role = 'admin' where id = '${U2}'`); // as SQL editor would
-ok('signup trigger creates profiles', (await db.query('select count(*)::int n from public.profiles')).rows[0].n === 3);
+ok('signup trigger creates profiles', (await db.query('select count(*)::int n from public.profiles')).rows[0].n === 4);
+ok('approved executive email binds on signup',
+  (await db.query(`select user_id from public.executive_access where email = 'inofep5668@student.babcock.edu.ng'`)).rows[0]?.user_id === U4);
 
 // Visitors
 let r = await as('anon', null, null, `insert into public.contact_messages (first_name, email, message) values ('A', 'a@b.co', 'hi')`);
@@ -138,6 +142,18 @@ ok('admin can upload', !r.error, r.error);
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `insert into storage.objects (bucket_id, name) values ('bic-images', 'b.png')`);
 ok('member cannot upload', !!r.error);
 
+// Scoped executive access and paid sector content
+r = await as('authenticated', U4, 'inofep5668@student.babcock.edu.ng',
+  `insert into public.resources (title, file_url, sector, visibility) values ('Securities guide', 'resources/sec.pdf', 'Securities', 'sector')`);
+ok('sector admin can create content in own sector', !r.error, r.error);
+r = await as('authenticated', U4, 'inofep5668@student.babcock.edu.ng',
+  `insert into public.resources (title, file_url, sector, visibility) values ('Forex guide', 'resources/fx.pdf', 'Forex', 'sector')`);
+ok('sector admin cannot create content in another sector', !!r.error, r.error);
+r = await as('authenticated', U4, 'inofep5668@student.babcock.edu.ng', `select * from public.contact_messages`);
+ok('sector admin cannot read unrelated contact messages', r.error || r.rows.length === 0);
+r = await as('authenticated', U1, 'member@babcock.edu.ng', `select title from public.resources`);
+ok('unpaid member cannot read protected resources', r.rows?.length === 0, JSON.stringify(r));
+
 // Function exposure
 const priv = (fn, role) => db.query(`select has_function_privilege('${role}', '${fn}', 'execute') v`).then((x) => x.rows[0].v);
 ok('trigger functions not callable by anon', !(await priv('public.handle_new_user()', 'anon')) && !(await priv('public.apply_membership_payment_status()', 'anon')) && !(await priv('public.notify_send_email()', 'anon')) && !(await priv('public.protect_profile_fields()', 'anon')) && !(await priv('public.set_created_at_now()', 'anon')) && !(await priv('public.email_is_confirmed()', 'anon')));
@@ -155,6 +171,7 @@ ok('second email to the same address within an hour is skipped', (await db.query
 
 // Offline payments (0700): only admins record them; members then see "paid"
 const appId = (await db.query(`select id from public.member_applications where email = 'member@babcock.edu.ng' limit 1`)).rows[0].id;
+await db.exec(`update public.member_applications set sector = 'Securities', campus = 'Ilishan' where id = ${appId}`);
 const setPay = (st, m, note = '') => `select payment_status from public.admin_set_membership_payment(${appId}, '${st}', ${m ? `'${m}'` : 'null'}, '${note}')`;
 r = await as('anon', null, null, setPay('paid', 'cash'));
 ok('anon cannot record a payment', !!r.error);
@@ -166,6 +183,11 @@ r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('paid', null));
 ok('paid needs a method', !!r.error);
 r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('paid', 'cash', 'Paid at the welcome desk'));
 ok('admin records a cash payment', !r.error && r.rows[0].payment_status === 'paid', r.error);
+r = await as('authenticated', U1, 'member@babcock.edu.ng', `select title from public.resources`);
+ok('paid member reads resources for their sector', r.rows?.length === 1 && r.rows[0].title === 'Securities guide', JSON.stringify(r));
+r = await as('authenticated', U1, 'member@babcock.edu.ng', `update public.profiles set sector = 'Forex' where id = '${U1}'`);
+ok('paid member cannot self-switch sector',
+  (await db.query(`select sector from public.profiles where id = '${U1}'`)).rows[0]?.sector === 'Securities');
 r = await as('authenticated', U1, 'member@babcock.edu.ng', `select payment_status, payment_method, payment_recorded_by from public.member_applications`);
 ok('member sees their payment', r.rows?.[0]?.payment_status === 'paid' && r.rows[0].payment_method === 'cash' && r.rows[0].payment_recorded_by === U2, JSON.stringify(r));
 r = await as('authenticated', U2, 'admin@babcock.edu.ng', setPay('pending', 'cash'));

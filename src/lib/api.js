@@ -28,7 +28,20 @@ async function readRows(table, order = 'created_at', ascending = false, limit = 
 
 export const fetchEvents = () => readRows('events', 'created_at', false);
 export const fetchArticles = () => readRows('articles', 'created_at', false);
-export const fetchResources = () => readRows('resources', 'created_at', false);
+export async function fetchResources() {
+  const rows = await readRows('resources', 'created_at', false);
+  if (!isSupabaseConfigured || !rows.length) return rows;
+  const supabase = await getSupabase();
+  return Promise.all(rows.map(async (row) => {
+    const marker = '/bic-resources/';
+    const path = row.file_url?.includes(marker)
+      ? row.file_url.slice(row.file_url.indexOf(marker) + marker.length)
+      : row.file_url;
+    if (!path || /^https?:\/\//i.test(path)) return row;
+    const { data, error } = await supabase.storage.from('bic-resources').createSignedUrl(path, 3600);
+    return error ? { ...row, file_url: null } : { ...row, file_url: data.signedUrl };
+  }));
+}
 export const fetchNewsletterPosts = () =>
   readRows('newsletter_posts', 'created_at', false).then((rows) =>
     rows.filter((r) => r.status === 'published'),

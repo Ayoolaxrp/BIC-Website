@@ -125,6 +125,7 @@ export default function Membership() {
       knowledge_level: data.get('knowledge_level'),
       interests: selectedInterests,
       sector: data.get('sector'),
+      campus: data.get('campus'),
       committee: data.get('committee'),
     };
 
@@ -326,6 +327,15 @@ export default function Membership() {
                       </label>
                     ))}
                   </div>
+                </div>
+
+                <div className="form-group" style={{ marginTop: 16 }}>
+                  <label>Campus</label>
+                  <select name="campus" required defaultValue="">
+                    <option value="" disabled>Select campus</option>
+                    <option value="Ilishan">Ilishan-Remo</option>
+                    <option value="Iperu">Iperu-Remo</option>
+                  </select>
                 </div>
 
                 <div className="form-group" style={{ marginTop: 16 }}>

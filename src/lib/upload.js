@@ -72,6 +72,11 @@ export async function uploadFile(file, kind = 'resource', folder = 'resources') 
       upsert: false,
     });
     if (upErr) return { ok: false, error: `Upload failed: ${upErr.message}` };
+    if (kind === 'resource') {
+      // Resources live in a private bucket. Store only the object path; the
+      // member portal exchanges it for a short-lived URL after RLS approves.
+      return { ok: true, url: path, size_label: sizeLabel };
+    }
     const { data } = supabase.storage.from(bucket).getPublicUrl(path);
     return { ok: true, url: data.publicUrl, size_label: sizeLabel };
   }

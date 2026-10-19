@@ -4,6 +4,7 @@ import {
   cameFromRecoveryLink,
   getCurrentUser,
   getMyApplication,
+  getMyExecutiveAccess,
   getMyRsvps,
   getProfile,
   isDemoMode,
@@ -278,6 +279,7 @@ function MembershipSteps({ application }) {
  * ------------------------------------------------------------------------ */
 function Dashboard({ user, onSignOut }) {
   const [profile, setProfile] = useState(null);
+  const [executiveAccess, setExecutiveAccess] = useState(null);
   const [application, setApplication] = useState(undefined); // undefined = loading
   const [rsvps, setRsvps] = useState([]);
   const [resources, setResources] = useState([]);
@@ -301,6 +303,7 @@ function Dashboard({ user, onSignOut }) {
         bio: p?.bio || '',
       });
     });
+    getMyExecutiveAccess(user.id).then((nextAccess) => live && setExecutiveAccess(nextAccess));
     getMyApplication(user.email).then((a) => live && setApplication(a));
     getMyRsvps(user.email).then((r) => live && setRsvps(r));
     fetchResources().then((r) => live && setResources(r));
@@ -334,12 +337,14 @@ function Dashboard({ user, onSignOut }) {
     setEditing(false);
   };
 
-  const sector = profile?.sector || application?.sector || null;
+  const paid = application?.payment_status === 'paid';
+  const sector = application?.sector || profile?.sector || null;
+  const campus = application?.campus || profile?.campus || null;
   const groupLink = sector && GROUP_LINKS[sector];
   const groupReady = groupLink && !groupLink.includes('REPLACE_');
   const sectorResources = resources.filter((r) => !r.sector || !sector || r.sector === sector);
   const firstName = (profile?.full_name || user.user_metadata?.full_name || '').split(' ')[0];
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || !!executiveAccess;
 
   return (
     <>
@@ -367,12 +372,14 @@ function Dashboard({ user, onSignOut }) {
           <section className="mp-block" aria-labelledby="mp-sector">
             <div className="mp-block-head">
               <h2 id="mp-sector">Your sector</h2>
-              {sector && <button type="button" className="link-btn" onClick={() => setEditing(true)}>Change</button>}
+              {sector && !paid && <button type="button" className="link-btn" onClick={() => setEditing(true)}>Change</button>}
             </div>
             {sector ? (
               <>
                 <p className="mp-sector-name">{sectorLabel(sector)}</p>
+                {campus && <p className="mp-muted">{campus} campus</p>}
                 <p className="mp-muted">{SECTORS.find((s) => s.value === sector)?.desc}</p>
+                {paid && <p className="mp-muted">Your sector is locked after activation. Contact the membership team to request a change.</p>}
                 <div className="mp-row">
                   {groupReady ? (
                     <a href={groupLink} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">Join the sector chat</a>
@@ -389,7 +396,9 @@ function Dashboard({ user, onSignOut }) {
             )}
 
             <h3 className="mp-sub">Resources</h3>
-            {sectorResources.length === 0 ? (
+            {!paid ? (
+              <p className="mp-muted">Sector materials unlock automatically after your membership payment is verified.</p>
+            ) : sectorResources.length === 0 ? (
               <p className="mp-muted">Nothing here yet. Session slides and reading lists appear here when the club uploads them.</p>
             ) : (
               <ul className="mp-list">
@@ -465,7 +474,7 @@ function Dashboard({ user, onSignOut }) {
                 </div>
                 <div className="form-group">
                   <label htmlFor="pf-sector">Sector</label>
-                  <select id="pf-sector" value={form.sector} onChange={(e) => setForm({ ...form, sector: e.target.value })}>
+                  <select id="pf-sector" value={form.sector} disabled={paid} onChange={(e) => setForm({ ...form, sector: e.target.value })}>
                     <option value="">Not chosen yet</option>
                     {SECTORS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                   </select>

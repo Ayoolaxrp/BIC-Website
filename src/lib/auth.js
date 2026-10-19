@@ -269,6 +269,19 @@ export async function getProfile(userId) {
   return data;
 }
 
+/** Scoped executive permissions pre-approved for the signed-in school email. */
+export async function getMyExecutiveAccess(userId) {
+  if (isDemoMode || !userId) return null;
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('executive_access')
+    .select('full_name, permissions, sector, campus, active')
+    .eq('user_id', userId)
+    .eq('active', true)
+    .maybeSingle();
+  return error ? null : data;
+}
+
 /** The user's own member application (membership status). */
 export async function getMyApplication(email) {
   if (!isSupabaseConfigured || !email) {
