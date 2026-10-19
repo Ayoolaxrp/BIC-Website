@@ -11,7 +11,7 @@ const quickLinks = [
 export default function NotFound() {
   return (
     <>
-      <Seo title="Page Not Found" description="The page you are looking for does not exist." />
+      <Seo title="Page Not Found" description="The page you are looking for does not exist." noindex />
       <section className="notfound-section">
         <div className="container text-center">
           <p className="notfound-code" aria-hidden="true">404</p>

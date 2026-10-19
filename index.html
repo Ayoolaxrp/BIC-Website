@@ -12,15 +12,47 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Babcock Investors Club" />
+    <meta property="og:locale" content="en_NG" />
     <meta property="og:title" content="Babcock Investors Club" />
     <meta property="og:description" content="The student investment club at Babcock University. Learn markets with people who are learning them too." />
     <meta property="og:image" content="%SITE_URL%/images/bic-2025-1.webp" />
+    <meta property="og:image:alt" content="Babcock Investors Club members at a club event" />
     <meta property="og:url" content="%SITE_URL%/" />
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Babcock Investors Club" />
     <meta name="twitter:description" content="The student investment club at Babcock University." />
     <meta name="twitter:image" content="%SITE_URL%/images/bic-2025-1.webp" />
+    <meta name="twitter:image:alt" content="Babcock Investors Club members at a club event" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "%SITE_URL%/#organization",
+            "name": "Babcock Investors Club",
+            "alternateName": "BIC",
+            "url": "%SITE_URL%/",
+            "logo": "%SITE_URL%/images/logo.png",
+            "email": "babcockinvestorsclub@gmail.com",
+            "telephone": "+2348116883025",
+            "sameAs": [
+              "https://www.instagram.com/babcock_investors_club/",
+              "https://www.linkedin.com/company/babcock-investors-club/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "%SITE_URL%/#website",
+            "url": "%SITE_URL%/",
+            "name": "Babcock Investors Club",
+            "publisher": { "@id": "%SITE_URL%/#organization" },
+            "inLanguage": "en-NG"
+          }
+        ]
+      }
+    </script>
     <title>Babcock Investors Club</title>
     <!-- Type: the platform's system face first (SF Pro on Apple devices);
          Inter is the self-hosted fallback everywhere else. -->

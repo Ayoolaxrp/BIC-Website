@@ -31,7 +31,7 @@ export default function ArticlePage() {
   if (notFound) {
     return (
       <section className="section container text-center" style={{ paddingTop: 120, paddingBottom: 120 }}>
-        <Seo title="Article Not Found" description="This article may have been unpublished. Browse the Babcock Investors Club blog for more insights." />
+        <Seo title="Article Not Found" description="This article may have been unpublished. Browse the Babcock Investors Club blog for more insights." noindex />
         <h1 className="section-title">Article not found</h1>
         <p className="admin-subtitle">
           This article may have been unpublished. Browse the rest of our library instead.
