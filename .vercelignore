@@ -1,0 +1,7 @@
+brag-output/
+brag-output-*/
+v-*.png
+.firecrawl/
+.reticle/
+coverage/
+artifacts/
