@@ -35,7 +35,12 @@ const team = [
     group: 'Directors & Operations',
     members: [
       { name: 'Awolaja Ayomide Oreoluwa', role: 'Director of Activities' },
-      { name: 'Obiajulu Daniela Chidubem', role: 'Director of Public Relations' },
+      {
+        name: 'Obiajulu Daniela Chidubem',
+        role: 'Director of Public Relations',
+        linkedin: 'https://www.linkedin.com/in/obiajulu-daniela-39836b353',
+        email: 'obiajuluD0850@student.babcock.edu.ng',
+      },
       { name: 'Akindehinde Favour Eniola', role: 'Director of Welfare' },
       { name: 'Momoh Favour Oloruntobi', role: 'Associate Director of Activities' },
       { name: 'Amorin Samuel', role: 'Associate Public Relations Officer' },
@@ -47,7 +52,12 @@ const team = [
     members: [
       { name: 'Awodeyi Ayoolamikun', role: 'Chairperson, Crypto & Digital Assets' },
       { name: 'Obiokor Samuel Okeoghene', role: 'Chairperson, Forex' },
-      { name: 'Inofe Peace Otsebholu', role: 'Chairperson, Securities' },
+      {
+        name: 'Inofe Peace Otsebholu',
+        role: 'Chairperson, Securities',
+        linkedin: 'https://www.linkedin.com/in/inofe-peace-6876b8306',
+        email: 'inofep5668@student.babcock.edu.ng',
+      },
       { name: 'Okunubi Kehinde Sabirat', role: 'Chairperson, Real Estate' },
     ],
   },
@@ -66,10 +76,17 @@ const team = [
   {
     group: 'Iperu Campus Executives',
     members: [
-      { name: 'Karibi-Whyte Monima Edward', role: 'Associate General Secretary' },
+      {
+        name: 'Monima Edward Karibi-Whyte',
+        role: 'Associate General Secretary',
+        linkedin: 'https://www.linkedin.com/in/monima-edward-karibi-whyte-668452317',
+        email: 'karibi-whytem6125@student.babcock.edu.ng',
+      },
       {
         name: 'Daniella Georgewill Fabia',
         role: 'Associate Director of Public Relations & Acting Associate Director of Welfare',
+        linkedin: 'https://www.linkedin.com/in/daniella-fabia-georgewill-9824b7384',
+        email: 'georgewilld4473@student.babcock.edu.ng',
       },
       { name: 'Sheyindemi Adetomilola Kehinde', role: 'Vice President, Iperu Campus' },
     ],
@@ -180,6 +197,25 @@ export default function About() {
                   <li key={m.name}>
                     <strong>{m.name}</strong>
                     <span>{m.role}</span>
+                    {(m.linkedin || m.email) && (
+                      <div className="team-contact-links">
+                        {m.linkedin && (
+                          <a
+                            href={m.linkedin}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`${m.name} on LinkedIn`}
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        {m.email && (
+                          <a href={`mailto:${m.email}`} aria-label={`Email ${m.name}`}>
+                            Email
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

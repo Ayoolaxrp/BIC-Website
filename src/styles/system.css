@@ -380,6 +380,17 @@ ol, ul { list-style: none; padding: 0; }
 .team-list li { display: flex; flex-direction: column; gap: 2px; padding: 16px 0; border-top: 1px solid var(--hairline); }
 .team-list strong { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; color: var(--navy); }
 .team-list span { font-size: 0.9375rem; color: var(--gray-500); }
+.team-contact-links { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; }
+.team-contact-links a {
+  color: var(--accent-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-ink) 28%, transparent);
+  text-underline-offset: 3px;
+}
+.team-contact-links a:hover { text-decoration-color: currentColor; }
+.team-contact-links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
 /* ---- Forms: labels line up across grid columns ---- */
 .grid-2 { align-items: start; }
