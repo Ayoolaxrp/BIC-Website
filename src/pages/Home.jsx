@@ -21,10 +21,10 @@ const proof = [
 ];
 
 const sponsors = [
-  { name: 'Fundbox', detail: 'Financial Services' },
-  { name: 'Leadway', detail: 'Assurance' },
-  { name: 'More Ladda', detail: 'by Meristem' },
-  { name: 'Chapel Hill Denham', detail: 'Investment Management' },
+  { name: 'Fundbox', detail: 'Financial Services', logo: '/images/partners/fundbox-financial-services.png' },
+  { name: 'Leadway', detail: 'Assurance', logo: '/images/partners/leadway-assurance.png' },
+  { name: 'More Ladda', detail: 'by Meristem', logo: '/images/partners/meristem.png', dark: true },
+  { name: 'Chapel Hill Denham', detail: 'Investment Management', logo: '/images/partners/chapel-hill-denham.png', dark: true },
 ];
 
 const sectors = [
@@ -147,6 +147,9 @@ export default function Home() {
             <ul className="hb-list" aria-label="2025/2026 seminar sponsors">
               {sponsors.map((sponsor) => (
                 <li key={sponsor.name}>
+                  <span className={`partner-logo-frame${sponsor.dark ? ' is-dark' : ''}`}>
+                    <img src={sponsor.logo} alt={`${sponsor.name} logo`} loading="lazy" />
+                  </span>
                   <span className="hb-wordmark">
                     <strong>{sponsor.name}</strong>
                     <small>{sponsor.detail}</small>

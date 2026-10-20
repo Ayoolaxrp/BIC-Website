@@ -356,9 +356,18 @@ ol, ul { list-style: none; padding: 0; }
 
 /* ---- Partners page ---- */
 .partner-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0 clamp(1.5rem, 4vw, 3rem); }
-.partner-list li { display: flex; flex-direction: column; gap: 2px; padding: 20px 0; border-top: 1px solid var(--hairline); }
+.partner-list li { display: flex; flex-direction: column; gap: 14px; padding: 20px 0; border-top: 1px solid var(--hairline); }
 .partner-list strong { font-family: var(--font-display); font-size: 1.1875rem; font-weight: 600; letter-spacing: -0.012em; color: var(--navy); }
 .partner-list span { font-size: 0.9375rem; color: var(--gray-500); }
+.partner-copy { display: grid; gap: 2px; }
+.partner-logo-frame {
+  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: 84px; height: 48px; padding: 8px 10px; overflow: hidden;
+  background: var(--white); border: 1px solid var(--hairline); border-radius: 8px;
+}
+.partner-logo-frame.is-dark { background: var(--navy); border-color: var(--navy); }
+.partner-logo-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.partner-logo-large { width: 100%; height: 88px; padding: 18px 24px; }
 .offer-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 2.5rem) clamp(2rem, 5vw, 4rem); }
 .offer-list h3 { color: var(--navy); margin-bottom: 6px; }
 .offer-list p { color: var(--gray-500); max-width: 30rem; }
@@ -537,7 +546,7 @@ ol, ul { list-style: none; padding: 0; }
 .hb-kicker { font-size: 1rem; font-weight: 600; color: var(--brand-ink); margin-bottom: 14px; }
 .hb-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--hairline); }
 .hb-list li {
-  display: flex; align-items: center; gap: 14px; min-width: 0;
+  display: flex; align-items: center; gap: 12px; min-width: 0;
   color: var(--navy); padding: 18px 16px 18px 0; border-bottom: 1px solid var(--hairline);
 }
 .hb-list li:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--hairline); }

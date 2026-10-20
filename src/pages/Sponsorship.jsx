@@ -8,10 +8,10 @@ import { RESPONSE_TIME, mailto } from '../lib/contact';
 
 // Verified partners from the club's official "Meet Our Sponsors" poster (2026 seminar & Stock Pitch 2.0).
 const partners = [
-  { name: 'Fundbox Financial Services', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
-  { name: 'Leadway Assurance', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
-  { name: 'More Ladda (Meristem)', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
-  { name: 'Chapel Hill Denham', note: 'Sponsored the 2025/2026 Annual Investment Seminar' },
+  { name: 'Fundbox Financial Services', note: 'Sponsored the 2025/2026 Annual Investment Seminar', logo: '/images/partners/fundbox-financial-services.png' },
+  { name: 'Leadway Assurance', note: 'Sponsored the 2025/2026 Annual Investment Seminar', logo: '/images/partners/leadway-assurance.png' },
+  { name: 'More Ladda (Meristem)', note: 'Sponsored the 2025/2026 Annual Investment Seminar', logo: '/images/partners/meristem.png', dark: true },
+  { name: 'Chapel Hill Denham', note: 'Sponsored the 2025/2026 Annual Investment Seminar', logo: '/images/partners/chapel-hill-denham.png', dark: true },
 ];
 
 const offers = [
@@ -73,8 +73,13 @@ export default function Sponsorship() {
           <ul className="partner-list partner-list-2">
             {partners.map((p) => (
               <li key={p.name}>
-                <strong>{p.name}</strong>
-                <span>{p.note}</span>
+                <span className={`partner-logo-frame partner-logo-large${p.dark ? ' is-dark' : ''}`}>
+                  <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+                </span>
+                <span className="partner-copy">
+                  <strong>{p.name}</strong>
+                  <span>{p.note}</span>
+                </span>
               </li>
             ))}
           </ul>
