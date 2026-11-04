@@ -10,6 +10,7 @@ const files = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
 const db = new PGlite();
 
 const STUBS = `
+create role service_role nologin bypassrls;
 create role anon nologin;
 create role authenticated nologin;
 create schema auth;
@@ -60,7 +61,8 @@ for (const round of [1, 2]) {
     try { await db.exec(prep(fs.readFileSync(path.join(dir, f), 'utf8'))); }
     catch (e) { console.log(`MIGRATION ERROR round ${round} ${f}: ${e.message}`); process.exit(1); }
   }
-  console.log(`migrations applied, round ${round}`);
+  await db.exec(fs.readFileSync('tests/fixtures/applied-kora-contract.sql', 'utf8'));
+  console.log(`migrations and recovered applied Kora contract loaded, round ${round}`);
 }
 
 const U1 = '11111111-1111-1111-1111-111111111111';
@@ -199,6 +201,27 @@ ok('payment RPC not callable by anon', !(await priv('public.admin_set_membership
 
 const b = (await db.query(`select id, file_size_limit from storage.buckets order by id`)).rows;
 ok('buckets with limits', b.length === 2 && b[0].file_size_limit === 5242880n || b[0].file_size_limit == 5242880, JSON.stringify(b, (k, v) => typeof v === 'bigint' ? Number(v) : v));
+
+
+// Snapshot of already-applied Kora contract, tested only in local PGlite.
+for(const signature of ['create_kora_intent(text,jsonb)','get_kora_intent(text)','finalize_kora_payment(text,bigint,text)']){
+ ok('Kora RPC denied to browsers '+signature,!(await priv('public.'+signature,'anon'))&&!(await priv('public.'+signature,'authenticated')));
+ ok('Kora RPC service-only '+signature,await priv('public.'+signature,'service_role'));
+}
+r=await as('anon',null,null,'select * from public.kora_checkout_intents');ok('anon cannot read Kora intents',!!r.error);
+const kref='BIC-KORA-11111111-1111-4111-8111-111111111111';
+const kapp={full_name:'Mock Kora Member',email:'kora@babcock.edu.ng',sector:'Securities',campus:'Ilishan',interests:[]};
+await db.query('select public.create_kora_intent($1,$2)',[kref,JSON.stringify(kapp)]);
+const ki=(await db.query('select public.get_kora_intent($1) i',[kref])).rows[0].i;
+ok('recovered contract sets fixed server price',ki.amount_kobo===250000&&ki.currency==='NGN'&&ki.status==='pending');
+let rejected=false;try{await db.query('select public.finalize_kora_payment($1,$2,$3)',[kref,1,'NGN']);}catch{rejected=true;}ok('Kora amount mismatch rejected',rejected);
+rejected=false;try{await db.query('select public.finalize_kora_payment($1,$2,$3)',[kref,250000,'USD']);}catch{rejected=true;}ok('Kora currency mismatch rejected',rejected);
+await db.query('select public.finalize_kora_payment($1,$2,$3)',[kref,250000,'NGN']);
+await db.query('select public.finalize_kora_payment($1,$2,$3)',[kref,250000,'NGN']);
+ok('duplicate Kora confirmation writes one ledger row',Number((await db.query('select count(*) n from public.payments where paystack_ref=$1',[kref])).rows[0].n)===1);
+const ka=(await db.query('select payment_status,payment_method from public.member_applications where paystack_ref=$1',[kref])).rows[0];
+ok('Kora membership confirmation applied',ka.payment_status==='paid'&&ka.payment_method==='kora');
+ok('Kora intent paid',(await db.query('select public.get_kora_intent($1) i',[kref])).rows[0].i.status==='paid');
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
