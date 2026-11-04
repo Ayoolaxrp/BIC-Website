@@ -9,12 +9,15 @@
     "build:pages": "tsc && vite build --base=/BIC-Website/",
     "preview": "vite preview",
     "test:db": "node supabase/tests/migrations.test.mjs supabase/migrations",
-    "db:apply": "node scripts/run-sql.cjs supabase/migrations"
+    "db:apply": "node scripts/run-sql.cjs supabase/migrations",
+    "test:checkout": "node --test tests/kora.test.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.2.17",
     "@reticlehq/react": "^3.5.0",
     "@reticlehq/vite-plugin": "^3.5.0",
+    "@types/node": "^22.20.5",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^6.0.5",
