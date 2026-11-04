@@ -95,6 +95,27 @@ cash** and **Paid by transfer** buttons (and **Undo payment**). The member's
 portal then shows them as an active member. Only admins can do this; it runs
 through `admin_set_membership_payment()` (migration 0700) and records who did it.
 
+### Giving chairs the member check
+
+The **Member check** tab (`/admin`) lets a chair paste the number from a WhatsApp join request and see
+whether that person is registered and has paid. It shows only name, WhatsApp number, sector, campus and
+paid status. It works for admins and for **club-wide** executives (no sector and no campus) who have
+`view_members` or `manage_members`. Because anyone who paid can join any group, sector-limited executives
+do not get it.
+
+Add a chair by email, then they sign up with that same email and confirm it (the database links them on sign-up):
+
+```sql
+insert into public.executive_access (email, full_name, permissions, sector, campus)
+values ('chair@example.com', 'Chair Name', array['view_members'], null, null)
+on conflict (email) do update set permissions = excluded.permissions, sector = null, campus = null,
+  active = true, updated_at = now();
+```
+
+This is only safe while **Confirm email** stays ON in Supabase (Authentication, Providers, Email): the
+access is linked by email address at sign-up. Check it at
+`<project-url>/auth/v1/settings` (`mailer_autoconfirm` must be `false`).
+
 ## 6. Optional: confirmation emails and Paystack
 
 **Emails** (application received, RSVP confirmed) use Resend.

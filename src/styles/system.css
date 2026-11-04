@@ -105,6 +105,19 @@ main:focus { outline: none; }
 .btn-full { width: 100%; }
 /* Long labels (e.g. the WhatsApp group button) wrap on phones instead of being clipped. */
 .btn-wrap { white-space: normal; text-align: center; }
+/* Member check (admin): one search row, then the answer. */
+.member-check-form { display: flex; gap: 10px; margin: 16px 0 20px; max-width: 760px; }
+.member-check-form input {
+  flex: 1; min-width: 0; min-height: 44px; padding: 12px 14px; font: inherit; color: var(--navy);
+  background: var(--white); border: 1px solid var(--hairline-strong); border-radius: var(--radius-input);
+}
+.member-check-form input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.18); }
+.member-check-form .btn { flex: none; }
+@media (max-width: 560px) {
+  .member-check-form { flex-direction: column; }
+  .member-check-form .btn { width: 100%; }
+}
+.member-check-line { margin: 6px 0 0; color: var(--gray-500); }
 /* Thank-you page: the WhatsApp group buttons, spaced as one calm list. */
 .join-groups { display: grid; gap: 12px; justify-items: start; margin: 20px 0 8px; }
 .join-groups p { margin: 0 0 4px; }

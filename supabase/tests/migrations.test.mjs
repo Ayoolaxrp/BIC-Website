@@ -235,5 +235,76 @@ for(const email of ['not-an-email','a@gmail','a b@gmail.com']){
  ok('Kora intent refuses malformed email '+JSON.stringify(email),rejected);
 }
 
+// Member check (migration 20261105000100): a narrow lookup for club-wide executives.
+const MC = { chair: '55555555-5555-5555-5555-555555555555', manager: '66666666-6666-6666-6666-666666666666', sector: '77777777-7777-7777-7777-777777777777', events: '88888888-8888-8888-8888-888888888888' };
+await db.exec(`insert into public.executive_access (email, full_name, permissions, sector, campus) values
+  ('chair.one@test.example', 'Chair One', array['view_members'], null, null),
+  ('chair.two@test.example', 'Chair Two', array['manage_members'], null, null),
+  ('chair.sector@test.example', 'Sector Chair', array['view_members'], 'Securities', null),
+  ('chair.events@test.example', 'Events Chair', array['manage_events'], null, null)
+  on conflict (email) do nothing`);
+await db.exec(`insert into auth.users (id, email, raw_user_meta_data, email_confirmed_at) values
+  ('${MC.chair}', 'chair.one@test.example', '{}', now()),
+  ('${MC.manager}', 'chair.two@test.example', '{}', now()),
+  ('${MC.sector}', 'chair.sector@test.example', '{}', now()),
+  ('${MC.events}', 'chair.events@test.example', '{}', now())`);
+// The payment trigger refuses rows inserted as paid (nobody can fake a payment), so seed with user triggers off.
+await db.exec('alter table public.member_applications disable trigger user');
+await db.exec(`insert into public.member_applications (full_name, phone_number, email, matric_number, sector, campus, payment_status, payment_verified_at, created_at) values
+  ('Ada Paid', '+234 813 825 7616', 'ada.paid@gmail.com', '21/0001', 'Crypto', 'Ilishan', 'paid', now(), now() - interval '2 hours'),
+  ('Ada Retry', '08138257616', 'ada.paid@gmail.com', '21/0001', 'Crypto', 'Ilishan', 'pending', null, now() - interval '3 hours'),
+  ('Bola Unpaid', '0803 111 2222', 'bola@gmail.com', '22/0002', 'Forex', 'Iperu', 'pending', null, now() - interval '1 hour'),
+  ('Chi_Wild 50%', '0901 000 0001', 'chi@yahoo.com', '22/9999', 'Securities', 'Ilishan', 'paid', now(), now() - interval '1 hour'),
+  ('Chidinma Other', '0902 000 0002', 'chidinma@gmail.com', '22/9998', 'General', 'Ilishan', 'pending', null, now() - interval '1 hour')`);
+await db.exec(`insert into public.member_applications (full_name, phone_number, email, payment_status, payment_verified_at)
+  select 'Many Person ' || n, '0705' || lpad(n::text, 7, '0'), 'many' || n || '@gmail.com', 'paid', now() from generate_series(1, 25) n`);
+await db.exec('alter table public.member_applications enable trigger user');
+const mc = (uid, email, q) => as('authenticated', uid, email, `select * from public.member_check(${q === null ? 'null' : "'" + q.replace(/'/g, "''") + "'"})`);
+const chair = (q) => mc(MC.chair, 'chair.one@test.example', q);
+
+let m = await chair('8138257616');
+ok('member check finds a paid member by number, one row despite a retry application', m.rows?.length === 1 && m.rows[0].full_name === 'Ada Paid' && m.rows[0].paid === true, JSON.stringify(m));
+for (const typed of ['+2348138257616', '+234 813 825 7616', '0813 825 7616', '(0813) 825-7616', '234 813 825 7616', '8257616']) {
+  m = await chair(typed);
+  ok('member check matches however the number is typed: ' + typed, m.rows?.length === 1 && m.rows[0].full_name === 'Ada Paid', JSON.stringify(m));
+}
+m = await chair('0803 111 2222');
+ok('member check shows an unpaid applicant as not paid', m.rows?.length === 1 && m.rows[0].full_name === 'Bola Unpaid' && m.rows[0].paid === false, JSON.stringify(m));
+m = await chair('08000000000');
+ok('member check returns nothing for an unknown number', m.rows?.length === 0, JSON.stringify(m));
+m = await chair('ada');
+ok('member check searches names, merging a retry into the paid row', m.rows?.length === 1 && m.rows[0].paid === true, JSON.stringify(m));
+m = await chair('bola@gmail.com');
+ok('member check finds by exact email', m.rows?.length === 1 && m.rows[0].full_name === 'Bola Unpaid', JSON.stringify(m));
+m = await chair('bola@gmail');
+ok('member check does not match part of an email', m.rows?.length === 0, JSON.stringify(m));
+m = await chair('22/9999');
+ok('member check finds by exact matric number', m.rows?.length === 1 && m.rows[0].full_name === 'Chi_Wild 50%', JSON.stringify(m));
+m = await chair('%%%');
+ok('member check treats percent signs literally', m.rows?.length === 0, JSON.stringify(m));
+m = await chair('chi_');
+ok('member check treats underscores literally', m.rows?.length === 1 && m.rows[0].full_name === 'Chi_Wild 50%', JSON.stringify(m));
+for (const short of ['ab', '12345', ' ', '+234 8', '']) {
+  m = await chair(short);
+  ok('member check refuses short queries: ' + JSON.stringify(short), m.rows?.length === 0, JSON.stringify(m));
+}
+m = await chair(null);
+ok('member check handles a null query', m.rows?.length === 0, JSON.stringify(m));
+m = await chair('Many Person');
+ok('member check caps results at 20', m.rows?.length === 20, JSON.stringify(m.rows?.length ?? m));
+m = await chair('8138257616');
+ok('member check returns only name, number, sector, campus and paid status', JSON.stringify(Object.keys(m.rows[0])) === JSON.stringify(['full_name', 'phone_number', 'sector', 'campus', 'paid', 'paid_at']), JSON.stringify(Object.keys(m.rows[0] ?? {})));
+m = await mc(MC.manager, 'chair.two@test.example', '8138257616');
+ok('manage_members executives can use the member check', m.rows?.length === 1, JSON.stringify(m));
+m = await as('authenticated', U2, 'admin@babcock.edu.ng', `select * from public.member_check('8138257616')`);
+ok('admins can use the member check', m.rows?.length === 1, JSON.stringify(m));
+for (const [who, uid, email] of [['a sector-limited executive', MC.sector, 'chair.sector@test.example'], ['an executive without member permissions', MC.events, 'chair.events@test.example'], ['a plain member', U1, 'member@babcock.edu.ng']]) {
+  m = await mc(uid, email, '8138257616');
+  ok('member check is denied to ' + who, !!m.error && /not allowed/i.test(m.error), JSON.stringify(m));
+}
+m = await as('anon', null, null, `select * from public.member_check('8138257616')`);
+ok('member check is denied to anon', !!m.error, JSON.stringify(m));
+ok('member check is not executable by anon, executable by signed-in users', !(await priv('public.member_check(text)', 'anon')) && (await priv('public.member_check(text)', 'authenticated')));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
