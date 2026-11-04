@@ -53,3 +53,8 @@ https://developers.korapay.com/docs/accepting-card-payments-with-apis — GET ch
 https://docs.korapay.com/ — general API guidance; inconsistent string status examples are not accepted instead of the transaction-specific boolean contract.
 
 Official amount-semantics reference: https://developers.korapay.com/docs/handling-underpayments-and-overpayments — nominal webhook amount remains the requested amount; use queried amount_accepted to determine value. amount_paid is the customer transfer, amount_accepted is the processed amount, and merchant balance settlement can subtract fees. No change to major-unit conversion is made; live collection stays off until an authorized sandbox display confirms denomination. Initialization retry remains status-only for known references; no automatic second charge is introduced.
+
+
+## Temporary receiver configuration
+
+The owner requested temporarily moving the merchant notification endpoint from Elion to BIC. Enable the Production server receiver with KORA_CHECKOUT_ENABLED=true and redeploy before changing the merchant webhook to https://www.babcockinvestorsclub.com/api/kora/webhook. Verify unsigned requests are rejected. The frontend collection flag remains false; receiver readiness does not prove a real payment or bank verification. Do not remove unrelated Elion settings.
