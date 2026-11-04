@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test:db": "node supabase/tests/migrations.test.mjs supabase/migrations",
     "db:apply": "node scripts/run-sql.cjs supabase/migrations",
-    "test:checkout": "node --test tests/kora.test.mjs",
+    "test:checkout": "node --test tests/kora.test.mjs tests/kora-throttle.test.mjs",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json"
   },
   "devDependencies": {

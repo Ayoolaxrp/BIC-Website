@@ -15,8 +15,9 @@ export function validSignature(data, signature, secret) {
  if(typeof signature!=='string'|| !/^[a-f0-9]{64}$/i.test(signature)) return false;
  return timingSafeEqual(createHmac('sha256',secret).update(JSON.stringify(data)).digest(),Buffer.from(signature,'hex'));
 }
-export function checkoutUrl(value) {
- try { const u=new URL(value); if(u.protocol==='https:'&&u.hostname==='checkout.korapay.com'&&!u.port&&!u.username&&!u.password) return u.href; } catch {}
+export function checkoutUrl(value, secret = '') {
+ const allowedHost=secret.startsWith('sk_test_')?'test-checkout.korapay.com':'checkout.korapay.com';
+ try { const u=new URL(value); if(u.protocol==='https:'&&u.hostname===allowedHost&&!u.port&&!u.username&&!u.password) return u.href; } catch {}
  return fail(502,'Invalid provider checkout URL');
 }
 export function config(env) {
@@ -64,7 +65,9 @@ export function createCheckoutService({rpc, providerFetch=fetch, env=process.env
   if(charge.status!=='success')return {reference:intent.reference,status:'pending'};
   // Nominal amount alone is not proof of received value: bank-transfer
   // underpayment preferences can produce success with a smaller accepted amount.
-  const actualFields=['amount_paid','amount_accepted'].filter(key=>charge[key]!==undefined);
+  // Kora's successful sandbox response can include null for an unused optional field.
+  // Null is absent evidence, not zero; at least one supplied value must still match.
+  const actualFields=['amount_paid','amount_accepted'].filter(key=>charge[key]!==undefined&&charge[key]!==null);
   if(actualFields.length===0)fail(409,'Actual payment amount is missing; manual verification required');
   for(const key of actualFields){
    if(amountToKobo(charge[key])!==Number(intent.amount_kobo))fail(409,'Actual payment amount does not match the checkout; manual verification required');
@@ -82,7 +85,7 @@ export function createCheckoutService({rpc, providerFetch=fetch, env=process.env
     const intent=await read(reference);
     const charge=await provider('initialize',{amount:2500,currency:intent.currency,narration:'BIC membership',reference,customer:{email:intent.email,name:application.full_name},merchant_bears_cost:true,redirect_url:cfg.origin+'/checkout/return',notification_url:cfg.origin+'/api/kora/webhook'});
     if(charge.reference!==reference)fail(502,'Provider reference mismatch');
-    return {reference,checkout_url:checkoutUrl(charge.checkout_url)};
+    return {reference,checkout_url:checkoutUrl(charge.checkout_url,cfg.secret)};
    }catch(error){if(error instanceof CheckoutError)error.reference=reference;throw error;}
   },
   async status(reference){const intent=await read(reference);return intent.status==='paid'?{reference,status:'paid'}:verify(intent);},
