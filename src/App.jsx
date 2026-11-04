@@ -12,6 +12,7 @@ import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import Sponsorship from './pages/Sponsorship';
 import Legal from './pages/Legal';
+import CheckoutReturn from './pages/CheckoutReturn';
 
 // The app may be served at the root (Vercel, dev) or under a sub-path
 // (GitHub Pages: /BIC-Website/). Base the router on Vite's BASE_URL so deep
@@ -66,6 +67,7 @@ function AppRoutes() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/sponsorship" element={<Sponsorship />} />
           <Route path="/member" element={<Member />} />
+          <Route path="/checkout/return" element={<CheckoutReturn />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/privacy" element={<Legal doc="privacy" />} />
           <Route path="/terms" element={<Legal doc="terms" />} />
