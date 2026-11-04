@@ -12,7 +12,7 @@ const payload=(changes={})=>({event:'charge.success',data:{reference,amount:2500
 function fixture({charge={},intent={},dbError=false,fetchError=false,providerStatus=true}={}){
  const calls=[];let confirmations=0;const row={reference,email:application.email,amount_kobo:250000,currency:'NGN',status:'pending',...intent};
  const rpc=async(name,args)=>{calls.push({name,args});if(dbError)throw new Error('sensitive storage detail');if(name==='get_kora_intent')return row;if(name==='finalize_kora_payment'){if(row.status!=='paid')confirmations++;row.status='paid';}return null;};
- const providerFetch=async(url,options)=>{calls.push({url,options});if(fetchError)throw new Error('mock timeout');return {ok:true,json:async()=>({status:providerStatus,data:url.endsWith('initialize')?{reference,checkout_url:'https://checkout.korapay.com/test/pay',...charge}:{reference,amount:'2500.00',currency:'NGN',status:'success',...charge}})};};
+ const providerFetch=async(url,options)=>{calls.push({url,options});if(fetchError)throw new Error('mock timeout');return {ok:true,json:async()=>({status:providerStatus,data:url.endsWith('initialize')?{reference,checkout_url:'https://checkout.korapay.com/test/pay',...charge}:{reference,amount:'2500.00',amount_paid:'2500.00',currency:'NGN',status:'success',...charge}})};};
  return {service:createCheckoutService({rpc,env,providerFetch,uuid:()=>uuid}),calls,row,get confirmations(){return confirmations;}};
 }
 test('disabled by default and incomplete configuration fails closed',()=>{assert.throws(()=>config({}),/disabled/);assert.throws(()=>config({KORA_CHECKOUT_ENABLED:'true'}),/configured/);assert.throws(()=>config({...env,VITE_SITE_URL:'http://bic.example'}),/origin/);});
@@ -20,7 +20,7 @@ test('strict decimal conversion rejects invalid or ambiguous provider amounts',(
 test('data-only HMAC constant-time length handling and full-body rejection',()=>{const p=payload();assert.equal(validSignature(p.data,sign(p.data),env.KORAPAY_SECRET_KEY),true);assert.equal(validSignature(p.data,'a',env.KORAPAY_SECRET_KEY),false);assert.equal(validSignature(p.data,sign(p),env.KORAPAY_SECRET_KEY),false);assert.equal(validSignature({...p.data,amount:1},sign(p.data),env.KORAPAY_SECRET_KEY),false);});
 test('checkout URL accepts only credential-free HTTPS Kora host',()=>{for(const v of ['http://checkout.korapay.com/a','https://evil.example','https://checkout.korapay.com.evil/a','https://a@checkout.korapay.com/a','https://checkout.korapay.com:444/a'])assert.throws(()=>checkoutUrl(v));});
 test('public application validates email, bounds, choices and denies browser payment claims',()=>{assert.equal(applicationInput(application).email,application.email);for(const v of [{...application,email:'other@example.com'},{...application,payment_status:'paid'},{...application,full_name:'x'.repeat(201)},{...application,level:'999'},{...application,interests:'bad'},null])assert.throws(()=>applicationInput(v));});
-test('server creates intent before Kora using fixed NGN 2500 regardless of browser',async()=>{const f=fixture();const result=await f.service.initialize({application});assert.equal(result.reference,reference);assert.equal(f.calls[0].name,'create_kora_intent');const c=f.calls.find(c=>c.url);const b=JSON.parse(c.options.body);assert.equal(b.amount,2500);assert.equal(b.currency,'NGN');assert.equal(b.customer.email,application.email);assert.equal(b.reference,reference);assert.equal(b.notification_url,env.VITE_SITE_URL+'/api/kora/webhook');assert.equal(b.redirect_url,env.VITE_SITE_URL+'/checkout/return');assert.equal(b.merchant_bears_cost,true);assert.equal(f.confirmations,0);});
+test('server creates intent before Kora using fixed NGN 2500 regardless of browser',async()=>{const f=fixture();const result=await f.service.initialize({application});assert.equal(result.reference,reference);assert.equal(f.calls[0].name,'create_kora_intent');const c=f.calls.find(c=>c.url);const b=JSON.parse(c.options.body);assert.equal(b.amount,2500);assert.equal(b.narration,'BIC membership');assert.equal(b.currency,'NGN');assert.equal(b.customer.email,application.email);assert.equal(b.reference,reference);assert.equal(b.notification_url,env.VITE_SITE_URL+'/api/kora/webhook');assert.equal(b.redirect_url,env.VITE_SITE_URL+'/checkout/return');assert.equal(b.merchant_bears_cost,true);assert.equal(f.confirmations,0);});
 test('extra browser amount/reference rejected before intent creation',async()=>{for(const input of [{application,amount:1},{application,reference:'client-ref'},{application:{...application,amount:1}},{kind:'event',target:'id'},null]){const f=fixture();await assert.rejects(f.service.initialize(input));assert.equal(f.calls.length,0);}});
 test('failure after intent creation returns recovery reference without granting value',async()=>{const f=fixture({fetchError:true});await assert.rejects(f.service.initialize({application}),e=>e.reference===reference&&!e.message.includes('mock timeout'));assert.equal(f.confirmations,0);});
 test('unknown references and inconsistent stored prices rejected',async()=>{await assert.rejects(fixture().service.status('wrong'));await assert.rejects(fixture({intent:{amount_kobo:1}}).service.status(reference));const f=createCheckoutService({env,rpc:async()=>null});await assert.rejects(f.status(reference),/not found/);});
@@ -37,3 +37,37 @@ test('HTTP origin, method, JSON and bounded-body protections',async()=>{assert.e
 test('webhook receives exact raw body and signature without browser origin',async()=>{let received;const raw=' { "data" : {"x":1} } ';const r=await http({action:'webhook',body:raw,headers:{origin:undefined,'x-korapay-signature':'sig'},service:{webhook:async(body,sig)=>{received=[body,sig];return {received:true};}}});assert.equal(r.code,200);assert.deepEqual(received,[raw,'sig']);assert.equal(r.headers['Cache-Control'],'no-store');});
 
 test('server Supabase URL takes precedence and public URL remains fallback',async()=>{let url;const rpc=supabaseRpc({...env,SUPABASE_URL:'https://server.supabase.co'},async(u)=>{url=u;return {ok:true,text:async()=>''};});await rpc('get_kora_intent',{p_reference:reference});assert.equal(url,'https://server.supabase.co/rest/v1/rpc/get_kora_intent');assert.doesNotThrow(()=>config({...env,VITE_SUPABASE_URL:undefined,SUPABASE_URL:'https://server.supabase.co'}));});
+
+test('successful charge requires actual paid or accepted evidence, never nominal alone',async()=>{
+ const f=fixture({charge:{amount_paid:undefined,amount_accepted:undefined}});
+ await assert.rejects(f.service.status(reference),/Actual payment amount is missing/);
+ assert.equal(f.confirmations,0);
+});
+test('accepted amount underpayment or overpayment never fulfills even with matching paid/nominal amount',async()=>{
+ for(const amount_accepted of ['2499.00','2501.00']){
+  const f=fixture({charge:{amount_accepted}});
+  await assert.rejects(f.service.status(reference),/Actual payment amount does not match/);
+  assert.equal(f.confirmations,0);
+ }
+});
+test('accepted-only matching evidence and matching paid plus accepted evidence can fulfill',async()=>{
+ for(const charge of [{amount_paid:undefined,amount_accepted:'2500.00'},{amount_paid:'2500.00',amount_accepted:2500}]){
+  const f=fixture({charge});assert.equal((await f.service.status(reference)).status,'paid');assert.equal(f.confirmations,1);
+ }
+});
+test('matching accepted amount cannot override conflicting paid amount',async()=>{
+ for(const amount_paid of ['2499.00','2501.00']){
+  const f=fixture({charge:{amount_paid,amount_accepted:'2500.00'}});
+  await assert.rejects(f.service.status(reference),/Actual payment amount does not match/);assert.equal(f.confirmations,0);
+ }
+});
+test('null malformed zero or excess-precision actual values fail closed',async()=>{
+ for(const amount_accepted of [null,'invalid',0,'2500.001']){
+  const f=fixture({charge:{amount_accepted}});await assert.rejects(f.service.status(reference));assert.equal(f.confirmations,0);
+ }
+});
+test('webhook nominal amount cannot bypass missing or mismatched provider actual amount',async()=>{
+ for(const charge of [{amount_paid:undefined},{amount_accepted:'2499.00'},{amount_accepted:'2501.00'}]){
+  const f=fixture({charge});const p=payload();await assert.rejects(f.service.webhook(JSON.stringify(p),sign(p.data)));assert.equal(f.confirmations,0);
+ }
+});
