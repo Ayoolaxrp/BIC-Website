@@ -77,3 +77,10 @@
 
 - **A Babcock-only email rule refused real students.** Their addresses are `@student.babcock.edu.ng`, and a regex for `@babcock.edu.ng` rejected them. The rule lived in four places (form, portal sign-up, checkout server, `create_kora_intent` SQL), so change them together through `src/lib/email.js` and a migration.
 - **A form that ignores a second submit while the first is sending looks like a validation bug in tests.** Test each case on a fresh page.
+
+## 2026-11-05: groups, paid list and member check
+
+- **Seeding "paid" test rows needs the payment trigger off.** The database refuses rows inserted as paid (nobody can fake a payment), so a test that inserts `payment_status = 'paid'` quietly gets pending rows. Disable user triggers on the table while seeding.
+- **A lookup for staff should be a narrow RPC, not table access.** `member_check()` returns only name, number, sector, campus and paid status, needs a club-wide executive, refuses short queries and caps results, so chairs never see emails, matric numbers or the full list.
+- **Executive access is linked by email at sign-up, so Confirm email must stay ON.** Check `/auth/v1/settings` (`mailer_autoconfirm` false) before adding a chair.
+- **A search box beside a button collapses on phones.** Stack them under 560px.

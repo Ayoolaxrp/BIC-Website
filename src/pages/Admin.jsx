@@ -23,10 +23,11 @@ import {
 import { getLocalQueue } from '../lib/store';
 import { uploadFile, formatBytes } from '../lib/upload';
 import { SECTORS, sectorLabel } from '../lib/sectors';
+import MemberCheck from '../components/MemberCheck';
 import { getCurrentUser, getMyExecutiveAccess, getProfile, isDemoMode, onAuthChange, signIn, signInWithGoogle, signOut } from '../lib/auth';
 import { googleAuthEnabled } from '../lib/config';
 
-const TABS = ['overview', 'events', 'articles', 'resources', 'newsletter', 'submissions'];
+const TABS = ['overview', 'events', 'articles', 'resources', 'newsletter', 'submissions', 'check'];
 
 const SUBMISSION_TABLES = [
   { table: 'member_applications', label: 'Member Applications' },
@@ -36,7 +37,7 @@ const SUBMISSION_TABLES = [
   { table: 'subscribers', label: 'Newsletter Subscribers' },
 ];
 
-const labelOf = { overview: 'Overview', events: 'Events', articles: 'Articles', resources: 'Resources', newsletter: 'Newsletter', submissions: 'Submissions' };
+const labelOf = { overview: 'Overview', events: 'Events', articles: 'Articles', resources: 'Resources', newsletter: 'Newsletter', submissions: 'Submissions', check: 'Member check' };
 
 function Field({ label, children, hint }) {
   return (
@@ -257,6 +258,8 @@ export default function Admin() {
   const isSuperAdmin = profile?.role === 'admin';
   const permissions = access?.permissions || [];
   const can = (permission) => isSuperAdmin || permissions.includes(permission);
+  // The member check is for admins and club-wide executives (the database enforces the same rule).
+  const clubWide = !access?.sector && !access?.campus;
   const visibleTabs = TABS.filter((candidate) => {
     if (candidate === 'overview') return true;
     if (candidate === 'events') return can('manage_events');
@@ -264,6 +267,7 @@ export default function Admin() {
     if (candidate === 'resources') return can('manage_resources');
     if (candidate === 'newsletter') return can('manage_newsletter');
     if (candidate === 'submissions') return isSuperAdmin || permissions.some((p) => ['manage_members', 'view_members', 'view_rsvps', 'view_contacts'].includes(p));
+    if (candidate === 'check') return isSuperAdmin || (clubWide && (permissions.includes('view_members') || permissions.includes('manage_members')));
     return false;
   });
 
@@ -798,6 +802,7 @@ export default function Admin() {
             )}
           </div>
         )}
+        {tab === 'check' && <MemberCheck />}
       </motion.div>
     </section>
   );

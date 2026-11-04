@@ -133,3 +133,14 @@ export async function fetchSubmissionCounts() {
   }
   return out;
 }
+
+/** Is this person registered and paid? For club-wide executives; the database enforces who may ask. */
+export async function checkMember(query) {
+  if (!isSupabaseConfigured) return { ok: false, error: 'The member check needs the live database.' };
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('member_check', { p_query: query });
+  if (error) {
+    return { ok: false, error: /not allowed|permission denied/i.test(error.message) ? 'Your account does not have access to the member check.' : 'Could not check right now. Please try again.' };
+  }
+  return { ok: true, rows: data ?? [] };
+}
