@@ -8,6 +8,7 @@ import OfflineNotice from '../components/OfflineNotice';
 import { submitRecord } from '../lib/store';
 import { SECTORS } from '../lib/sectors';
 import { supabaseConfigured } from '../lib/config';
+import { emailProblem } from '../lib/email';
 
 
 // Only what the club actually runs (calendar, posters, club structure).
@@ -62,7 +63,7 @@ const faqs = [
   },
   {
     q: 'Who can become a member?',
-    a: 'Any registered Babcock University student, from 100 to 500 level, in any department. Just use your official @babcock.edu.ng email to register.',
+    a: 'Any registered Babcock University student, from 100 to 500 level, in any department. Use any email you check regularly; your Babcock student email works too.',
   },
   {
     q: 'What does the ₦2,500 membership fee cover?',
@@ -107,9 +108,11 @@ export default function Membership() {
     const data = new FormData(formRef.current);
     const email = String(data.get('email') || '').trim();
 
-    // Babcock email validation (runs after the browser's native `required` checks)
-    if (!/^[^\s@]+@babcock\.edu\.ng$/i.test(email)) {
-      setEmailError('Please enter a valid Babcock email address (name.lastname@babcock.edu.ng).');
+    // Any real email is welcome; this only catches broken shapes and typos like gmail.comn
+    // (runs after the browser's native `required` checks)
+    const emailIssue = emailProblem(email);
+    if (emailIssue) {
+      setEmailError(emailIssue);
       return;
     }
 
@@ -259,12 +262,13 @@ export default function Membership() {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label>Babcock Email Address</label>
+                  <label>Email Address</label>
                   <input
                     type="email"
                     name="email"
                     required
-                    placeholder="name.lastname@babcock.edu.ng"
+                    placeholder="name@example.com"
+                    spellCheck={false}
                     className={emailError ? 'input-error' : ''}
                   />
                   {emailError && <span className="field-error">{emailError}</span>}

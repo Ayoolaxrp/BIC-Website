@@ -67,3 +67,13 @@
   them and their rows in `finally` (script in the job tmp: `portal-e2e.cjs`).
 - **Admin pages have two email inputs** (login + footer newsletter). Scope test
   selectors to `main`.
+
+## 2026-11-04: group invite links
+
+- **The repo is public, so an invite link in `src/` or the repo is a link for everyone.** Payment-gated WhatsApp links live in the server-only `BIC_SECTOR_LINKS` env var and are returned by the status API only for a verified payment.
+- **A WhatsApp invite page shows the group name** (`og:title` on `https://chat.whatsapp.com/<code>`), so a pasted link can be matched to its sector without asking.
+
+## 2026-11-04: email rule
+
+- **A Babcock-only email rule refused real students.** Their addresses are `@student.babcock.edu.ng`, and a regex for `@babcock.edu.ng` rejected them. The rule lived in four places (form, portal sign-up, checkout server, `create_kora_intent` SQL), so change them together through `src/lib/email.js` and a migration.
+- **A form that ignores a second submit while the first is sending looks like a validation bug in tests.** Test each case on a fresh page.

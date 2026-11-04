@@ -21,3 +21,12 @@ BIC (Babcock Investors Club) website. Read this, then `FREEBUFF_HANDOFF.md` (rul
 - No fake or unverified content. "Exclusive Investment Masterclass" is the real poster title; leave it.
 - Never commit `.env`, never print its values, never put the service_role or Paystack secret key in the frontend or Vercel.
 - Low RAM/disk machine; retry network calls on `EAI_AGAIN`; stop retry loops after 2 failures.
+
+## Where we stopped (2026-11-04, branch `feat/sector-whatsapp-link`, not committed or pushed)
+- Done: after a verified Kora payment the return page shows a WhatsApp join button for the member's sector. Server: `sectorGroup()` in `server/kora.mjs`, `supabaseSector()` in `server/http.mjs`. Page: `src/pages/CheckoutReturn.jsx`. Docs: `docs/KORA_CHECKOUT.md` ("Group invite after payment").
+- Links are NOT in the repo (it is public). They live in the Vercel env var `BIC_SECTOR_LINKS` (format in `.env.example`). Mapping confirmed from each invite's public preview name: Crypto = "Crypto & Digital Assets Track", Securities = "Securities Track", Real Estate = "Real Estate Track", Forex = "FOREX Track".
+- Next: set `BIC_SECTOR_LINKS` in Vercel Production and redeploy. The `Aspiring` (aspiring members) link is not available yet; General members get "the sector chair will add you" until the owner sends it, then add the `Aspiring` key.
+- Open question: the owner's pasted chat also had an invite link whose group is named "BIC Members 26/27" (main members group). It is not mapped to any sector, and is deliberately not written here (public repo); ask the owner.
+- Email rule (2026-11-04): any well-formed email may apply now, with typo screening in `src/lib/email.js` (form, `/member` sign-up, server). Database: apply `supabase/migrations/20261104001000_allow_any_valid_email.sql` to the live project (replaces only `create_kora_intent`, safe to repeat; `0900` carries the same rule). Not applied live. Copy changed: Membership FAQ answer, Home join blurb, Legal data list, form labels. Left as example placeholders: Events RSVP, Admin login, footer newsletter.
+- Check in the Supabase dashboard: Authentication settings must not restrict sign-ups to babcock.edu.ng (the old README told the owner to set that). Not checked live.
+- Not checked: a real Kora payment, the live Supabase read of `member_applications` with the service key (unit-tested with a mock only), the member portal link (unchanged).

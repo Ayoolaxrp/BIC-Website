@@ -178,7 +178,7 @@ export default function Home() {
         <div className="container">
           <h2>Join for ₦2,500.</h2>
           <p className="hj-sub">
-            Open to every Babcock student, in any department. Apply with your Babcock email in
+            Open to every Babcock student, in any department. Apply in
             about two minutes, then pick the market you want to learn.
           </p>
           <div className="h-actions hj-actions">

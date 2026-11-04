@@ -225,5 +225,15 @@ const ka=(await db.query('select payment_status,payment_method from public.membe
 ok('Kora membership confirmation applied',ka.payment_status==='paid'&&ka.payment_method==='kora');
 ok('Kora intent paid',(await db.query('select public.get_kora_intent($1) i',[kref])).rows[0].i.status==='paid');
 
+// Any well-formed email may apply (migration 20261104001000); malformed ones are still refused by the database.
+for(const email of ['someone@gmail.com','awodeyia4449@student.babcock.edu.ng']){
+ await db.query('select public.create_kora_intent($1,$2)',['BIC-KORA-'+crypto.randomUUID(),JSON.stringify({full_name:'Any Email',email,sector:'Crypto',campus:'Ilishan',interests:[]})]);
+ ok('Kora intent accepts '+email,Number((await db.query('select count(*) n from public.kora_checkout_intents where email=$1',[email])).rows[0].n)===1);
+}
+for(const email of ['not-an-email','a@gmail','a b@gmail.com']){
+ rejected=false;try{await db.query('select public.create_kora_intent($1,$2)',['BIC-KORA-'+crypto.randomUUID(),JSON.stringify({full_name:'Bad',email,interests:[]})]);}catch{rejected=true;}
+ ok('Kora intent refuses malformed email '+JSON.stringify(email),rejected);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -8,7 +8,7 @@ web
 
 ## Users
 
-**Primary:** Babcock University students (100–500 level, any department) curious about investing — the site recruits them into the club and its sector communities. Registration is gated on an official `@babcock.edu.ng` email. When design decisions trade off, students win; sponsor-facing content serves that mission by establishing credibility. *(Confirmed with owner.)*
+**Primary:** Babcock University students (100–500 level, any department) curious about investing — the site recruits them into the club and its sector communities. Registration accepts any well-formed email (owner decision, 2026-11-04; the old `@babcock.edu.ng`-only rule also refused real `@student.babcock.edu.ng` addresses). When design decisions trade off, students win; sponsor-facing content serves that mission by establishing credibility. *(Confirmed with owner.)*
 
 **Secondary:** Organizations and financial-services partners (e.g. Fundbox Financial Services) evaluating BIC for sponsorship and partnership programs.
 

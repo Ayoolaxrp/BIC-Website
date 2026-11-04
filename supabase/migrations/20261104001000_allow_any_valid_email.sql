@@ -1,0 +1,41 @@
+-- Lets anyone with a well-formed email apply, not only @babcock.edu.ng (student.babcock.edu.ng
+-- addresses were being refused too). Replaces ONLY create_kora_intent(text,jsonb); the throttle,
+-- normalization and everything else are identical to 20261104000900. Safe to run more than once, in
+-- either order with 0900. CREATE OR REPLACE keeps the function owner and its service-only ACL.
+-- No existing application, intent or payment rows are touched. The server screens typos (gmail.comn).
+create or replace function public.create_kora_intent(p_reference text, p_application jsonb)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  app_id bigint;
+  normalized_email text := lower(btrim(p_application->>'email'));
+  checked_at timestamptz;
+begin
+  if p_reference is null or p_reference !~ '^BIC-KORA-[0-9a-f-]{36}$'
+     or normalized_email is null or char_length(normalized_email) > 320
+     or normalized_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
+    raise exception 'Invalid checkout intent';
+  end if;
+  -- Serialize ALL initializations, not merely the same email. Transaction-scoped
+  -- lock is held through both inserts/commit, including across parallel RPCs.
+  -- READ COMMITTED (PostgREST default) is needed for a fresh count after waiting.
+  -- Fail closed for snapshot-isolated callers rather than count a stale snapshot.
+  if current_setting('transaction_isolation') <> 'read committed' then
+    raise exception 'Checkout initialization requires read committed isolation';
+  end if;
+  perform pg_advisory_xact_lock(1112097611, 1);
+  checked_at := clock_timestamp();
+  if (select count(*) from public.kora_checkout_intents
+      where lower(btrim(email)) = normalized_email
+        and created_at >= checked_at - interval '1 hour') >= 3 then
+    raise exception 'Checkout initialization email limit reached';
+  end if;
+  if (select count(*) from public.kora_checkout_intents
+      where created_at >= checked_at - interval '1 minute') >= 30 then
+    raise exception 'Checkout initialization global limit reached';
+  end if;
+  insert into public.member_applications(full_name, matric_number, phone_number, department, level, email, knowledge_level, interests, sector, campus, committee, paystack_ref)
+  values (p_application->>'full_name', p_application->>'matric_number', p_application->>'phone_number', p_application->>'department', p_application->>'level', normalized_email, p_application->>'knowledge_level', array(select jsonb_array_elements_text(p_application->'interests')), nullif(p_application->>'sector',''), nullif(p_application->>'campus',''), p_application->>'committee', p_reference)
+  returning id into app_id;
+  insert into public.kora_checkout_intents(reference, application_id, email, amount_kobo, created_at)
+  values (p_reference, app_id, normalized_email, 250000, checked_at);
+end $$;

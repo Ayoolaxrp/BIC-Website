@@ -22,8 +22,8 @@ import Seo from '../components/Seo';
 import { fetchArticles, fetchNewsletterPosts, fetchResources } from '../lib/api';
 import { GROUP_LINKS, SECTORS, sectorLabel } from '../lib/sectors';
 import { CLUB_PHONE, whatsapp } from '../lib/contact';
+import { emailProblem } from '../lib/email';
 
-const BABCOCK_EMAIL = /^[^\s@]+@babcock\.edu\.ng$/i;
 const MIN_PASSWORD = 8;
 
 const fmtDate = (d) =>
@@ -59,8 +59,9 @@ function AuthScreen({ onSignedIn }) {
     setMsg(null);
     const cleanEmail = email.trim();
 
-    if (mode === 'signup' && !BABCOCK_EMAIL.test(cleanEmail)) {
-      setMsg({ type: 'error', text: 'Use your Babcock email (name.lastname@babcock.edu.ng) to create an account.' });
+    const emailIssue = mode === 'signup' ? emailProblem(cleanEmail) : '';
+    if (emailIssue) {
+      setMsg({ type: 'error', text: emailIssue });
       return;
     }
     setBusy(true);
@@ -77,7 +78,7 @@ function AuthScreen({ onSignedIn }) {
     if (!res.ok) {
       setMsg({ type: 'error', text: res.error });
     } else if (mode === 'signup') {
-      setMsg({ type: 'success', text: 'Account created. Open the confirmation link we sent to your Babcock email, then sign in.' });
+      setMsg({ type: 'success', text: 'Account created. Open the confirmation link we sent to your email, then sign in.' });
       setMode('signin');
       setPass('');
     } else {
@@ -88,7 +89,7 @@ function AuthScreen({ onSignedIn }) {
   const title = { signin: 'Sign in to BIC.', signup: 'Create your account.', forgot: 'Reset your password.' }[mode];
   const sub = {
     signin: 'See your membership, your sector and the events you have signed up for.',
-    signup: 'Use the same Babcock email as your membership application, so we can link the two.',
+    signup: 'Use the same email as your membership application, so we can link the two.',
     forgot: 'Enter your account email and we will send you a link to choose a new password.',
   }[mode];
   const cta = { signin: 'Sign in', signup: 'Create account', forgot: 'Send reset link' }[mode];
@@ -107,7 +108,7 @@ function AuthScreen({ onSignedIn }) {
             </div>
           )}
           <div className="form-group">
-            <label htmlFor="mp-email">{mode === 'signup' ? 'Babcock email' : 'Email'}</label>
+            <label htmlFor="mp-email">Email</label>
             <input
               id="mp-email"
               type="email"
@@ -116,7 +117,8 @@ function AuthScreen({ onSignedIn }) {
               inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name.lastname@babcock.edu.ng"
+              placeholder="name@example.com"
+              spellCheck={false}
             />
           </div>
           {mode !== 'forgot' && (

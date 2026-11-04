@@ -27,7 +27,7 @@ const DOCS = {
       { id: 'collect', title: 'Information we collect', body: (<>
         <p>Information you give us:</p>
         <ul>
-          <li>Membership applications: your name, matric number, Babcock email, phone number, department, level, areas of interest, sector and committee choices.</li>
+          <li>Membership applications: your name, matric number, email address, phone number, department, level, areas of interest, sector and committee choices.</li>
           <li>Event RSVPs: your name, email and the event you chose.</li>
           <li>Contact and partnership enquiries: your name, organisation, email, phone number and message.</li>
           <li>Updates: your email address, if you subscribe.</li>
