@@ -191,7 +191,7 @@ function PaymentControl({ app, onChange }) {
     <div className="pay-control">
       <p className="pay-state">
         {paid
-          ? `Paid${app.payment_method === 'cash' ? ' in cash' : app.payment_method === 'transfer' ? ' by bank transfer' : app.payment_method === 'paystack' ? ' online' : ''}${app.payment_verified_at ? ` on ${new Date(app.payment_verified_at).toLocaleDateString()}` : ''}`
+          ? `Paid${app.payment_method === 'cash' ? ' in cash' : app.payment_method === 'transfer' ? ' by bank transfer' : app.payment_method === 'paystack' || app.payment_method === 'kora' ? ' online' : ''}${app.payment_verified_at ? ` on ${new Date(app.payment_verified_at).toLocaleDateString()}` : ''}`
           : 'Fee not recorded yet'}
       </p>
       <div className="pay-actions">
