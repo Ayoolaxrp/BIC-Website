@@ -81,7 +81,7 @@ After a verified payment, POST /api/kora/status adds `group` and `group_link` to
 
 The server reads the sector the member chose from `member_applications` (by `paystack_ref`, read-only, service key in the apikey header) and looks it up in the server-only env var `BIC_SECTOR_LINKS` (JSON, see `.env.example`). The repo is public, so the links are not in the code or the JS bundle; only a paid reference can reveal one. Only `https://chat.whatsapp.com/...` links are accepted.
 
-A sector with no group of its own (today: General) gets the `Aspiring` link when that key is set, and no link until then. If the sector lookup fails, the member gets no link, never the Aspiring one, and the page says the sector chair will add them. The reference in the return URL is the key to the link, so a member can reopen the page later.
+A sector with no group of its own (today: General) gets the `Members` link (the main registered-members chat, e.g. "BIC Members 26/27") when that key is set, and no link until then. Never put the large unpaid "aspiring" chat link in this variable. If the sector lookup fails, the member gets no link, never the Aspiring one, and the page says the sector chair will add them. The reference in the return URL is the key to the link, so a member can reopen the page later.
 
 Changing a link: edit `BIC_SECTOR_LINKS` in Vercel (Production) and redeploy. The member portal (`GROUP_LINKS` in `src/lib/sectors.js`) still shows its placeholders and is unchanged.
 
