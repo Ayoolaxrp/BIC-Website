@@ -58,10 +58,12 @@ for (const old of (process.env.PRE || '').split(',').filter(Boolean)) {
 }
 for (const round of [1, 2]) {
   for (const f of files) {
-    try { await db.exec(prep(fs.readFileSync(path.join(dir, f), 'utf8'))); }
+    try {
+      if (f === '20261104000900_kora_initialization_throttle.sql') await db.exec(fs.readFileSync('tests/fixtures/applied-kora-contract.sql', 'utf8'));
+      await db.exec(prep(fs.readFileSync(path.join(dir, f), 'utf8')));
+    }
     catch (e) { console.log(`MIGRATION ERROR round ${round} ${f}: ${e.message}`); process.exit(1); }
   }
-  await db.exec(fs.readFileSync('tests/fixtures/applied-kora-contract.sql', 'utf8'));
   console.log(`migrations and recovered applied Kora contract loaded, round ${round}`);
 }
 
