@@ -9,11 +9,11 @@ const uuid='11111111-1111-4111-8111-111111111111';const reference='BIC-KORA-'+uu
 const application={full_name:'Mock Member',email:'member@babcock.edu.ng',matric_number:'22/1234',phone_number:'mock-phone',department:'Finance',level:'200',knowledge_level:'Beginner',interests:[],sector:'Securities',campus:'Ilishan',committee:'Finance & Fundraising'};
 const sign=data=>createHmac('sha256',env.KORAPAY_SECRET_KEY).update(JSON.stringify(data)).digest('hex');
 const payload=(changes={})=>({event:'charge.success',data:{reference,amount:2500,currency:'NGN',status:'success',...changes}});
-function fixture({charge={},intent={},dbError=false,fetchError=false,providerStatus=true}={}){
+function fixture({charge={},intent={},dbError=false,fetchError=false,providerStatus=true,environment=env}={}){
  const calls=[];let confirmations=0;const row={reference,email:application.email,amount_kobo:250000,currency:'NGN',status:'pending',...intent};
  const rpc=async(name,args)=>{calls.push({name,args});if(dbError)throw new Error('sensitive storage detail');if(name==='get_kora_intent')return row;if(name==='finalize_kora_payment'){if(row.status!=='paid')confirmations++;row.status='paid';}return null;};
  const providerFetch=async(url,options)=>{calls.push({url,options});if(fetchError)throw new Error('mock timeout');return {ok:true,json:async()=>({status:providerStatus,data:url.endsWith('initialize')?{reference,checkout_url:'https://checkout.korapay.com/test/pay',...charge}:{reference,amount:'2500.00',amount_paid:'2500.00',currency:'NGN',status:'success',...charge}})};};
- return {service:createCheckoutService({rpc,env,providerFetch,uuid:()=>uuid}),calls,row,get confirmations(){return confirmations;}};
+ return {service:createCheckoutService({rpc,env:environment,providerFetch,uuid:()=>uuid}),calls,row,get confirmations(){return confirmations;}};
 }
 test('disabled by default and incomplete configuration fails closed',()=>{assert.throws(()=>config({}),/disabled/);assert.throws(()=>config({KORA_CHECKOUT_ENABLED:'true'}),/configured/);assert.throws(()=>config({...env,VITE_SITE_URL:'http://bic.example'}),/origin/);});
 test('strict decimal conversion rejects invalid or ambiguous provider amounts',()=>{assert.equal(amountToKobo('2500.00'),250000);assert.equal(amountToKobo('10.5'),1050);for(const v of ['2e3',0,-1,'1.001','NaN',null,'01'])assert.throws(()=>amountToKobo(v));});
@@ -61,13 +61,44 @@ test('matching accepted amount cannot override conflicting paid amount',async()=
   await assert.rejects(f.service.status(reference),/Actual payment amount does not match/);assert.equal(f.confirmations,0);
  }
 });
-test('null malformed zero or excess-precision actual values fail closed',async()=>{
- for(const amount_accepted of [null,'invalid',0,'2500.001']){
+test('malformed zero or excess-precision supplied actual values fail closed',async()=>{
+ for(const amount_accepted of ['invalid',0,'2500.001']){
   const f=fixture({charge:{amount_accepted}});await assert.rejects(f.service.status(reference));assert.equal(f.confirmations,0);
  }
 });
 test('webhook nominal amount cannot bypass missing or mismatched provider actual amount',async()=>{
  for(const charge of [{amount_paid:undefined},{amount_accepted:'2499.00'},{amount_accepted:'2501.00'}]){
   const f=fixture({charge});const p=payload();await assert.rejects(f.service.webhook(JSON.stringify(p),sign(p.data)));assert.equal(f.confirmations,0);
+ }
+});
+
+
+test('test hosted checkout is allowed only with a server test key; live stays live-only',async()=>{
+ const live='https://checkout.korapay.com/test/pay';
+ const sandbox='https://test-checkout.korapay.com/test/pay';
+ assert.equal(checkoutUrl(live,'sk_live_mock'),live);
+ assert.equal(checkoutUrl(sandbox,'sk_test_mock'),sandbox);
+ for(const key of ['', 'sk_live_mock','mock-kora-secret','SK_TEST_mock']) assert.throws(()=>checkoutUrl(sandbox,key));
+ assert.throws(()=>checkoutUrl(live,'sk_test_mock'));
+ for(const url of ['http://test-checkout.korapay.com/a','https://test-checkout.korapay.com.evil/a','https://a@test-checkout.korapay.com/a','https://test-checkout.korapay.com:444/a']) assert.throws(()=>checkoutUrl(url,'sk_test_mock'));
+ const f=fixture({environment:{...env,KORAPAY_SECRET_KEY:'sk_test_mock'},charge:{checkout_url:sandbox}});
+ assert.equal((await f.service.initialize({application})).checkout_url,sandbox);
+ await assert.rejects(fixture({charge:{checkout_url:sandbox}}).service.initialize({application}),/Invalid provider checkout URL/);
+});
+
+
+test('observed sandbox success shape permits null accepted amount only with matching paid evidence',async()=>{
+ const f=fixture({charge:{status:'success',amount:'2500.00',amount_paid:'2500.00',amount_accepted:null}});
+ assert.deepEqual(await f.service.status(reference),{reference,status:'paid'});assert.equal(f.confirmations,1);
+ const webhook=fixture({charge:{status:'success',amount:'2500.00',amount_paid:'2500.00',amount_accepted:null}});
+ const p=payload();await webhook.service.webhook(JSON.stringify(p),sign(p.data));assert.equal(webhook.confirmations,1);
+});
+test('null optional actual amounts are absent evidence; no valid actual field rejects success',async()=>{
+ for(const charge of [{amount_paid:null,amount_accepted:null},{amount_paid:undefined,amount_accepted:null},{amount_paid:null,amount_accepted:undefined}]){
+  const f=fixture({charge});await assert.rejects(f.service.status(reference),/Actual payment amount is missing/);assert.equal(f.confirmations,0);
+ }
+ const acceptedOnly=fixture({charge:{amount_paid:null,amount_accepted:'2500.00'}});assert.equal((await acceptedOnly.service.status(reference)).status,'paid');
+ for(const charge of [{amount_paid:'2499.00',amount_accepted:null},{amount_paid:null,amount_accepted:'2501.00'},{amount_paid:'invalid',amount_accepted:null}]){
+  const f=fixture({charge});await assert.rejects(f.service.status(reference));assert.equal(f.confirmations,0);
  }
 });
