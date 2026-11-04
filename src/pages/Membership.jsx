@@ -242,7 +242,7 @@ export default function Membership() {
                     <input type="text" name="matric_number" required placeholder="20/0123" />
                   </div>
                   <div className="form-group">
-                    <label>Phone Number</label>
+                    <label>WhatsApp Number</label>
                     <input type="tel" name="phone_number" required placeholder="+234 800 000 0000" />
                   </div>
                 </div>

@@ -77,11 +77,11 @@ The owner requested temporarily moving the merchant notification endpoint from E
 
 ## Group invite after payment
 
-After a verified payment, POST /api/kora/status adds `group` and `group_link` to its answer, and /checkout/return shows a "Join the ... group on WhatsApp" button. Nothing is added while a payment is pending, and the webhook never returns a link.
+After a verified payment, POST /api/kora/status adds a `groups` list to its answer (each item: `group`, `link`, `yours`), and /checkout/return shows a "Join the ... group on WhatsApp" button for each. Nothing is added while a payment is pending, and the webhook never returns a link.
 
-The server reads the sector the member chose from `member_applications` (by `paystack_ref`, read-only, service key in the apikey header) and looks it up in the server-only env var `BIC_SECTOR_LINKS` (JSON, see `.env.example`). The repo is public, so the links are not in the code or the JS bundle; only a paid reference can reveal one. Only `https://chat.whatsapp.com/...` links are accepted.
+Owner decision (2026-11-04): the fee covers the whole club. Everyone who pays gets the main members chat (`Members`, e.g. "BIC Members 26/27") first, then their own sector group (`yours: true`), then every other sector group under "More groups you can join". The sector the member chose is read from `member_applications` (by `paystack_ref`, read-only, service key in the apikey header) only to decide which group leads, so a failed lookup still shows every group. Links come from the server-only env var `BIC_SECTOR_LINKS` (JSON, see `.env.example`). The repo is public, so the links are not in the code or the JS bundle; only a paid reference can reveal them. Only `https://chat.whatsapp.com/...` links are accepted, and a group with no link configured is simply left out. Never put the large unpaid "aspiring" chat link in this variable. The reference in the return URL is the key to the links, so a member can reopen the page later.
 
-A sector with no group of its own (today: General) gets the `Members` link (the main registered-members chat, e.g. "BIC Members 26/27") when that key is set, and no link until then. Never put the large unpaid "aspiring" chat link in this variable. If the sector lookup fails, the member gets no link, never the Aspiring one, and the page says the sector chair will add them. The reference in the return URL is the key to the link, so a member can reopen the page later.
+Chairs approve join requests against the paid list (the phone field on the form is labelled "WhatsApp Number" so the numbers match what WhatsApp shows). Because anyone who paid can join any group, one list serves every chair.
 
 Changing a link: edit `BIC_SECTOR_LINKS` in Vercel (Production) and redeploy. The member portal (`GROUP_LINKS` in `src/lib/sectors.js`) still shows its placeholders and is unchanged.
 

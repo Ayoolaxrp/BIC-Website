@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {Readable} from 'node:stream';
-import {createCheckoutService,amountToKobo,validSignature,checkoutUrl,config,applicationInput,sectorGroup} from '../server/kora.mjs';
+import {createCheckoutService,amountToKobo,validSignature,checkoutUrl,config,applicationInput,sectorGroups} from '../server/kora.mjs';
 import {handler,supabaseRpc,supabaseSector} from '../server/http.mjs';
 import {emailProblem} from '../src/lib/email.js';
 const env={KORA_CHECKOUT_ENABLED:'true',KORAPAY_SECRET_KEY:'mock-kora-secret',SUPABASE_SECRET_KEY:'sb_secret_mock',VITE_SUPABASE_URL:'https://mock.supabase.co',VITE_SITE_URL:'https://bic.example'};
@@ -103,38 +103,34 @@ test('null optional actual amounts are absent evidence; no valid actual field re
   const f=fixture({charge});await assert.rejects(f.service.status(reference));assert.equal(f.confirmations,0);
  }
 });
-const links={Crypto:'https://chat.whatsapp.com/CRYPTO1',Securities:'https://chat.whatsapp.com/SECURITIES1',Forex:'https://chat.whatsapp.com/FOREX1','Real Estate':'https://chat.whatsapp.com/REALESTATE1'};
+const links={Crypto:'https://chat.whatsapp.com/CRYPTO1',Securities:'https://chat.whatsapp.com/SECURITIES1',Forex:'https://chat.whatsapp.com/FOREX1','Real Estate':'https://chat.whatsapp.com/REALESTATE1',Members:'https://chat.whatsapp.com/MEMBERS1'};
 const linkEnv={...env,BIC_SECTOR_LINKS:JSON.stringify(links)};
-const membersEnv={...env,BIC_SECTOR_LINKS:JSON.stringify({...links,Members:'https://chat.whatsapp.com/MEMBERS1'})};
-test('paid status returns the member\u2019s own sector group, read from the database by reference',async()=>{
- for(const [sector,link] of Object.entries(links)){
+const names=r=>r.groups.map(g=>g.group+(g.yours?'*':''));
+test('everyone who pays gets the main members chat and every sector group, their own sector first, read from the database by reference',async()=>{
+ const expected={Crypto:['Members','Crypto*','Forex','Securities','Real Estate'],Forex:['Members','Forex*','Crypto','Securities','Real Estate'],Securities:['Members','Securities*','Crypto','Forex','Real Estate'],'Real Estate':['Members','Real Estate*','Crypto','Forex','Securities'],General:['Members','Crypto','Forex','Securities','Real Estate']};
+ for(const [sector,order] of Object.entries(expected)){
   const asked=[];const f=fixture({environment:linkEnv,sectorOf:async r=>{asked.push(r);return sector;}});
-  const expected={reference,status:'paid',group:sector,group_link:link};
-  assert.deepEqual(await f.service.status(reference),expected);
-  assert.deepEqual(await f.service.status(reference),expected);
+  const result=await f.service.status(reference);
+  assert.deepEqual(names(result),order);assert.equal(result.status,'paid');assert.equal(result.reference,reference);
+  assert.equal(result.groups[0].link,links.Members);
+  assert.deepEqual(await f.service.status(reference),result);
   assert.deepEqual(asked,[reference,reference]);assert.equal(f.confirmations,1);
  }
 });
-test('a sector with no group of its own joins the main Members group once that link exists, otherwise gets no link',async()=>{
- const withMembers=fixture({environment:membersEnv,sectorOf:async()=>'General'});
- assert.deepEqual(await withMembers.service.status(reference),{reference,status:'paid',group:'Members',group_link:'https://chat.whatsapp.com/MEMBERS1'});
- const without=fixture({environment:linkEnv,sectorOf:async()=>'General'});
- assert.deepEqual(await without.service.status(reference),{reference,status:'paid'});
- const own=fixture({environment:membersEnv,sectorOf:async()=>'Crypto'});
- assert.equal((await own.service.status(reference)).group,'Crypto');
-});
-test('no link before payment is verified, when no links are configured, or when the sector is unknown',async()=>{
+test('no groups before payment is verified, or when no links are configured',async()=>{
  let asked=0;const sectorOf=async()=>{asked++;return 'Crypto';};
- const pending=fixture({environment:membersEnv,sectorOf,charge:{status:'pending'}});
+ const pending=fixture({environment:linkEnv,sectorOf,charge:{status:'pending'}});
  assert.deepEqual(await pending.service.status(reference),{reference,status:'pending'});
  assert.equal(asked,0);
  assert.deepEqual(await fixture({sectorOf}).service.status(reference),{reference,status:'paid'});
- for(const sector of [null,undefined,7])assert.deepEqual(await fixture({environment:membersEnv,sectorOf:async()=>sector}).service.status(reference),{reference,status:'paid'});
 });
-test('a failed sector lookup never hides a confirmed payment or sends a Crypto member to the Members group',async()=>{
- const f=fixture({environment:membersEnv,sectorOf:async()=>{throw new Error('sensitive storage detail');}});
- assert.deepEqual(await f.service.status(reference),{reference,status:'paid'});
- assert.equal(f.confirmations,1);
+test('a failed or odd sector lookup still shows every group, none flagged as theirs',async()=>{
+ for(const sectorOf of [async()=>{throw new Error('sensitive storage detail');},async()=>null,async()=>undefined,async()=>7,async()=>'Something Else']){
+  const f=fixture({environment:linkEnv,sectorOf});
+  const result=await f.service.status(reference);
+  assert.deepEqual(names(result),['Members','Crypto','Forex','Securities','Real Estate']);
+  assert.equal(JSON.stringify(result).includes('sensitive'),false);assert.equal(f.confirmations,1);
+ }
 });
 test('webhook never looks up or exposes a link',async()=>{
  let asked=0;const f=fixture({environment:linkEnv,sectorOf:async()=>{asked++;return 'Crypto';}});const p=payload();
@@ -142,11 +138,12 @@ test('webhook never looks up or exposes a link',async()=>{
  assert.equal(asked,0);
 });
 test('only credential-free https WhatsApp invite links are ever returned, and object prototype keys are ignored',()=>{
- const group=(v,sector='Crypto')=>sectorGroup({BIC_SECTOR_LINKS:JSON.stringify({Crypto:v})},sector);
- assert.deepEqual(group('https://chat.whatsapp.com/abc'),{group:'Crypto',link:'https://chat.whatsapp.com/abc'});
- for(const v of ['http://chat.whatsapp.com/abc','https://evil.example/abc','https://chat.whatsapp.com.evil.example/abc','https://u:p@chat.whatsapp.com/abc','https://chat.whatsapp.com:444/abc','javascript:alert(1)','not a url',7,null])assert.equal(group(v),null);
- for(const sector of ['__proto__','constructor','toString'])assert.equal(group('https://chat.whatsapp.com/abc',sector),null);
- for(const raw of [undefined,'{bad json','null','5','[]'])assert.equal(sectorGroup({BIC_SECTOR_LINKS:raw},'Crypto'),null);
+ const one=(v,sector='Crypto')=>sectorGroups({BIC_SECTOR_LINKS:JSON.stringify({Crypto:v})},sector);
+ assert.deepEqual(one('https://chat.whatsapp.com/abc'),[{group:'Crypto',link:'https://chat.whatsapp.com/abc',yours:true}]);
+ for(const v of ['http://chat.whatsapp.com/abc','https://evil.example/abc','https://chat.whatsapp.com.evil.example/abc','https://u:p@chat.whatsapp.com/abc','https://chat.whatsapp.com:444/abc','javascript:alert(1)','not a url',7,null])assert.deepEqual(one(v),[]);
+ for(const sector of ['__proto__','constructor','toString'])assert.deepEqual(one('https://chat.whatsapp.com/abc',sector).map(g=>g.group),['Crypto']);
+ for(const raw of [undefined,'{bad json','null','5','[]'])assert.deepEqual(sectorGroups({BIC_SECTOR_LINKS:raw},'Crypto'),[]);
+ assert.deepEqual(sectorGroups({BIC_SECTOR_LINKS:JSON.stringify({Members:'https://chat.whatsapp.com/m',Aspiring:'https://chat.whatsapp.com/a'})},'General').map(g=>g.group),['Members']);
 });
 test('sector lookup uses apikey only, an encoded reference filter and tolerates no row',async()=>{
  let request;const respond=body=>async(url,options)=>{request={url,options};return {ok:true,json:async()=>body};};

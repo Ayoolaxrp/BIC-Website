@@ -23,13 +23,15 @@ export function checkoutUrl(value, secret = '') {
 }
 // Invite links live in the server-only BIC_SECTOR_LINKS env var, never in the public repo or JS bundle,
 // so only a verified payment can reveal one. JSON: {"Crypto":"https://chat.whatsapp.com/...","Members":"..."}.
-// A sector with no group of its own falls back to the "Members" catch-all group (the main registered-members chat, never the big unpaid aspiring chat); an unknown sector (failed lookup) gets nothing.
+// The fee covers the whole club: everyone who pays gets the main members chat ("Members", never the big
+// unpaid aspiring chat) and every sector group. The member's own sector, when known, is flagged and listed first.
+const SECTORS=['Crypto','Forex','Securities','Real Estate','General'];
 const inviteLink=v=>{try{const u=new URL(v);return u.protocol==='https:'&&u.hostname==='chat.whatsapp.com'&&!u.port&&!u.username&&!u.password?u.href:null;}catch{return null;}};
-export function sectorGroup(env, sector) {
- let links;try{links=JSON.parse(env.BIC_SECTOR_LINKS||'{}');}catch{return null;}
- if(!links||typeof links!=='object'||typeof sector!=='string')return null;
- for(const group of [sector,'Members']){const link=Object.hasOwn(links,group)?inviteLink(links[group]):null;if(link)return {group,link};}
- return null;
+export function sectorGroups(env, sector) {
+ let links;try{links=JSON.parse(env.BIC_SECTOR_LINKS||'{}');}catch{return [];}
+ if(!links||typeof links!=='object')return [];
+ const order=['Members',...(SECTORS.includes(sector)?[sector]:[]),...SECTORS.filter(s=>s!==sector)];
+ return order.flatMap(group=>{const link=Object.hasOwn(links,group)?inviteLink(links[group]):null;return link?[{group,link,yours:group===sector}]:[];});
 }
 export function config(env) {
  if(env.KORA_CHECKOUT_ENABLED!=='true') return fail(503,'Online checkout is disabled');
@@ -103,10 +105,10 @@ export function createCheckoutService({rpc, sectorOf=async(_reference)=>null, pr
    const intent=await read(reference);
    const result=intent.status==='paid'?{reference,status:'paid'}:await verify(intent);
    if(result.status!=='paid')return result;
-   // A failed lookup must never hide a confirmed payment: the page then shows the "chair will add you" fallback.
+   // The lookup only decides which group leads, so a failed lookup still shows every group.
    let sector=null;try{sector=await sectorOf(reference);}catch{}
-   const found=sectorGroup(env,sector);
-   return found?{...result,group:found.group,group_link:found.link}:result;
+   const groups=sectorGroups(env,sector);
+   return groups.length?{...result,groups}:result;
   },
   async webhook(raw,signature){
    let body;try{body=JSON.parse(raw);}catch{return fail(400,'Invalid JSON');}
