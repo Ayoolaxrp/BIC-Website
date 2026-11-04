@@ -105,6 +105,10 @@ main:focus { outline: none; }
 .btn-full { width: 100%; }
 /* Long labels (e.g. the WhatsApp group button) wrap on phones instead of being clipped. */
 .btn-wrap { white-space: normal; text-align: center; }
+/* Thank-you page: the WhatsApp group buttons, spaced as one calm list. */
+.join-groups { display: grid; gap: 12px; justify-items: start; margin: 20px 0 8px; }
+.join-groups p { margin: 0 0 4px; }
+.join-groups h2 { font-size: 1.0625rem; letter-spacing: -0.01em; margin: 16px 0 0; }
 
 .btn-primary { background: var(--brand); color: var(--white); border-color: var(--brand); }
 .btn-primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); color: var(--white); }
