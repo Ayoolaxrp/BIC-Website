@@ -1,15 +1,14 @@
+import { checkoutRequest, koraCheckoutEnabled } from '../lib/checkout';
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
 import PageHero from '../components/PageHero';
 import Seo from '../components/Seo';
 import OfflineNotice from '../components/OfflineNotice';
-import usePaystack from '../hooks/usePaystack';
 import { submitRecord } from '../lib/store';
 import { SECTORS } from '../lib/sectors';
-import { PAYSTACK_PUBLIC_KEY, paystackConfigured, supabaseConfigured } from '../lib/config';
+import { supabaseConfigured } from '../lib/config';
 
-const MEMBERSHIP_FEE = 2500; // NGN, set by the club Oct 2026
 
 // Only what the club actually runs (calendar, posters, club structure).
 const benefits = [
@@ -48,7 +47,7 @@ const steps = [
   },
   {
     title: 'Pay the ₦2,500 fee',
-    text: 'Pay securely through Paystack, or in person while online payment is being set up.',
+    text: 'Pay through secure Kora checkout when available, or contact the membership team.',
   },
   {
     title: 'Get onboarded',
@@ -91,7 +90,7 @@ export default function Membership() {
   const [submitting, setSubmitting] = useState(false);
   const [formMsg, setFormMsg] = useState(null); // { type: 'success' | 'error', text }
   const [openFaq, setOpenFaq] = useState(null);
-  const { status: paystackStatus, pay } = usePaystack();
+  const [checkoutReference, setCheckoutReference] = useState(() => sessionStorage.getItem('bic-kora-reference') || '');
 
   const toggleInterest = (value) => {
     setSelectedInterests((prev) =>
@@ -114,7 +113,7 @@ export default function Membership() {
       return;
     }
 
-    // Snapshot the application so it can be stored after a successful payment
+    // Snapshot the application; checkout uses the saved server-side application.
     pendingRef.current = {
       full_name: data.get('full_name'),
       matric_number: data.get('matric_number'),
@@ -131,9 +130,29 @@ export default function Membership() {
 
     const finish = () => setSubmitting(false);
 
-    // When Paystack isn't configured yet, still accept the application so no
-    // lead is lost. The club follows up manually to collect the fee.
-    if (!paystackConfigured) {
+    if (koraCheckoutEnabled) {
+      if (checkoutReference) return;
+      setSubmitting(true);
+      try {
+        const result = await checkoutRequest('initialize', { application: pendingRef.current });
+        sessionStorage.setItem('bic-kora-reference', result.reference);
+        setCheckoutReference(result.reference);
+        const url = new URL(result.checkout_url);
+        if (url.protocol !== 'https:' || url.hostname !== 'checkout.korapay.com' || url.username || url.password || url.port) throw new Error('Invalid checkout destination.');
+        window.location.assign(url.href);
+      } catch (error) {
+        if (error.reference) {
+          sessionStorage.setItem('bic-kora-reference', error.reference);
+          setCheckoutReference(error.reference);
+        }
+        setFormMsg({ type: 'error', text: error.message + ' Do not pay again until any pending payment is checked.' });
+        finish();
+      }
+      return;
+    }
+
+    // Payment disabled: preserve the existing pending application workflow.
+    {
       setSubmitting(true);
       const res = await submitRecord('member_applications', {
         ...pendingRef.current,
@@ -143,7 +162,7 @@ export default function Membership() {
       if (res.ok) {
         setFormMsg({
           type: 'success',
-          text: 'Application received! Online payment is being set up, so the membership team will contact you at your Babcock email to complete your ₦2,500 registration.',
+          text: 'Application received! The membership team will contact you to complete your ₦2,500 registration.',
         });
         formRef.current.reset();
         setSelectedInterests([]);
@@ -154,55 +173,7 @@ export default function Membership() {
       return;
     }
 
-    const checkout = () => {
-      const opened = pay({
-        key: PAYSTACK_PUBLIC_KEY,
-        email,
-        amount: MEMBERSHIP_FEE,
-        // Lets the paystack-webhook verify this is a membership payment server-side
-        metadata: {
-          payment_type: 'membership',
-          full_name: pendingRef.current?.full_name ?? '',
-        },
-        onSuccess: (response) => {
-          finish();
-          // Persist the application (Supabase, or local queue as fallback)
-          submitRecord('member_applications', {
-            ...pendingRef.current,
-            paystack_ref: response.reference,
-          });
-          setFormMsg({
-            type: 'success',
-            text: `Payment complete! Reference: ${response.reference}. Your registration has been received.`,
-          });
-          formRef.current.reset();
-          setSelectedInterests([]);
-          pendingRef.current = null;
-        },
-        onClose: () => {
-          finish();
-          setFormMsg({ type: 'error', text: 'Transaction window closed. You can retry whenever you are ready.' });
-        },
-      });
-      if (!opened) {
-        finish();
-        setFormMsg({ type: 'error', text: 'Payment gateway is still loading. Please wait a moment and try again.' });
-      }
-    };
 
-    setSubmitting(true);
-    if (paystackStatus === 'ready') {
-      checkout();
-    } else {
-      // Wait briefly for the dynamically-loaded Paystack script
-      setTimeout(() => {
-        if (window.PaystackPop) checkout();
-        else {
-          finish();
-          setFormMsg({ type: 'error', text: 'Payment gateway could not be loaded. Check your connection and try again.' });
-        }
-      }, 800);
-    }
   };
 
   return (
@@ -363,33 +334,21 @@ export default function Membership() {
                     type="submit"
                     className="btn btn-primary"
                     style={{ width: '100%', padding: 16, fontSize: '1.05rem', justifyContent: 'center' }}
-                    disabled={submitting}
+                    disabled={submitting || (koraCheckoutEnabled && Boolean(checkoutReference))}
                   >
-                    {submitting
-                      ? paystackConfigured
-                        ? 'Preparing payment...'
-                        : 'Submitting application...'
-                      : paystackConfigured
-                        ? 'Proceed to Payment (₦2,500)'
-                        : 'Submit Application'}
+                    {submitting ? 'Preparing…' : koraCheckoutEnabled ? 'Proceed to secure payment (₦2,500)' : 'Submit Application'}
                   </button>
-                  {!paystackConfigured && (
+                  {(
                     <p className="form-note" style={{ marginTop: 10 }}>
-                      Online payment is being set up. Submit your application now and the
-                      membership team will contact you to complete your ₦2,500 registration.{' '}
-                      <Link to="/contact">Questions? Contact us.</Link>
+                      Online payment is available only when configured. Otherwise, submit your application and the team will follow up.{' '}
+                      <Link to="/member">Open member portal</Link>. <Link to="/contact">Questions? Contact us.</Link>
                     </p>
                   )}
                 </div>
 
+                {checkoutReference && <p role="status">A checkout has already been prepared. <Link to={"/checkout/return?reference=" + encodeURIComponent(checkoutReference)}>Check payment status</Link> before paying again.</p>}
                 {formMsg && (
                   <div className={`form-status visible ${formMsg.type}`}>{formMsg.text}</div>
-                )}
-
-                {paystackConfigured && (
-                  <div className="paystack-badge">
-                    Secured by <span style={{ color: '#011B33', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.5px' }}>paystack</span>
-                  </div>
                 )}
                 <p className="form-note">
                   Fees fund club activities and resources. BIC content is educational only and is not financial advice.
