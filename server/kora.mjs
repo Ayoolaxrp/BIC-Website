@@ -22,13 +22,13 @@ export function checkoutUrl(value, secret = '') {
  return fail(502,'Invalid provider checkout URL');
 }
 // Invite links live in the server-only BIC_SECTOR_LINKS env var, never in the public repo or JS bundle,
-// so only a verified payment can reveal one. JSON: {"Crypto":"https://chat.whatsapp.com/...","Aspiring":"..."}.
-// A sector with no group of its own falls back to the "Aspiring" catch-all group; an unknown sector (failed lookup) gets nothing.
+// so only a verified payment can reveal one. JSON: {"Crypto":"https://chat.whatsapp.com/...","Members":"..."}.
+// A sector with no group of its own falls back to the "Members" catch-all group (the main registered-members chat, never the big unpaid aspiring chat); an unknown sector (failed lookup) gets nothing.
 const inviteLink=v=>{try{const u=new URL(v);return u.protocol==='https:'&&u.hostname==='chat.whatsapp.com'&&!u.port&&!u.username&&!u.password?u.href:null;}catch{return null;}};
 export function sectorGroup(env, sector) {
  let links;try{links=JSON.parse(env.BIC_SECTOR_LINKS||'{}');}catch{return null;}
  if(!links||typeof links!=='object'||typeof sector!=='string')return null;
- for(const group of [sector,'Aspiring']){const link=Object.hasOwn(links,group)?inviteLink(links[group]):null;if(link)return {group,link};}
+ for(const group of [sector,'Members']){const link=Object.hasOwn(links,group)?inviteLink(links[group]):null;if(link)return {group,link};}
  return null;
 }
 export function config(env) {

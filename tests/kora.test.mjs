@@ -105,7 +105,7 @@ test('null optional actual amounts are absent evidence; no valid actual field re
 });
 const links={Crypto:'https://chat.whatsapp.com/CRYPTO1',Securities:'https://chat.whatsapp.com/SECURITIES1',Forex:'https://chat.whatsapp.com/FOREX1','Real Estate':'https://chat.whatsapp.com/REALESTATE1'};
 const linkEnv={...env,BIC_SECTOR_LINKS:JSON.stringify(links)};
-const aspiringEnv={...env,BIC_SECTOR_LINKS:JSON.stringify({...links,Aspiring:'https://chat.whatsapp.com/ASPIRING1'})};
+const membersEnv={...env,BIC_SECTOR_LINKS:JSON.stringify({...links,Members:'https://chat.whatsapp.com/MEMBERS1'})};
 test('paid status returns the member\u2019s own sector group, read from the database by reference',async()=>{
  for(const [sector,link] of Object.entries(links)){
   const asked=[];const f=fixture({environment:linkEnv,sectorOf:async r=>{asked.push(r);return sector;}});
@@ -115,24 +115,24 @@ test('paid status returns the member\u2019s own sector group, read from the data
   assert.deepEqual(asked,[reference,reference]);assert.equal(f.confirmations,1);
  }
 });
-test('a sector with no group of its own joins the Aspiring group once that link exists, otherwise gets no link',async()=>{
- const withAspiring=fixture({environment:aspiringEnv,sectorOf:async()=>'General'});
- assert.deepEqual(await withAspiring.service.status(reference),{reference,status:'paid',group:'Aspiring',group_link:'https://chat.whatsapp.com/ASPIRING1'});
+test('a sector with no group of its own joins the main Members group once that link exists, otherwise gets no link',async()=>{
+ const withMembers=fixture({environment:membersEnv,sectorOf:async()=>'General'});
+ assert.deepEqual(await withMembers.service.status(reference),{reference,status:'paid',group:'Members',group_link:'https://chat.whatsapp.com/MEMBERS1'});
  const without=fixture({environment:linkEnv,sectorOf:async()=>'General'});
  assert.deepEqual(await without.service.status(reference),{reference,status:'paid'});
- const own=fixture({environment:aspiringEnv,sectorOf:async()=>'Crypto'});
+ const own=fixture({environment:membersEnv,sectorOf:async()=>'Crypto'});
  assert.equal((await own.service.status(reference)).group,'Crypto');
 });
 test('no link before payment is verified, when no links are configured, or when the sector is unknown',async()=>{
  let asked=0;const sectorOf=async()=>{asked++;return 'Crypto';};
- const pending=fixture({environment:aspiringEnv,sectorOf,charge:{status:'pending'}});
+ const pending=fixture({environment:membersEnv,sectorOf,charge:{status:'pending'}});
  assert.deepEqual(await pending.service.status(reference),{reference,status:'pending'});
  assert.equal(asked,0);
  assert.deepEqual(await fixture({sectorOf}).service.status(reference),{reference,status:'paid'});
- for(const sector of [null,undefined,7])assert.deepEqual(await fixture({environment:aspiringEnv,sectorOf:async()=>sector}).service.status(reference),{reference,status:'paid'});
+ for(const sector of [null,undefined,7])assert.deepEqual(await fixture({environment:membersEnv,sectorOf:async()=>sector}).service.status(reference),{reference,status:'paid'});
 });
-test('a failed sector lookup never hides a confirmed payment or sends a Crypto member to the Aspiring group',async()=>{
- const f=fixture({environment:aspiringEnv,sectorOf:async()=>{throw new Error('sensitive storage detail');}});
+test('a failed sector lookup never hides a confirmed payment or sends a Crypto member to the Members group',async()=>{
+ const f=fixture({environment:membersEnv,sectorOf:async()=>{throw new Error('sensitive storage detail');}});
  assert.deepEqual(await f.service.status(reference),{reference,status:'paid'});
  assert.equal(f.confirmations,1);
 });
