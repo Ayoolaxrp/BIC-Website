@@ -90,4 +90,4 @@ Changing a link: edit `BIC_SECTOR_LINKS` in Vercel (Production) and redeploy. Th
 
 The Babcock-only rule is gone. `src/lib/email.js` is the one rule used by the application form, the portal sign-up and the server: any well-formed address is fine (Gmail, school, student.babcock.edu.ng), and only broken shapes and typos of big providers (gmail.comn, gmial.com, yahoo.cm) are refused, with a "Did you mean ...?" hint. The database keeps only a loose shape check. Real students use @student.babcock.edu.ng, which the old rule also refused.
 
-Live database: `create_kora_intent` in the live project still has the old rule until `20261104001000_allow_any_valid_email.sql` is applied (it replaces that one function; safe to run twice). With the checkout switched off, the form saves applications straight to `member_applications`, which already accepts any email shape.
+Live database: `create_kora_intent` was updated on 2026-11-04 (migrations 0900 and 20261104001000 applied together; both carry the same rule and are safe to run twice).
