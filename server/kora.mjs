@@ -62,7 +62,13 @@ export function createCheckoutService({rpc, providerFetch=fetch, env=process.env
   const charge=await provider(encodeURIComponent(intent.reference));
   if(charge.reference!==intent.reference||charge.currency!==intent.currency||amountToKobo(charge.amount)!==Number(intent.amount_kobo))fail(409,'Payment details do not match the checkout');
   if(charge.status!=='success')return {reference:intent.reference,status:'pending'};
-  if(charge.amount_paid!==undefined&&amountToKobo(charge.amount_paid)!==Number(intent.amount_kobo))fail(409,'Settled amount does not match the checkout');
+  // Nominal amount alone is not proof of received value: bank-transfer
+  // underpayment preferences can produce success with a smaller accepted amount.
+  const actualFields=['amount_paid','amount_accepted'].filter(key=>charge[key]!==undefined);
+  if(actualFields.length===0)fail(409,'Actual payment amount is missing; manual verification required');
+  for(const key of actualFields){
+   if(amountToKobo(charge[key])!==Number(intent.amount_kobo))fail(409,'Actual payment amount does not match the checkout; manual verification required');
+  }
   await call('finalize_kora_payment',{p_reference:intent.reference,p_amount_kobo:250000,p_currency:'NGN'});
   return {reference:intent.reference,status:'paid'};
  };
@@ -74,7 +80,7 @@ export function createCheckoutService({rpc, providerFetch=fetch, env=process.env
    await call('create_kora_intent',{p_reference:reference,p_application:application});
    try{
     const intent=await read(reference);
-    const charge=await provider('initialize',{amount:2500,currency:intent.currency,reference,customer:{email:intent.email,name:application.full_name},merchant_bears_cost:true,redirect_url:cfg.origin+'/checkout/return',notification_url:cfg.origin+'/api/kora/webhook'});
+    const charge=await provider('initialize',{amount:2500,currency:intent.currency,narration:'BIC membership',reference,customer:{email:intent.email,name:application.full_name},merchant_bears_cost:true,redirect_url:cfg.origin+'/checkout/return',notification_url:cfg.origin+'/api/kora/webhook'});
     if(charge.reference!==reference)fail(502,'Provider reference mismatch');
     return {reference,checkout_url:checkoutUrl(charge.checkout_url)};
    }catch(error){if(error instanceof CheckoutError)error.reference=reference;throw error;}
