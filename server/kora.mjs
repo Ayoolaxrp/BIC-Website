@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
+import { emailProblem } from '../src/lib/email.js';
 export class CheckoutError extends Error {
  constructor(status, message, reference = undefined) { super(message); this.status = status; this.reference=reference; }
 }
@@ -20,6 +21,16 @@ export function checkoutUrl(value, secret = '') {
  try { const u=new URL(value); if(u.protocol==='https:'&&u.hostname===allowedHost&&!u.port&&!u.username&&!u.password) return u.href; } catch {}
  return fail(502,'Invalid provider checkout URL');
 }
+// Invite links live in the server-only BIC_SECTOR_LINKS env var, never in the public repo or JS bundle,
+// so only a verified payment can reveal one. JSON: {"Crypto":"https://chat.whatsapp.com/...","Aspiring":"..."}.
+// A sector with no group of its own falls back to the "Aspiring" catch-all group; an unknown sector (failed lookup) gets nothing.
+const inviteLink=v=>{try{const u=new URL(v);return u.protocol==='https:'&&u.hostname==='chat.whatsapp.com'&&!u.port&&!u.username&&!u.password?u.href:null;}catch{return null;}};
+export function sectorGroup(env, sector) {
+ let links;try{links=JSON.parse(env.BIC_SECTOR_LINKS||'{}');}catch{return null;}
+ if(!links||typeof links!=='object'||typeof sector!=='string')return null;
+ for(const group of [sector,'Aspiring']){const link=Object.hasOwn(links,group)?inviteLink(links[group]):null;if(link)return {group,link};}
+ return null;
+}
 export function config(env) {
  if(env.KORA_CHECKOUT_ENABLED!=='true') return fail(503,'Online checkout is disabled');
  for(const key of ['KORAPAY_SECRET_KEY','SUPABASE_SECRET_KEY','VITE_SITE_URL']) if(!env[key]) return fail(503,'Checkout is not configured');
@@ -37,13 +48,13 @@ export function applicationInput(input) {
   application[key]=input[key].trim();
  }
  application.email=application.email.toLowerCase();
- if(!/^[^\s@]+@babcock\.edu\.ng$/.test(application.email))fail(400,'Use your Babcock email address');
+ const emailIssue=emailProblem(application.email);if(emailIssue)fail(400,emailIssue);
  if(!['100','200','300','400','500'].includes(application.level)||!['Beginner','Intermediate','Expert'].includes(application.knowledge_level)||!['Ilishan','Iperu'].includes(application.campus))fail(400,'Invalid application selection');
  if(!['Crypto','Forex','Securities','Real Estate','General'].includes(application.sector)||!['PR/Media','Welfare','Finance & Fundraising','Events & Logistics','Membership','Educational Research','Training & Partnership'].includes(application.committee))fail(400,'Invalid sector or committee');
  if(!Array.isArray(input.interests)||input.interests.length>20||input.interests.some(v=>typeof v!=='string'||v.length>120))fail(400,'Invalid interests');
  application.interests=input.interests;return application;
 }
-export function createCheckoutService({rpc, providerFetch=fetch, env=process.env, uuid=randomUUID}) {
+export function createCheckoutService({rpc, sectorOf=async(_reference)=>null, providerFetch=fetch, env=process.env, uuid=randomUUID}) {
  const cfg=config(env);
  const call=async(name,args)=>{try{return await rpc(name,args);}catch{fail(503,'Payment storage unavailable; do not pay again until the reference is checked');}};
  const provider=async(path,body=undefined)=>{
@@ -88,7 +99,15 @@ export function createCheckoutService({rpc, providerFetch=fetch, env=process.env
     return {reference,checkout_url:checkoutUrl(charge.checkout_url,cfg.secret)};
    }catch(error){if(error instanceof CheckoutError)error.reference=reference;throw error;}
   },
-  async status(reference){const intent=await read(reference);return intent.status==='paid'?{reference,status:'paid'}:verify(intent);},
+  async status(reference){
+   const intent=await read(reference);
+   const result=intent.status==='paid'?{reference,status:'paid'}:await verify(intent);
+   if(result.status!=='paid')return result;
+   // A failed lookup must never hide a confirmed payment: the page then shows the "chair will add you" fallback.
+   let sector=null;try{sector=await sectorOf(reference);}catch{}
+   const found=sectorGroup(env,sector);
+   return found?{...result,group:found.group,group_link:found.link}:result;
+  },
   async webhook(raw,signature){
    let body;try{body=JSON.parse(raw);}catch{return fail(400,'Invalid JSON');}
    if(!body?.data||typeof body.data!=='object'||Array.isArray(body.data)||!validSignature(body.data,signature,cfg.secret))fail(401,'Invalid signature');

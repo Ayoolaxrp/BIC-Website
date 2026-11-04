@@ -1,7 +1,20 @@
 import { CheckoutError, config, createCheckoutService } from './kora.mjs';
-export function supabaseRpc(env, request=fetch){
+function storageUrl(env){
  const url=new URL(env.SUPABASE_URL || env.VITE_SUPABASE_URL);
  if(url.protocol!=='https:'||url.pathname!=='/'||url.search||url.hash||url.username||url.password)throw new CheckoutError(503,'Invalid payment storage configuration');
+ return url;
+}
+// Read-only: the sector the member chose, found by the checkout reference the server saved on their application.
+export function supabaseSector(env, request=fetch){
+ const url=storageUrl(env);
+ return async reference=>{
+  const response=await request(url.origin+'/rest/v1/member_applications?select=sector&limit=1&paystack_ref=eq.'+encodeURIComponent(reference),{headers:{apikey:env.SUPABASE_SECRET_KEY},signal:AbortSignal.timeout(10000)});
+  if(!response.ok)throw new Error('Storage request failed');
+  return (await response.json())[0]?.sector??null;
+ };
+}
+export function supabaseRpc(env, request=fetch){
+ const url=storageUrl(env);
  return async(name,args)=>{
   if(!['create_kora_intent','get_kora_intent','finalize_kora_payment'].includes(name))throw new Error('Invalid RPC');
   // Modern sb_secret_ keys authenticate with apikey only, never Bearer.
@@ -21,7 +34,7 @@ export function handler(action,{env=process.env,makeService=undefined}={}){
    if(action!=='webhook'&&req.headers.origin!==cfg.origin)throw new CheckoutError(403,'Invalid request origin');
    if(!/^application\/json(?:;|$)/i.test(req.headers['content-type']||''))throw new CheckoutError(415,'JSON required');
    const raw=await readRaw(req);
-   const service=makeService?makeService():createCheckoutService({env,rpc:supabaseRpc(env)});
+   const service=makeService?makeService():createCheckoutService({env,rpc:supabaseRpc(env),sectorOf:supabaseSector(env)});
    let result;
    if(action==='webhook')result=await service.webhook(raw,req.headers['x-korapay-signature']);
    else{let input;try{input=JSON.parse(raw);}catch{throw new CheckoutError(400,'Invalid JSON');}result=action==='initialize'?await service.initialize(input):await service.status(input?.reference);}

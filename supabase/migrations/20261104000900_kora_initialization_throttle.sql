@@ -2,6 +2,7 @@
 -- Apply this file only after verifying create_kora_intent(text,jsonb) and
 -- kora_checkout_intents match the recovered contract. Do not replay old migrations.
 -- No existing application, intent or payment rows are updated/deleted.
+-- Any well-formed email may apply (typo screening happens in the server); 20261104001000 carries the same rule.
 -- CREATE OR REPLACE retains the existing function owner and service-only ACL.
 create index if not exists kora_checkout_intents_created_at_idx
   on public.kora_checkout_intents (created_at);
@@ -16,7 +17,8 @@ declare
   checked_at timestamptz;
 begin
   if p_reference is null or p_reference !~ '^BIC-KORA-[0-9a-f-]{36}$'
-     or normalized_email is null or normalized_email !~ '^[^[:space:]@]+@babcock\.edu\.ng$' then
+     or normalized_email is null or char_length(normalized_email) > 320
+     or normalized_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
     raise exception 'Invalid checkout intent';
   end if;
   -- Serialize ALL initializations, not merely the same email. Transaction-scoped

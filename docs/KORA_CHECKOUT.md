@@ -12,7 +12,7 @@ KORA_CHECKOUT_ENABLED=true enables server endpoints. VITE_KORA_CHECKOUT_ENABLED=
 
 ## Endpoints and flow
 
-- POST /api/kora/initialize accepts only {application:{full_name,matric_number,phone_number,department,level,email,knowledge_level,interests,sector,campus,committee}}. This is the public membership form, NOT an authenticated account flow. Fields are bounded, choices validated, and email must be @babcock.edu.ng to match the recovered SQL. Browser-supplied price, reference or paid status is rejected.
+- POST /api/kora/initialize accepts only {application:{full_name,matric_number,phone_number,department,level,email,knowledge_level,interests,sector,campus,committee}}. This is the public membership form, NOT an authenticated account flow. Fields are bounded, choices validated, and email must be well formed (any provider, see `src/lib/email.js`; typos such as gmail.comn are refused). The recovered SQL only allowed @babcock.edu.ng, so apply migration 20261104001000 (or 0900, which now carries the same rule) before turning checkout on. Browser-supplied price, reference or paid status is rejected.
 - The server generates BIC-KORA- plus crypto.randomUUID(), then calls create_kora_intent(p_reference,p_application). That RPC atomically saves the pending application and private intent. get_kora_intent(p_reference) must return the same reference, fixed 250000 kobo and NGN before initialization.
 - The server sends Kora POST /merchant/api/v1/charges/initialize with narration BIC membership, amount 2500, currency NGN, merchant_bears_cost=true, a server reference, notification_url at /api/kora/webhook and redirect_url at /checkout/return. A credential-free HTTPS checkout.korapay.com URL is accepted for live keys. With a server KORAPAY_SECRET_KEY beginning sk_test_, only test-checkout.korapay.com is accepted instead. The browser remains live-host-only; server sandbox initialization does not enable a public sandbox redirect.
 - POST /api/kora/status accepts {reference}. It returns only reference and pending/paid, never email or application data. The unpredictable UUID reference is the public lookup capability. It does not assert verified ownership of the email; public form submission was explicitly required.
@@ -73,3 +73,21 @@ Nullable provider evidence regression: the parent reported a visually verified T
 ## Temporary receiver configuration
 
 The owner requested temporarily moving the merchant notification endpoint from Elion to BIC. Enable the Production server receiver with KORA_CHECKOUT_ENABLED=true and redeploy before changing the merchant webhook to https://www.babcockinvestorsclub.com/api/kora/webhook. Verify unsigned requests are rejected. The frontend collection flag remains false; receiver readiness does not prove a real payment or bank verification. Do not remove unrelated Elion settings.
+
+
+## Group invite after payment
+
+After a verified payment, POST /api/kora/status adds `group` and `group_link` to its answer, and /checkout/return shows a "Join the ... group on WhatsApp" button. Nothing is added while a payment is pending, and the webhook never returns a link.
+
+The server reads the sector the member chose from `member_applications` (by `paystack_ref`, read-only, service key in the apikey header) and looks it up in the server-only env var `BIC_SECTOR_LINKS` (JSON, see `.env.example`). The repo is public, so the links are not in the code or the JS bundle; only a paid reference can reveal one. Only `https://chat.whatsapp.com/...` links are accepted.
+
+A sector with no group of its own (today: General) gets the `Aspiring` link when that key is set, and no link until then. If the sector lookup fails, the member gets no link, never the Aspiring one, and the page says the sector chair will add them. The reference in the return URL is the key to the link, so a member can reopen the page later.
+
+Changing a link: edit `BIC_SECTOR_LINKS` in Vercel (Production) and redeploy. The member portal (`GROUP_LINKS` in `src/lib/sectors.js`) still shows its placeholders and is unchanged.
+
+
+## Any email can apply
+
+The Babcock-only rule is gone. `src/lib/email.js` is the one rule used by the application form, the portal sign-up and the server: any well-formed address is fine (Gmail, school, student.babcock.edu.ng), and only broken shapes and typos of big providers (gmail.comn, gmial.com, yahoo.cm) are refused, with a "Did you mean ...?" hint. The database keeps only a loose shape check. Real students use @student.babcock.edu.ng, which the old rule also refused.
+
+Live database: `create_kora_intent` in the live project still has the old rule until `20261104001000_allow_any_valid_email.sql` is applied (it replaces that one function; safe to run twice). With the checkout switched off, the form saves applications straight to `member_applications`, which already accepts any email shape.

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 const migration=fs.readFileSync('supabase/migrations/20261104000900_kora_initialization_throttle.sql','utf8');
+const anyEmail=fs.readFileSync('supabase/migrations/20261104001000_allow_any_valid_email.sql','utf8');
 async function fixture(){
  const db=new PGlite();
  await db.exec(`
@@ -14,7 +15,7 @@ async function fixture(){
  `);
  await db.exec(fs.readFileSync('tests/fixtures/applied-kora-contract.sql','utf8'));
  const create=async(email='member@babcock.edu.ng')=>{const reference='BIC-KORA-'+randomUUID();await db.query('select public.create_kora_intent($1,$2)',[reference,JSON.stringify({full_name:'Local Test',email,interests:[]})]);return reference;};
- return {db,create,apply:()=>db.exec(migration),count:async(table)=>(await db.query('select count(*)::int n from public.'+table)).rows[0].n};
+ return {db,create,apply:()=>db.exec(migration),applyAnyEmail:()=>db.exec(anyEmail),count:async(table)=>(await db.query('select count(*)::int n from public.'+table)).rows[0].n};
 }
 test('additive migration preserves existing pending/paid rows, functions, and service-only ACL on repeat',async()=>{
  const f=await fixture();try{
@@ -43,5 +44,22 @@ test('parallel queued calls cannot exceed limit; lock precedes counts; stale sna
  // PGlite serializes queries: queued calls are NOT independent PG sessions.
  assert.ok(migration.indexOf('perform pg_advisory_xact_lock')<migration.indexOf('if (select count(*)'));
  await f.db.exec('begin isolation level repeatable read');await assert.rejects(f.create('other@babcock.edu.ng'),/read committed isolation/);await f.db.exec('rollback');
+ }finally{await f.db.close();}
+});
+test('any well-formed email can start a checkout, malformed ones cannot, and the limits and service-only access still hold',async()=>{
+ const f=await fixture();try{
+  // The recovered live function only accepts @babcock.edu.ng; the new migration opens it up. Run twice (idempotent).
+  await assert.rejects(f.create('student@gmail.com'),/Invalid checkout intent/);
+  await f.applyAnyEmail();await f.applyAnyEmail();
+  for(const email of ['student@gmail.com','awodeyia4449@student.babcock.edu.ng','Ola.Name+club@Yahoo.co.uk','member@babcock.edu.ng'])await f.create(email);
+  assert.equal(await f.count('member_applications'),4);assert.equal(await f.count('kora_checkout_intents'),4);
+  for(const email of ['not-an-email','a b@gmail.com','@gmail.com','a@gmail','a@@gmail.com',''])await assert.rejects(f.create(email),/Invalid checkout intent/,email);
+  assert.equal(await f.count('member_applications'),4);
+  // 0900 carries the same rule, so applying it after (or instead) cannot bring the Babcock-only rule back.
+  await f.apply();await f.create('after-0900@gmail.com');assert.equal(await f.count('kora_checkout_intents'),5);
+  // The per-email limit still counts a normalized non-Babcock address.
+  await f.create(' Repeat@Gmail.com ');await f.create('repeat@gmail.com');await f.create('REPEAT@GMAIL.COM');
+  await assert.rejects(f.create('repeat@gmail.com'),/email limit/);
+  for(const role of ['anon','authenticated','service_role']){const permission=(await f.db.query("select has_function_privilege($1,'public.create_kora_intent(text,jsonb)','execute') p",[role])).rows[0].p;assert.equal(permission,role==='service_role');}
  }finally{await f.db.close();}
 });

@@ -87,18 +87,16 @@ browser. Add keys to unlock the full experience.
 
 ### Linking accounts to student emails (important)
 
-Membership is tied to a **Babcock student email** (`@babcock.edu.ng`):
+Membership is open to any well-formed email, including Gmail and the real
+student addresses (`name1234@student.babcock.edu.ng`). Typos such as `gmail.comn`
+are caught by `src/lib/email.js`, used by the application form, the `/member`
+sign-up and the checkout server.
 
-1. **Client-side** (already done): the `/member` signup form only accepts
-   `name.lastname@babcock.edu.ng`, and the Membership application requires the same.
-2. **Server-side** (do this in Supabase for real enforcement):
-   **Authentication → Providers → Email → Advanced settings** → set
-   **"Allow signups from specific email domains"** to `babcock.edu.ng`.
-   This stops anyone from registering with a non-Babcock email, even if they
-   bypass the UI.
-3. Optionally enable **"Confirm email"** — Supabase then emails a confirmation
-   link, proving the applicant owns that inbox. For a university club this is the
-   strongest practical verification without Babcock IT integration.
+1. **Do not** restrict Supabase sign-ups to one email domain
+   (Authentication settings, any "allowed email domains" or before-user-created
+   hook). It would block everyone who uses a personal email.
+2. Optionally enable **"Confirm email"**: Supabase then emails a confirmation
+   link, proving the applicant owns that inbox.
 
 > True "is this student enrolled?" verification would require Babcock IT (an API
 > or LDAP hook) — out of scope for a club site. Email-domain restriction +

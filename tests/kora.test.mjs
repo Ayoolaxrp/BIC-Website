@@ -2,24 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {Readable} from 'node:stream';
-import {createCheckoutService,amountToKobo,validSignature,checkoutUrl,config,applicationInput} from '../server/kora.mjs';
-import {handler,supabaseRpc} from '../server/http.mjs';
+import {createCheckoutService,amountToKobo,validSignature,checkoutUrl,config,applicationInput,sectorGroup} from '../server/kora.mjs';
+import {handler,supabaseRpc,supabaseSector} from '../server/http.mjs';
+import {emailProblem} from '../src/lib/email.js';
 const env={KORA_CHECKOUT_ENABLED:'true',KORAPAY_SECRET_KEY:'mock-kora-secret',SUPABASE_SECRET_KEY:'sb_secret_mock',VITE_SUPABASE_URL:'https://mock.supabase.co',VITE_SITE_URL:'https://bic.example'};
 const uuid='11111111-1111-4111-8111-111111111111';const reference='BIC-KORA-'+uuid;
 const application={full_name:'Mock Member',email:'member@babcock.edu.ng',matric_number:'22/1234',phone_number:'mock-phone',department:'Finance',level:'200',knowledge_level:'Beginner',interests:[],sector:'Securities',campus:'Ilishan',committee:'Finance & Fundraising'};
 const sign=data=>createHmac('sha256',env.KORAPAY_SECRET_KEY).update(JSON.stringify(data)).digest('hex');
 const payload=(changes={})=>({event:'charge.success',data:{reference,amount:2500,currency:'NGN',status:'success',...changes}});
-function fixture({charge={},intent={},dbError=false,fetchError=false,providerStatus=true,environment=env}={}){
+function fixture({charge={},intent={},dbError=false,fetchError=false,providerStatus=true,environment=env,sectorOf}={}){
  const calls=[];let confirmations=0;const row={reference,email:application.email,amount_kobo:250000,currency:'NGN',status:'pending',...intent};
  const rpc=async(name,args)=>{calls.push({name,args});if(dbError)throw new Error('sensitive storage detail');if(name==='get_kora_intent')return row;if(name==='finalize_kora_payment'){if(row.status!=='paid')confirmations++;row.status='paid';}return null;};
  const providerFetch=async(url,options)=>{calls.push({url,options});if(fetchError)throw new Error('mock timeout');return {ok:true,json:async()=>({status:providerStatus,data:url.endsWith('initialize')?{reference,checkout_url:'https://checkout.korapay.com/test/pay',...charge}:{reference,amount:'2500.00',amount_paid:'2500.00',currency:'NGN',status:'success',...charge}})};};
- return {service:createCheckoutService({rpc,env:environment,providerFetch,uuid:()=>uuid}),calls,row,get confirmations(){return confirmations;}};
+ return {service:createCheckoutService({rpc,env:environment,providerFetch,sectorOf,uuid:()=>uuid}),calls,row,get confirmations(){return confirmations;}};
 }
 test('disabled by default and incomplete configuration fails closed',()=>{assert.throws(()=>config({}),/disabled/);assert.throws(()=>config({KORA_CHECKOUT_ENABLED:'true'}),/configured/);assert.throws(()=>config({...env,VITE_SITE_URL:'http://bic.example'}),/origin/);});
 test('strict decimal conversion rejects invalid or ambiguous provider amounts',()=>{assert.equal(amountToKobo('2500.00'),250000);assert.equal(amountToKobo('10.5'),1050);for(const v of ['2e3',0,-1,'1.001','NaN',null,'01'])assert.throws(()=>amountToKobo(v));});
 test('data-only HMAC constant-time length handling and full-body rejection',()=>{const p=payload();assert.equal(validSignature(p.data,sign(p.data),env.KORAPAY_SECRET_KEY),true);assert.equal(validSignature(p.data,'a',env.KORAPAY_SECRET_KEY),false);assert.equal(validSignature(p.data,sign(p),env.KORAPAY_SECRET_KEY),false);assert.equal(validSignature({...p.data,amount:1},sign(p.data),env.KORAPAY_SECRET_KEY),false);});
 test('checkout URL accepts only credential-free HTTPS Kora host',()=>{for(const v of ['http://checkout.korapay.com/a','https://evil.example','https://checkout.korapay.com.evil/a','https://a@checkout.korapay.com/a','https://checkout.korapay.com:444/a'])assert.throws(()=>checkoutUrl(v));});
-test('public application validates email, bounds, choices and denies browser payment claims',()=>{assert.equal(applicationInput(application).email,application.email);for(const v of [{...application,email:'other@example.com'},{...application,payment_status:'paid'},{...application,full_name:'x'.repeat(201)},{...application,level:'999'},{...application,interests:'bad'},null])assert.throws(()=>applicationInput(v));});
+test('public application validates email, bounds, choices and denies browser payment claims',()=>{assert.equal(applicationInput(application).email,application.email);for(const v of [{...application,payment_status:'paid'},{...application,full_name:'x'.repeat(201)},{...application,level:'999'},{...application,interests:'bad'},null])assert.throws(()=>applicationInput(v));});
 test('server creates intent before Kora using fixed NGN 2500 regardless of browser',async()=>{const f=fixture();const result=await f.service.initialize({application});assert.equal(result.reference,reference);assert.equal(f.calls[0].name,'create_kora_intent');const c=f.calls.find(c=>c.url);const b=JSON.parse(c.options.body);assert.equal(b.amount,2500);assert.equal(b.narration,'BIC membership');assert.equal(b.currency,'NGN');assert.equal(b.customer.email,application.email);assert.equal(b.reference,reference);assert.equal(b.notification_url,env.VITE_SITE_URL+'/api/kora/webhook');assert.equal(b.redirect_url,env.VITE_SITE_URL+'/checkout/return');assert.equal(b.merchant_bears_cost,true);assert.equal(f.confirmations,0);});
 test('extra browser amount/reference rejected before intent creation',async()=>{for(const input of [{application,amount:1},{application,reference:'client-ref'},{application:{...application,amount:1}},{kind:'event',target:'id'},null]){const f=fixture();await assert.rejects(f.service.initialize(input));assert.equal(f.calls.length,0);}});
 test('failure after intent creation returns recovery reference without granting value',async()=>{const f=fixture({fetchError:true});await assert.rejects(f.service.initialize({application}),e=>e.reference===reference&&!e.message.includes('mock timeout'));assert.equal(f.confirmations,0);});
@@ -101,4 +102,72 @@ test('null optional actual amounts are absent evidence; no valid actual field re
  for(const charge of [{amount_paid:'2499.00',amount_accepted:null},{amount_paid:null,amount_accepted:'2501.00'},{amount_paid:'invalid',amount_accepted:null}]){
   const f=fixture({charge});await assert.rejects(f.service.status(reference));assert.equal(f.confirmations,0);
  }
+});
+const links={Crypto:'https://chat.whatsapp.com/CRYPTO1',Securities:'https://chat.whatsapp.com/SECURITIES1',Forex:'https://chat.whatsapp.com/FOREX1','Real Estate':'https://chat.whatsapp.com/REALESTATE1'};
+const linkEnv={...env,BIC_SECTOR_LINKS:JSON.stringify(links)};
+const aspiringEnv={...env,BIC_SECTOR_LINKS:JSON.stringify({...links,Aspiring:'https://chat.whatsapp.com/ASPIRING1'})};
+test('paid status returns the member\u2019s own sector group, read from the database by reference',async()=>{
+ for(const [sector,link] of Object.entries(links)){
+  const asked=[];const f=fixture({environment:linkEnv,sectorOf:async r=>{asked.push(r);return sector;}});
+  const expected={reference,status:'paid',group:sector,group_link:link};
+  assert.deepEqual(await f.service.status(reference),expected);
+  assert.deepEqual(await f.service.status(reference),expected);
+  assert.deepEqual(asked,[reference,reference]);assert.equal(f.confirmations,1);
+ }
+});
+test('a sector with no group of its own joins the Aspiring group once that link exists, otherwise gets no link',async()=>{
+ const withAspiring=fixture({environment:aspiringEnv,sectorOf:async()=>'General'});
+ assert.deepEqual(await withAspiring.service.status(reference),{reference,status:'paid',group:'Aspiring',group_link:'https://chat.whatsapp.com/ASPIRING1'});
+ const without=fixture({environment:linkEnv,sectorOf:async()=>'General'});
+ assert.deepEqual(await without.service.status(reference),{reference,status:'paid'});
+ const own=fixture({environment:aspiringEnv,sectorOf:async()=>'Crypto'});
+ assert.equal((await own.service.status(reference)).group,'Crypto');
+});
+test('no link before payment is verified, when no links are configured, or when the sector is unknown',async()=>{
+ let asked=0;const sectorOf=async()=>{asked++;return 'Crypto';};
+ const pending=fixture({environment:aspiringEnv,sectorOf,charge:{status:'pending'}});
+ assert.deepEqual(await pending.service.status(reference),{reference,status:'pending'});
+ assert.equal(asked,0);
+ assert.deepEqual(await fixture({sectorOf}).service.status(reference),{reference,status:'paid'});
+ for(const sector of [null,undefined,7])assert.deepEqual(await fixture({environment:aspiringEnv,sectorOf:async()=>sector}).service.status(reference),{reference,status:'paid'});
+});
+test('a failed sector lookup never hides a confirmed payment or sends a Crypto member to the Aspiring group',async()=>{
+ const f=fixture({environment:aspiringEnv,sectorOf:async()=>{throw new Error('sensitive storage detail');}});
+ assert.deepEqual(await f.service.status(reference),{reference,status:'paid'});
+ assert.equal(f.confirmations,1);
+});
+test('webhook never looks up or exposes a link',async()=>{
+ let asked=0;const f=fixture({environment:linkEnv,sectorOf:async()=>{asked++;return 'Crypto';}});const p=payload();
+ assert.deepEqual(await f.service.webhook(JSON.stringify(p),sign(p.data)),{received:true});
+ assert.equal(asked,0);
+});
+test('only credential-free https WhatsApp invite links are ever returned, and object prototype keys are ignored',()=>{
+ const group=(v,sector='Crypto')=>sectorGroup({BIC_SECTOR_LINKS:JSON.stringify({Crypto:v})},sector);
+ assert.deepEqual(group('https://chat.whatsapp.com/abc'),{group:'Crypto',link:'https://chat.whatsapp.com/abc'});
+ for(const v of ['http://chat.whatsapp.com/abc','https://evil.example/abc','https://chat.whatsapp.com.evil.example/abc','https://u:p@chat.whatsapp.com/abc','https://chat.whatsapp.com:444/abc','javascript:alert(1)','not a url',7,null])assert.equal(group(v),null);
+ for(const sector of ['__proto__','constructor','toString'])assert.equal(group('https://chat.whatsapp.com/abc',sector),null);
+ for(const raw of [undefined,'{bad json','null','5','[]'])assert.equal(sectorGroup({BIC_SECTOR_LINKS:raw},'Crypto'),null);
+});
+test('sector lookup uses apikey only, an encoded reference filter and tolerates no row',async()=>{
+ let request;const respond=body=>async(url,options)=>{request={url,options};return {ok:true,json:async()=>body};};
+ assert.equal(await supabaseSector(env,respond([{sector:'Crypto'}]))(reference),'Crypto');
+ assert.equal(request.url,env.VITE_SUPABASE_URL+'/rest/v1/member_applications?select=sector&limit=1&paystack_ref=eq.'+reference);
+ assert.equal(request.options.headers.apikey,env.SUPABASE_SECRET_KEY);
+ assert.equal(Object.keys(request.options.headers).some(k=>k.toLowerCase()==='authorization'),false);
+ assert.equal(await supabaseSector(env,respond([]))(reference),null);
+ await supabaseSector(env,respond([]))('a&b=c');assert.ok(request.url.endsWith('paystack_ref=eq.a%26b%3Dc'));
+ await assert.rejects(supabaseSector(env,async()=>({ok:false}))(reference));
+ assert.throws(()=>supabaseSector({...env,VITE_SUPABASE_URL:'http://insecure.example'}));
+});
+test('any well-formed email can apply, including student.babcock.edu.ng, Gmail and other providers',()=>{
+ for(const email of ['member@babcock.edu.ng','awodeyia4449@student.babcock.edu.ng','Someone.Name+club@Gmail.com','a_b-c@yahoo.co.uk','x@mail.com','ola@my-school.edu.ng',' padded@outlook.com ',"o'brien@proton.me"])assert.equal(applicationInput({...application,email}).email,email.trim().toLowerCase());
+});
+test('broken shapes and obvious typos of big providers are rejected with a helpful message',()=>{
+ for(const email of ['a@gmail.comn','a@gmial.com','a@gmail.con','a@gmail.co','a@yahoo.cm','a@hotmail.co','a@hotmial.com','a@gmail','a@@x.com','a b@x.com','a@x.c','a@.com','a@x..com','.a@x.com','a..b@x.com','a@x.com.','@x.com','a@','','plain','a@-x.com','a<b>@x.com','a@gmail.123'])assert.throws(()=>applicationInput({...application,email}),/valid email|spelling|application fields/i,email);
+ assert.equal(emailProblem('ola@gmail.comn'),'Check the spelling. Did you mean ola@gmail.com?');
+ assert.equal(emailProblem('ola@gmial.com'),'Check the spelling. Did you mean ola@gmail.com?');
+ assert.match(emailProblem('not-an-email'),/valid email/);
+ for(const email of [null,undefined,42,{}])assert.match(emailProblem(email),/valid email/);
+ assert.equal(emailProblem('ola@student.babcock.edu.ng'),'');
+ assert.equal(emailProblem('ola@gmail.com'),'');
 });
